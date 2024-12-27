@@ -47,7 +47,7 @@ const userController = {
                         username: user.user_name, 
                         email: user.email,
                         id: user._id,
-                        role : user.role
+                        is_admin : user.is_admin
                     }
                 },
                 process.env.ACCESS_TOKEN_SECRET,
