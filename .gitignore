@@ -1,11 +1,11 @@
-/back/node_modules
-/back/dist
-/back/build
-/back/.DS_Store
-/back/npm-debug.log
-/back/yarn-error.log
-/back/.vscode
-/back/.idea
+/server/node_modules
+/server/dist
+/server/build
+/server/.DS_Store
+/server/npm-debug.log
+/server/yarn-error.log
+/server/.vscode
+/server/.idea
 
 
 
