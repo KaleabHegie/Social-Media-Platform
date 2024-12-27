@@ -1,0 +1,8 @@
+/back/node_modules
+/back/dist
+/back/build
+/back/.DS_Store
+/back/npm-debug.log
+/back/yarn-error.log
+/back/.vscode
+/back/.idea
