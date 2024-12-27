@@ -6,3 +6,15 @@
 /back/yarn-error.log
 /back/.vscode
 /back/.idea
+
+
+
+
+/front/node_modules
+/front/dist
+/front/build
+/front/.DS_Store
+/front/npm-debug.log
+/front/yarn-error.log
+/front/.vscode
+/front/.idea
