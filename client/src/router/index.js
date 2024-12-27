@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 
 // Import components
 import SignIn from '@/components/auth/SignIn.vue';
-// import SignInAmharic from '@/components/auth/SignInAmharic.vue';
+import SignInAmharic from '@/components/auth/SignInAmharic.vue';
 // import SignUp from '@/components/auth/SignUp.vue';
 // import SignUpAmharic from '@/components/auth/SignUpAmharic.vue';
 // import ForgotPassword from '@/components/auth/ForgotPassword.vue';
@@ -12,7 +12,7 @@ import SignIn from '@/components/auth/SignIn.vue';
 const routes = [
   { path: '/', redirect: '/signin' },
   { path: '/signin', component: SignIn },
-//   { path: '/signin-amharic', component: SignInAmharic },
+  { path: '/signin-amharic', component: SignInAmharic },
 //   { path: '/signup', component: SignUp },
 //   { path: '/signup-amharic', component: SignUpAmharic },
 //   { path: '/forgot-password', component: ForgotPassword },
