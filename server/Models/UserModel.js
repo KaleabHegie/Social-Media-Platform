@@ -12,9 +12,11 @@ const NotificationSchema = new mongoose.Schema({
 
 // User Schema
 const UserSchema = new mongoose.Schema({
-        username: { type: String, required: true, unique: true },
+        user_name: { type: String, required: true, unique: true },
         first_name: { type: String, required: true },
         last_name: { type: String, required: true },
+        date_of_birth: { type: Date, required: false },
+        gender : { type: String, enum: ['male', 'female'] ,required: false },
         email: { type: String, required: true, unique: true },
         password: { type: String, required: true },
         profile_photo_url: { type: String },
@@ -34,7 +36,8 @@ const UserSchema = new mongoose.Schema({
             created_at: { type: Date, default: Date.now },
           },
         ],
-        notifications: [NotificationSchema], 
+        is_admin : { type: Boolean, default: false },
+        notifications: [NotificationSchema] , 
   },{
         timestamps: true
   });

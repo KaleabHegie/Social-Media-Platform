@@ -13,20 +13,18 @@ const MessageSubSchema = new mongoose.Schema({
 // Main Message Schema
 const MessageSchema = new mongoose.Schema(
   {
-    chat_id: { type: mongoose.Schema.Types.ObjectId, required: true },
-    participants: [
-      {
-        userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-        last_opened_at: { type: Date, default: Date.now },
-      },
-    ],
-    messages: [MessageSubSchema], 
+        chat_id: { type: mongoose.Schema.Types.ObjectId, required: true },
+        participants: [
+          {
+            userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+            last_opened_at: { type: Date, default: Date.now },
+          },
+        ],
+        messages: [MessageSubSchema], 
   },
   {
-    timestamps: true, // Adds createdAt and updatedAt for the document
+        timestamps: true, 
   }
 );
 
-
-// Export Model
 module.exports = mongoose.model('Message', MessageSchema);
