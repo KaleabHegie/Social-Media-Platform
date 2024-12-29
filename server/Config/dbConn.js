@@ -3,8 +3,8 @@ const mongoose = require('mongoose');
 const connectDb = async () => {
   try {
     const connect = await mongoose.connect(process.env.DATABASE_SERVER, {
-      useNewUrlParser: true, // Recommended options
-      useUnifiedTopology: true,
+      // useNewUrlParser: true, // Recommended options
+      // useUnifiedTopology: true,
     });
     console.log("DB Connected:", connect.connection.host, connect.connection.name);
   } catch (err) {
