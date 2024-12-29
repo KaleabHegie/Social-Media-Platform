@@ -1,19 +1,17 @@
 <template>
-  <div class=" min-h-screen bg-gray-50 flex items-center justify-center py-12 sm:px-6 lg:px-8">
+  <div class=" min-h-screen bg-white rounded-lg shadow-xl overflow-hidden flex items-center justify-center py-12 sm:px-6 lg:px-8">
     <div class="w-full max-w-md">
       <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
         <!-- Logo Section -->
         <div class="text-center -mt-24 h-64">
-          <img class="cursor-none" src="@/assets/logo.png" alt="Tsede Logo" />
+          <img src="@/assets/logo.png" alt="Tsede Logo" />
         </div>
 
         <!-- Language Dropdown -->
         <div class="text-right mb-10">
-          <select v-model="selectedLanguage" @change="changeLanguage"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-sky-500 focus:border-sky-500">
-            <option value="en">English</option>
-            <option value="am">አማርኛ</option>
-          </select>
+          <button @click="switchLanguage" class="bg-sky-400 hover:bg-sky-400 text-white px-3 py-1 rounded">
+            {{ currentLanguage === 'en' ? 'አማርኛ' : 'English' }}
+          </button>
         </div>
 
         <!-- Form Section -->
@@ -101,91 +99,98 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'SignIn',
-  data() {
-    return {
-      form: {
-        username: '',
-        password: '',
-        rememberMe: false,
-      },
-      errors: {},
-      loading: false,
-      showPassword: false,
-      selectedLanguage: 'en', // Default language
-    };
-  },
-  methods: {
-    togglePasswordVisibility() {
-      this.showPassword = !this.showPassword;
-    },
-    validateForm() {
-      this.errors = {};
+<script setup>
+import { ref, reactive, computed } from 'vue';
+import { useRouter } from 'vue-router';
+import { useLanguageStore } from '@/stores/languageStore';
 
-      // Username or Email validation
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+// Access the language store
+const { currentLanguage, switchLanguage, t } = useLanguageStore();
 
-      if (this.form.username.includes("@") || emailRegex.test(this.form.username)) {
-        // Assume it's an email
-        const hasAtSymbol = /@/.test(this.form.username);
-        const hasDomain = /\.[a-zA-Z]{2,}$/.test(this.form.username);
+// Define form data and state
+const form = reactive({
+  username: '',
+  password: '',
+  rememberMe: false,
+});
+const errors = reactive({});
+const loading = ref(false);
+const showPassword = ref(false);
+const selectedLanguage = ref('en'); // Default language
 
-        if (!hasAtSymbol) {
-          this.errors.username = "Email must include an '@' symbol.";
-        } else if (!hasDomain) {
-          this.errors.username = "Email must include a valid domain (e.g., '.com').";
-        } else if (!emailRegex.test(this.form.username)) {
-          this.errors.username = "Please enter a valid email address.";
-        }
-      } else {
-        // Treat as a username if it's not a valid email
-        if (this.form.username.length < 3) {
-          this.errors.username = "Username must be at least 3 characters long.";
-        }
-      }
+// Router instance
+const router = useRouter();
 
-      // Password validation
-      const hasLetter = /[A-Za-z]/.test(this.form.password);
-      const hasNumber = /\d/.test(this.form.password);
-      const hasSpecialChar = /[@$!%*#?&]/.test(this.form.password);
-      const isLongEnough = this.form.password.length >= 8;
+// Methods
+const togglePasswordVisibility = () => {
+  showPassword.value = !showPassword.value;
+};
 
-      if (!isLongEnough) {
-        this.errors.password = "Password must be at least 8 characters long.";
-      } else if (!hasLetter) {
-        this.errors.password = "Password must include at least one letter.";
-      } else if (!hasNumber) {
-        this.errors.password = "Password must include at least one number.";
-      } else if (!hasSpecialChar) {
-        this.errors.password = "Password must include at least one special character (@, $, !, %, *, #, ?, &).";
-      }
+const validateForm = () => {
+  // Reset errors
+  Object.keys(errors).forEach((key) => delete errors[key]);
 
-      return Object.keys(this.errors).length === 0;
-    },
+  // Username or Email validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    async handleSubmit() {
-      if (!this.validateForm()) return;
+  if (form.username.includes('@') || emailRegex.test(form.username)) {
+    // Assume it's an email
+    const hasAtSymbol = /@/.test(form.username);
+    const hasDomain = /\.[a-zA-Z]{2,}$/.test(form.username);
 
-      this.loading = true;
-      try {
-        // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        this.$router.push('/dashboard');
-      } catch (error) {
-        console.error('Login error:', error);
-      } finally {
-        this.loading = false;
-      }
-    },
-    changeLanguage() {
-      if (this.selectedLanguage === 'am') {
-        this.$router.push('/signin-amharic');
-      } else {
-        this.$router.push('/signin');
-      }
-    },
-  },
+    if (!hasAtSymbol) {
+      errors.username = "Email must include an '@' symbol.";
+    } else if (!hasDomain) {
+      errors.username = "Email must include a valid domain (e.g., '.com').";
+    } else if (!emailRegex.test(form.username)) {
+      errors.username = 'Please enter a valid email address.';
+    }
+  } else {
+    // Treat as a username if it's not a valid email
+    if (form.username.length < 3) {
+      errors.username = 'Username must be at least 3 characters long.';
+    }
+  }
+
+  // Password validation
+  const hasLetter = /[A-Za-z]/.test(form.password);
+  const hasNumber = /\d/.test(form.password);
+  const hasSpecialChar = /[@$!%*#?&]/.test(form.password);
+  const isLongEnough = form.password.length >= 8;
+
+  if (!isLongEnough) {
+    errors.password = 'Password must be at least 8 characters long.';
+  } else if (!hasLetter) {
+    errors.password = 'Password must include at least one letter.';
+  } else if (!hasNumber) {
+    errors.password = 'Password must include at least one number.';
+  } else if (!hasSpecialChar) {
+    errors.password = 'Password must include at least one special character (@, $, !, %, *, #, ?, &).';
+  }
+
+  return Object.keys(errors).length === 0;
+};
+
+const handleSubmit = async () => {
+  if (!validateForm()) return;
+
+  loading.value = true;
+  try {
+    // Simulate API call
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    router.push('/dashboard');
+  } catch (error) {
+    console.error('Login error:', error);
+  } finally {
+    loading.value = false;
+  }
+};
+
+const changeLanguage = () => {
+  if (selectedLanguage.value === 'am') {
+    router.push('/signin-amharic');
+  } else {
+    router.push('/signin');
+  }
 };
 </script>
