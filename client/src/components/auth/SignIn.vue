@@ -118,7 +118,6 @@ const form = reactive({
 const errors = reactive({});
 const loading = ref(false);
 const showPassword = ref(false);
-const selectedLanguage = ref('en'); // Default language
 
 // Router instance
 const router = useRouter();
