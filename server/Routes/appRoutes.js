@@ -34,14 +34,12 @@ router.get("/getHashTags", postController.getHashTags);
  *************************************************************************/
 
 router.post(
-  "/uploadPost",
+  "/makeComment",
   validateToken,
-  upload.array("files"),
-  postController.uploadPost
+  commentController.makeComment
 );
-router.delete("/deletePost", validateToken, postController.deletePost);
+// router.delete("/deletePost", validateToken, commentController.deleteComment);
 
-router.get("/getHashTags", postController.getHashTags);
 
 
 

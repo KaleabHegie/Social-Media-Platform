@@ -38,8 +38,6 @@ const postController = {
         });
       }
 
-  
-
       const { caption, hashtags, type } = req.body;
 
       if (!type) {
@@ -48,15 +46,13 @@ const postController = {
         });
       }
 
-      if (hashtags.length > 5) {
+      if (hashtags && hashtags.length > 5) {
         return res.status(constants.VALIDATION_ERRORS).json({
           message: "Too Many HashTags",
         });
       }
 
       const files = req.files;
-
-      console.log("Number of files:", files.length);
 
       const uploadedMediaUrls = [];
 
@@ -106,8 +102,10 @@ const postController = {
 
       res.status(200).json({ message: "Post created successfully", post: newPost });
     } catch (error) {
-      console.error("Error creating post:", error);
-      res.status(500).json({ error: "An error occurred while creating the post" });
+      console.error("Error creating post:", error.toString());
+      res
+        .status(constants.SERVER_ERROR)
+        .json({ error: "An error occurred while creating the post" });
     }
   },
 
