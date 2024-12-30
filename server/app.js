@@ -3,7 +3,7 @@ const { errorHandler } = require('./Middleware/errorHandler');
 const connectDB = require('./Config/dbConn');
 const cors = require('cors');
 const app = express();
-const authRoutes = require('./Routes/authRoutes');
+const userAccountRoutes = require('./Routes/userAccountRoutes');
 const appRoutes = require('./Routes/appRoutes');
 
 require('dotenv').config();
@@ -22,7 +22,7 @@ app.get(["/","/ping"], async (req, res) => {
   res.json({ status: "Server Active" });
 });
 
-app.use("/api", authRoutes);
+app.use("/api", userAccountRoutes);
 app.use("/api", appRoutes);
 
 

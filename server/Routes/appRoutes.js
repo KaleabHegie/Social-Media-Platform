@@ -1,6 +1,5 @@
 const express = require("express");
 const postController = require("../Controllers/postController");
-const adminController = require("../Controllers/adminController");
 
 const router = express.Router();
 const multer = require("multer");
@@ -23,11 +22,6 @@ router.delete("/deletePost", validateToken, postController.deletePost);
 
 router.get("/getHashTags", postController.getHashTags);
 
-/************************************************************************
- *
- *  Admin Related Routes
- *
- *************************************************************************/
-router.post("/uploadHashTagAdmin", validateToken, adminController.uploadHashTagAdmin);
+
 
 module.exports = router;

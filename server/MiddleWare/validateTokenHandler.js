@@ -2,7 +2,7 @@ const asyncHandler = require("express-async-handler");
 const jwt = require("jsonwebtoken");
 const { constants } = require("../Utils/constants");
 
-const validateToken = async (req, res, next) => {
+const validateToken = (req, res, next) => {
   const authHeader = req.headers.authorization || req.headers.Authorization;
 
   if (authHeader && authHeader.startsWith("Bearer")) {
@@ -10,16 +10,20 @@ const validateToken = async (req, res, next) => {
 
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
       if (err) {
-        console.error("Token verification failed:", err);
+        console.error("Token verification failed:", err.toString());
         return res
           .status(constants.INVALID_TOKEN)
           .json({ message: "Invalid Auth token | Token Expired" });
       }
 
+      // Attach user info to the request object
       req.user = decoded.user;
+      return next(); // Forward the request
     });
+  } else {
+    // No token present, forward the request as it came
+    return next();
   }
-  next();
 };
 
 // Generic role validation middleware

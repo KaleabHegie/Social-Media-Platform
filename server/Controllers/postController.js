@@ -38,6 +38,8 @@ const postController = {
         });
       }
 
+  
+
       const { caption, hashtags, type } = req.body;
 
       if (!type) {
