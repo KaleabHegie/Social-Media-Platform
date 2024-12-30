@@ -4,21 +4,7 @@ const User = require("../Models/UserModel");
 const Post = require("../Models/PostModel");
 const Hashtag = require("../Models/HashTagModel");
 
-// // Configure Cloudinary
-// cloudinary.config({
-//   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-//   api_key: process.env.CLOUDINARY_API_KEY,
-//   api_secret: process.env.CLOUDINARY_API_SECRET,
-// });
-
-// Configure Cloudinary
-cloudinary.config({
-  cloud_name: "dwkvbn1vu",
-  api_key: "922675774229729",
-  api_secret: "zfWlXCOgJU0q4p3yVHZEEo74PnY",
-});
-
-const postController = {
+const commentController = {
   /************************************************************************
    *
    *
@@ -193,4 +179,4 @@ const postController = {
   },
 };
 
-module.exports = postController;
+module.exports = commentController;
