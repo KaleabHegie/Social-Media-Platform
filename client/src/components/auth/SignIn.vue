@@ -103,6 +103,7 @@
 import { ref, reactive, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useLanguageStore } from '@/stores/languageStore';
+import { useAuthStore } from '@/stores/authStore';
 
 // Access the language store
 const { currentLanguage, switchLanguage, t } = useLanguageStore();
@@ -171,20 +172,7 @@ const validateForm = () => {
   return Object.keys(errors).length === 0;
 };
 
-const handleSubmit = async () => {
-  if (!validateForm()) return;
 
-  loading.value = true;
-  try {
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    router.push('/dashboard');
-  } catch (error) {
-    console.error('Login error:', error);
-  } finally {
-    loading.value = false;
-  }
-};
 
 const changeLanguage = () => {
   if (selectedLanguage.value === 'am') {
@@ -193,4 +181,38 @@ const changeLanguage = () => {
     router.push('/signin');
   }
 };
+
+
+
+
+const authStore = useAuthStore();
+
+
+
+
+
+
+const handleSubmit = async () => {
+  if (!validateForm()) return;
+
+  loading.value = true;
+
+  const credentials = {
+    username: form.username,
+    password: form.password,
+  };
+
+
+  
+  
+  const success = await authStore.login(credentials);
+  loading.value = false;
+
+  if (success) {
+    router.push('/dashboard'); // Navigate to the dashboard after login
+  } else {
+    errors.general = authStore.error || 'Login failed';
+  }
+};
+
 </script>
