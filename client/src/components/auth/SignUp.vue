@@ -107,16 +107,24 @@
                             <input id="password" v-model="formData.password" type="password" required
                                 class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-400 focus:border-sky-400" />
                         </div>
+                        <div class="mb-4">
+                            <label for="confirm-password"
+                                class="block text-sm font-medium text-gray-700 bg-white px-1 ml-2 -mb-3 z-10 relative w-fit">
+                              Confirm Password
+                            </label>
+                            <input id="password" v-model="formData.password" type="password" required
+                                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-400 focus:border-sky-400" />
+                        </div>
                     </div>
 
                     <!-- Navigation Buttons -->
                     <div class="flex justify-between mt-6">
                         <button v-if="currentStep > 1" @click.prevent="prevStep"
-                            class="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-sky-400 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-400">
+                            class="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-sky-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-400">
                             Previous
                         </button>
                         <button type="submit"
-                            class="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-sky-400 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-400">
+                            class="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-sky-400 hover:bg-sky-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-400">
                             {{ currentStep === 3 ? 'Submit' : 'Next' }}
                         </button>
                     </div>
