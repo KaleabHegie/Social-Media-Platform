@@ -142,6 +142,26 @@ const formData = reactive({
     password: ''
 })
 
+
+const handleSubmit = async () => {
+  if (!validateForm()) return;
+
+  loading.value = true;
+
+  const user_info = {
+    username: form.username,
+    password: form.password,
+  };
+  const success = await authStore.Register(user_info);
+  loading.value = false;
+
+  if (success) {
+    router.push('/login'); // Navigate to the dashboard after login
+  } else {
+    errors.general = authStore.error || 'Register failed';
+  }
+};
+
 const nextStep = () => {
     if (currentStep.value < 3) {
         currentStep.value++

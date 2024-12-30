@@ -27,14 +27,16 @@ const UserSchema = new mongoose.Schema({
         followers: [
           {
             user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-            created_at: { type: Date, default: Date.now },
-          },
+          },{
+            timestamps: true
+          }
         ],
         following: [
           {
             user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-            created_at: { type: Date, default: Date.now },
-          },
+          },{
+            timestamps: true
+          }
         ],
         is_admin : { type: Boolean, default: false },
         notifications: [NotificationSchema] , 
