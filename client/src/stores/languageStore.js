@@ -15,11 +15,11 @@ const translations = {
   },
   first_name: {
     en: " First Name",
-    am: " የተጠቃሚ ስም"
+    am: " የመጀመሪያ ስም"
   },
   last_name: {
     en: " Last Name",
-    am: " የተጠቃሚ ስም"
+    am: " የአባት ስም"
   },
   password: {
     en: "Password",
