@@ -1,10 +1,15 @@
-const express = require("express");
-const AppRoute = express.Router();
+const express = require('express');
+const postController = require('../Controllers/postController');
+const router = express.Router();
+
 
 
 /************************************************************************
  *
- *  User Account Registration,login, profile Routes Below
+ *  Post Related Routes
  *
  *************************************************************************/
 
+router.post('/uploadPost', postController.uploadPost);
+
+module.exports = router;

@@ -4,6 +4,8 @@ const connectDB = require('./Config/dbConn');
 const cors = require('cors');
 const app = express();
 const authRoutes = require('./Routes/authRoutes');
+const appRoutes = require('./Routes/appRoutes');
+
 require('dotenv').config();
 
 app.use(express.json());
@@ -21,7 +23,9 @@ app.get(["/","/ping"], async (req, res) => {
 });
 
 app.use("/api", authRoutes);
+app.use("/api", appRoutes);
+
 
 app.listen(port, () => {
-  console.log(`Job-Listing-System listening at http://localhost:${port}`);
+  console.log(`Social-Media-App-Api listening at http://localhost:${port}`);
 });
