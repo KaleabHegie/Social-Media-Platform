@@ -1,5 +1,7 @@
 const express = require("express");
 const postController = require("../Controllers/postController");
+const commentController = require("../Controllers/commentController");
+
 
 const router = express.Router();
 const multer = require("multer");
@@ -21,6 +23,27 @@ router.post(
 router.delete("/deletePost", validateToken, postController.deletePost);
 
 router.get("/getHashTags", postController.getHashTags);
+
+
+
+
+/************************************************************************
+ *
+ *  Comment Related Routes
+ *
+ *************************************************************************/
+
+router.post(
+  "/uploadPost",
+  validateToken,
+  upload.array("files"),
+  postController.uploadPost
+);
+router.delete("/deletePost", validateToken, postController.deletePost);
+
+router.get("/getHashTags", postController.getHashTags);
+
+
 
 
 

@@ -54,44 +54,49 @@ const userController = {
         password: hashedPassword,
       });
 
-      res.status(201).json({ message: "User registered successfully", user: newUser });
+      res.json({ message: "User registered successfully", user: newUser });
     } catch (error) {
-      console.log(error);
-      res.status(500).json({ message: "Error registering user", error });
+      console.log(error.toString());
+      res.status(constants.SERVER_ERROR).json({ message: "Error registering user", error });
     }
   },
   login: async (req, res) => {
-    const password = req.body.password;
-    const user_name = req.body.username;
-    if (!user_name || !password) {
-      res.status(400);
-      throw new Error("Please provide username and password");
-    }
-    const user = await User.findOne({ user_name });
+    try {
+      const password = req.body.password;
+      const user_name = req.body.username;
 
-    if (
-      user &&
-      (await bcrypt.compare(password, user.password)) &&
-      (await (user_name, user.user_name))
-    ) {
-      const accessToken = jwt.sign(
-        {
-          user: {
-            username: user.user_name,
-            email: user.email,
-            id: user._id,
-            is_admin: user.is_admin,
+      // Check if both username and password are provided
+      if (!user_name || !password) {
+        return res.status(400).json({ message: "Please provide username and password" });
+      }
+
+      // Find the user by username
+      const user = await User.findOne({ user_name });
+
+      // Verify the user exists and the password is correct
+      if (user && (await bcrypt.compare(password, user.password))) {
+        const accessToken = jwt.sign(
+          {
+            user: {
+              username: user.user_name,
+              email: user.email,
+              id: user._id,
+              is_admin: user.is_admin,
+            },
           },
-        },
-        process.env.ACCESS_TOKEN_SECRET,
-        {
-          expiresIn: "30d",
-        }
-      );
+          process.env.ACCESS_TOKEN_SECRET,
+          {
+            expiresIn: "30d",
+          }
+        );
 
-      res.status(200).json({ accessToken });
-    } else {
-      res.status(401).json({ message: "Invalid username or password" });
+        return res.status(200).json({ accessToken });
+      } else {
+        return res.status(401).json({ message: "Invalid username or password" });
+      }
+    } catch (error) {
+      console.error("Error during login:", error);
+      return res.status(500).json({ message: "An internal server error occurred" });
     }
   },
 
@@ -150,9 +155,9 @@ const userController = {
         profile_photo_url: user.profile_photo_url,
       });
     } catch (error) {
-      console.error("Error setting profile image:", error);
+      console.error("Error setting profile image:", error.toString());
       res.status(constants.SERVER_ERROR).json({
-        error: "An error occurred while setting the profile image",
+        message: "An error occurred while setting the profile image",
       });
     }
   },
@@ -192,9 +197,47 @@ const userController = {
         bio: user.bio,
       });
     } catch (error) {
-      console.error("Error setting profile Bio:", error);
+      console.error("Error setting profile Bio:", error.toString());
       res.status(constants.SERVER_ERROR).json({
-        error: "An error occurred while setting the Bio",
+        message: "An error occurred while setting the Bio",
+      });
+    }
+  },
+
+  setAccountVisibility: async (req, res) => {
+    try {
+      // Check if the user is logged in
+      if (!req.user) {
+        return res.status(constants.UNAUTHORIZED).json({
+          message: "Can't set Account Visibility  if user is not logged in",
+        });
+      }
+      let { is_private } = req.body;
+      if (!is_private) {
+        return res.status(constants.VALIDATION_ERRORS).json({
+          message: "Visibility Value is required",
+        });
+      }
+
+      // Find the user by ID
+      const user = await User.findById(req.user.id);
+
+      if (!user) {
+        return res.status(constants.UNAUTHORIZED).json({
+          message: "User not found",
+        });
+      }
+
+      user.is_private = is_private;
+      await user.save();
+
+      res.json({
+        message: "Account Visibility updated successfully",
+      });
+    } catch (error) {
+      console.error("Error setting Account Visibility:", error.toString());
+      res.status(constants.SERVER_ERROR).json({
+        message: "An error occurred while setting Account Visibility",
       });
     }
   },
