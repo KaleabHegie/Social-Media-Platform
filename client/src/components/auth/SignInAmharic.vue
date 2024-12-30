@@ -21,7 +21,7 @@
           <!-- Username or Email -->
           <div class="relative">
             <label for="username" class="absolute -top-2 left-2 bg-white text-sm font-medium text-gray-700 px-1">
-              የተጠቃሚ ስም ወይም ኢሜይል
+              {{ t('Username') }}
             </label>
             <div class="mt-2">
               <input id="username" v-model="form.username" type="text" required

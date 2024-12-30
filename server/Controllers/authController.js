@@ -11,7 +11,6 @@ const userController = {
             if (existingUser) {
                 return res.status(400).json({ message: 'A user was found with this email' });
             }
-
             const hashedPassword = await bcrypt.hash(password, 10);
 
             const newUser = await User.create({
@@ -32,21 +31,21 @@ const userController = {
         }
     },
     login : asyncHandler(async (req, res) => {
-        const { email, password } = req.body
-    
-        if (!email || !password) {
+        const password  = req.body.password
+        const user_name = req.body.username
+        if (!user_name || !password) {
             res.status(400)
-            throw new Error('Please provide email and password')
+            throw new Error('Please provide username and password')
         }
-        const user = await User.findOne({ email })
+        const user = await User.findOne({ user_name })
     
-        if (user && (await bcrypt.compare(password, user.password)) || (await (password, user.password))) {
+        if (user && (await bcrypt.compare(password, user.password)) && (await (user_name, user.user_name))) {
             const accessToken = jwt.sign(
                 {
                     user: {
                         username: user.user_name, 
                         email: user.email,
-                        id: user._id,
+                        id: user._id,       
                         is_admin : user.is_admin
                     }
                 },
@@ -58,8 +57,7 @@ const userController = {
     
             res.status(200).json({ accessToken })
         } else {
-            res.status(401)
-            throw new Error('Invalid email or password')
+            res.status(401).json({ message: 'Invalid username or password' })
         }
     })
 };

@@ -10,11 +10,11 @@
 
 
 
-/front/node_modules
-/front/dist
-/front/build
-/front/.DS_Store
-/front/npm-debug.log
-/front/yarn-error.log
-/front/.vscode
-/front/.idea
+/client/node_modules
+/client/dist
+/client/build
+/client/.DS_Store
+/client/npm-debug.log
+/client/yarn-error.log
+/client/.vscode
+/client/.idea
