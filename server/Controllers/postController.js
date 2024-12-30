@@ -128,7 +128,38 @@ const postController = {
         });
       }
 
-      res.json({ message: "Post Deleted Successfully", post: newPost });
+      const { postId } = req.query;
+
+      // Check if the post exists
+      const post = await Post.findById(postId);
+
+      if (!post) {
+        return res.status(constants.NOT_FOUND).json({
+          message: "Post not found",
+        });
+      }
+
+      // Check if the logged-in user is the author of the post
+      if (post.user.toString() !== req.user.id) {
+        return res.status(constants.FORBIDDEN).json({
+          message: "You are not authorized to delete this post",
+        });
+      }
+
+      // Delete the post
+      await Post.findByIdAndDelete(postId);
+
+      // Update the user's post count
+      const user = await User.findById(req.user.id);
+
+      if (user) {
+        user.post_count = user.post_count > 0 ? user.post_count - 1 : 0; // Decrease the post count, ensuring it doesn't go negative
+        await user.save();
+      }
+
+      res.json({
+        message: "Post deleted successfully",
+      });
     } catch (error) {
       console.error("Error creating post:", error);
       res

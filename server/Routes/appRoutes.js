@@ -7,7 +7,6 @@ const multer = require("multer");
 const upload = multer({ storage: multer.memoryStorage() });
 const { validateToken } = require("../MiddleWare/validateTokenHandler");
 
-
 /************************************************************************
  *
  *  Post Related Routes
@@ -20,36 +19,15 @@ router.post(
   upload.array("files"),
   postController.uploadPost
 );
+router.delete("/deletePost", validateToken, postController.deletePost);
 
-router.get(
-  "/getHashTags",
-  postController.getHashTags
-);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+router.get("/getHashTags", postController.getHashTags);
 
 /************************************************************************
  *
  *  Admin Related Routes
  *
  *************************************************************************/
-router.post(
-  "/uploadHashTagAdmin",
-  validateToken,
-  adminController.uploadHashTagAdmin
-);
-
+router.post("/uploadHashTagAdmin", validateToken, adminController.uploadHashTagAdmin);
 
 module.exports = router;
