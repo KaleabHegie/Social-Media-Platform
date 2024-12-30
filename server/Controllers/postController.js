@@ -1,5 +1,8 @@
-const cloudinary = require('cloudinary').v2;
-
+const cloudinary = require("cloudinary").v2;
+const { constants } = require("../Utils/constants");
+const User = require("../Models/UserModel");
+const Post = require("../Models/PostModel");
+const Hashtag = require("../Models/HashTagModel");
 
 // // Configure Cloudinary
 // cloudinary.config({
@@ -15,31 +18,51 @@ cloudinary.config({
   api_secret: "zfWlXCOgJU0q4p3yVHZEEo74PnY",
 });
 
-
 const postController = {
+  /************************************************************************
+   *
+   *
+   *
+   * To Upload Post  - POST /api/uploadPost
+   *
+   *
+   *
+   *
+   ************************************************************************/
   uploadPost: async (req, res) => {
     try {
-      const { caption } = req.body;
-      const files = req.files;
-
-      if (!caption || !files || files.length === 0) {
-        return res
-          .status(400)
-          .json({ error: "Caption and at least one file are required" });
+      // Check if the user is logged in
+      if (!req.user) {
+        return res.status(constants.UNAUTHORIZED).json({
+          message: "Can't upload posts if user is not logged in",
+        });
       }
 
-      console.log("Received caption:", caption);
+      const { caption, hashtags, type } = req.body;
+
+      if (!type) {
+        return res.status(constants.VALIDATION_ERRORS).json({
+          message: "Post type is required",
+        });
+      }
+
+      if (hashtags.length > 5) {
+        return res.status(constants.VALIDATION_ERRORS).json({
+          message: "Too Many HashTags",
+        });
+      }
+
+      const files = req.files;
+
       console.log("Number of files:", files.length);
 
-      console.log( process.env.CLOUDINARY_API_KEY);
-      // Upload files to UploadThing
+      const uploadedMediaUrls = [];
 
-      const fileUrls = [];
-
+      // Upload files to Cloudinary
       for (const file of files) {
         const result = await new Promise((resolve, reject) => {
           const stream = cloudinary.uploader.upload_stream(
-            { resource_type: 'auto',folder: 'posts' },
+            { resource_type: "auto", folder: type === "post" ? "posts" : "stories" },
             (error, result) => {
               if (error) {
                 reject(error);
@@ -48,21 +71,91 @@ const postController = {
               }
             }
           );
-      
-          // Use file.buffer to pass the file data
+
           stream.end(file.buffer);
         });
-      
-        fileUrls.push(result.secure_url);
+
+        uploadedMediaUrls.push(result.secure_url);
       }
-      
 
-      console.log("Post created:", { caption, fileUrls });
+      // Find the user by ID
+      const user = await User.findById(req.user.id);
 
-      res.status(200).json({ message: "Post created successfully", caption, fileUrls });
+      // Check if the user exists
+      if (!user) {
+        return res.status(constants.UNAUTHORIZED).json({ error: "User not found" });
+      }
+
+      // Create a new post and associate it with the user
+      const newPost = new Post({
+        user: user._id,
+        medias: uploadedMediaUrls,
+        caption,
+        hashtags,
+        type,
+      });
+
+      // Save the post
+      await newPost.save();
+
+      // Optionally, update the user's post count
+      user.post_count++;
+      await user.save();
+
+      res.status(200).json({ message: "Post created successfully", post: newPost });
     } catch (error) {
       console.error("Error creating post:", error);
       res.status(500).json({ error: "An error occurred while creating the post" });
+    }
+  },
+
+  /************************************************************************
+   *
+   *
+   *
+   * To Delete a Post  - DELETE /api/deletePost
+   *
+   *
+   *
+   *
+   ************************************************************************/
+  deletePost: async (req, res) => {
+    try {
+      // Check if the user is logged in
+      if (!req.user) {
+        return res.status(constants.UNAUTHORIZED).json({
+          message: "Can't Delete posts if user is not logged in",
+        });
+      }
+
+      res.json({ message: "Post Deleted Successfully", post: newPost });
+    } catch (error) {
+      console.error("Error creating post:", error);
+      res
+        .status(constants.SERVER_ERROR)
+        .json({ error: "An error occurred while creating the post" });
+    }
+  },
+
+  /************************************************************************
+   *
+   *
+   *
+   * To Get HashTags  - GET /api/getHashTags
+   *
+   *
+   *
+   *
+   ************************************************************************/
+  getHashTags: async (req, res) => {
+    try {
+      const hashtags = await Hashtag.find({});
+      res.status(200).json({ hashtags });
+    } catch (error) {
+      console.error("Error fetching hashtags:", error);
+      res
+        .status(constants.SERVER_ERROR)
+        .json({ message: "An error occurred while fetching hashtags" });
     }
   },
 };

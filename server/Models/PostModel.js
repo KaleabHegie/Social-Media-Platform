@@ -16,11 +16,11 @@ const CommentSchema = new mongoose.Schema({
     });
 
 const PostSchema = new mongoose.Schema({
-        user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-        media: [{ type: String }], 
+        user: { type: mongoose.Schema.Types.ObjectId, ref: 'User',  onDelete: 'cascade' }, // Cascade delete when user is deleted
+        medias: [{ type: String }], 
         caption: { type: String },
         likes_count: { type: Number, default: 0 },
-        hashtags : [{ type: mongoose.Schema.Types.ObjectId, ref: 'HashTags' }],
+        hashtags : [{type: String}],
         like: [
           {
             user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },

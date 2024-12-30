@@ -1,11 +1,7 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-const HashtagSchema = new mongoose.Schema(
-    {
-        name: { type: String, required: true, unique: true },
-    },
-    {
-        timestamps: true, // Adds createdAt and updatedAt for the document
-  });
+const HashtagSchema = new mongoose.Schema({
+  name: { type: String, required: true, unique: true },
+});
 
-module.exports = mongoose.model('Hashtag', HashtagSchema);
+module.exports = mongoose.model("Hashtag", HashtagSchema);
