@@ -31,10 +31,9 @@
                 </div>
 
                 <!-- Form -->
-                <form @submit.prevent="handleSubmit">
+                <form @submit.prevent="nextStep">
                     <!-- Step 1 -->
                     <div v-if="currentStep === 1">
-                        <!-- Step 1 Fields -->
                         <div class="mb-4">
                             <label for="user_name"
                                 class="block text-sm font-medium text-gray-700 bg-white px-1 ml-2 -mb-3 z-10 relative w-fit">
@@ -90,7 +89,6 @@
 
                     <!-- Step 3 -->
                     <div v-if="currentStep === 3">
-                        <!-- Step 3 Fields -->
                         <div class="mb-4">
                             <label for="email"
                                 class="block text-sm font-medium text-gray-700 bg-white px-1 ml-2 -mb-3 z-10 relative w-fit">
@@ -110,9 +108,9 @@
                         <div class="mb-4">
                             <label for="confirm-password"
                                 class="block text-sm font-medium text-gray-700 bg-white px-1 ml-2 -mb-3 z-10 relative w-fit">
-                              Confirm Password
+                                Confirm Password
                             </label>
-                            <input id="password" v-model="formData.password" type="password" required
+                            <input id="confirm-password" v-model="formData.confirm_password" type="password" required
                                 class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-400 focus:border-sky-400" />
                         </div>
                     </div>
@@ -143,14 +141,16 @@
         </div>
     </div>
 </template>
+
 <script setup>
 import { ref, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import { useLanguageStore } from '@/stores/languageStore';
 import { useAuthStore } from '@/stores/authStore';
+
 // Store access
 const languageStore = useLanguageStore();
-const t = (key) => languageStore.t.value(key); 
+const t = (key) => languageStore.t.value(key);
 
 const currentLanguage = languageStore.currentLanguage;
 const switchLanguage = languageStore.switchLanguage;
@@ -165,24 +165,39 @@ const formData = reactive({
     gender: '',
     email: '',
     password: '',
+    confirm_password: '', // Add confirm_password
 });
 
-// Translations
-const step1Fields = reactive({
-    user_name: t('usernameonly'),
-    first_name: t('first_name'),
-    last_name: t('last_name'),
-});
+// Validation Functions
+const isValidStep1 = () => {
+    return formData.user_name && formData.first_name && formData.last_name;
+};
 
-const step3Fields = reactive({
-    email: t('email'),
-    password: t('password'),
-});
+const isValidStep2 = () => {
+    if (!formData.date_of_birth) return false;
+
+    const birthDate = new Date(formData.date_of_birth);
+    const today = new Date();
+    const age = today.getFullYear() - birthDate.getFullYear();
+    const ageAdjustment = today < new Date(today.getFullYear(), birthDate.getMonth(), birthDate.getDate()) ? -1 : 0;
+
+    return age + ageAdjustment >= 13 && formData.gender;
+};
+
+const isValidStep3 = () => {
+    return formData.password && formData.password === formData.confirm_password;
+};
 
 // Step Navigation
 const nextStep = () => {
-    if (currentStep.value < 3) {
+    if (currentStep.value === 1 && isValidStep1()) {
         currentStep.value++;
+    } else if (currentStep.value === 2 && isValidStep2()) {
+        currentStep.value++;
+    } else if (currentStep.value === 3 && isValidStep3()) {
+        handleSubmit();
+    } else {
+        alert('Please complete all required fields correctly.');
     }
 };
 
@@ -194,22 +209,18 @@ const prevStep = () => {
 
 // Form Submission
 const handleSubmit = async () => {
-    if (currentStep.value < 3) {
-        nextStep();
-    } else {
-        const authStore = useAuthStore();
-        const router = useRouter();
+    const authStore = useAuthStore();
+    const router = useRouter();
 
-        try {
-            const success = await authStore.register(formData);
-            if (success) {
-                router.push('/signin');
-            } else {
-                alert(authStore.error || 'Registration failed.');
-            }
-        } catch (err) {
-            console.error('Error submitting form:', err);
+    try {
+        const success = await authStore.register(formData);
+        if (success) {
+            router.push('/signin');
+        } else {
+            alert(authStore.error || 'Registration failed.');
         }
+    } catch (err) {
+        console.error('Error submitting form:', err);
     }
 };
 </script>
