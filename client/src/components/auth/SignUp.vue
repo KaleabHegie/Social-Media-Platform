@@ -41,6 +41,8 @@
                             </label>
                             <input id="user_name" v-model="formData.user_name" type="text" required
                                 class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-400 focus:border-sky-400" />
+                            <!-- Error message -->
+                            <p v-if="errors.user_name" class="text-sm text-red-600 mt-1">{{ errors.user_name }}</p>
                         </div>
                         <div class="mb-4">
                             <label for="first_name"
@@ -49,6 +51,8 @@
                             </label>
                             <input id="first_name" v-model="formData.first_name" type="text" required
                                 class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-400 focus:border-sky-400" />
+                            <!-- Error message -->
+                            <p v-if="errors.first_name" class="text-sm text-red-600 mt-1">{{ errors.first_name }}</p>
                         </div>
                         <div class="mb-4">
                             <label for="last_name"
@@ -57,6 +61,8 @@
                             </label>
                             <input id="last_name" v-model="formData.last_name" type="text" required
                                 class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-400 focus:border-sky-400" />
+                            <!-- Error message -->
+                            <p v-if="errors.last_name" class="text-sm text-red-600 mt-1">{{ errors.last_name }}</p>
                         </div>
                     </div>
 
@@ -69,6 +75,9 @@
                             </label>
                             <input id="date_of_birth" v-model="formData.date_of_birth" type="date"
                                 class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-400 focus:border-sky-400" />
+                            <!-- Error message -->
+                            <p v-if="errors.date_of_birth" class="text-sm text-red-600 mt-1">{{ errors.date_of_birth }}
+                            </p>
                         </div>
                         <div class="mb-6">
                             <label class="block text-sm font-semibold text-gray-700 mb-3">Gender</label>
@@ -84,6 +93,8 @@
                                     <span class="ml-2 text-gray-800">Female</span>
                                 </label>
                             </div>
+                            <!-- Error message -->
+                            <p v-if="errors.gender" class="text-sm text-red-600 mt-1">{{ errors.gender }}</p>
                         </div>
                     </div>
 
@@ -96,6 +107,8 @@
                             </label>
                             <input id="email" v-model="formData.email" type="email" required
                                 class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-400 focus:border-sky-400" />
+                            <!-- Error message -->
+                            <p v-if="errors.email" class="text-sm text-red-600 mt-1">{{ errors.email }}</p>
                         </div>
                         <div class="mb-4">
                             <label for="password"
@@ -104,6 +117,8 @@
                             </label>
                             <input id="password" v-model="formData.password" type="password" required
                                 class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-400 focus:border-sky-400" />
+                            <!-- Error message -->
+                            <p v-if="errors.password" class="text-sm text-red-600 mt-1">{{ errors.password }}</p>
                         </div>
                         <div class="mb-4">
                             <label for="confirm-password"
@@ -112,6 +127,9 @@
                             </label>
                             <input id="confirm-password" v-model="formData.confirm_password" type="password" required
                                 class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-400 focus:border-sky-400" />
+                            <!-- Error message -->
+                            <p v-if="errors.confirm_password" class="text-sm text-red-600 mt-1">{{
+                                errors.confirm_password }}</p>
                         </div>
                     </div>
 
@@ -165,27 +183,47 @@ const formData = reactive({
     gender: '',
     email: '',
     password: '',
-    confirm_password: '', // Add confirm_password
+    confirm_password: '', 
 });
 
-// Validation Functions
+const errors = reactive({
+    user_name: '',
+    first_name: '',
+    last_name: '',
+    date_of_birth: '',
+    gender: '',
+    email: '',
+    password: '',
+    confirm_password: '',
+});
+
+// Validation Functions with Error Messages
 const isValidStep1 = () => {
-    return formData.user_name && formData.first_name && formData.last_name;
+    errors.user_name = !formData.user_name ? 'Username is required.' : '';
+    errors.first_name = !formData.first_name ? 'First name is required.' : '';
+    errors.last_name = !formData.last_name ? 'Last name is required.' : '';
+    return !errors.user_name && !errors.first_name && !errors.last_name;
 };
 
 const isValidStep2 = () => {
-    if (!formData.date_of_birth) return false;
+    errors.date_of_birth = !formData.date_of_birth ? 'Date of birth is required.' : '';
+    errors.gender = !formData.gender ? 'Gender is required.' : '';
 
     const birthDate = new Date(formData.date_of_birth);
     const today = new Date();
     const age = today.getFullYear() - birthDate.getFullYear();
     const ageAdjustment = today < new Date(today.getFullYear(), birthDate.getMonth(), birthDate.getDate()) ? -1 : 0;
+    if (age + ageAdjustment < 13) {
+        errors.date_of_birth = 'You must be at least 13 years old.';
+    }
 
-    return age + ageAdjustment >= 13 && formData.gender;
+    return !errors.date_of_birth && !errors.gender;
 };
 
 const isValidStep3 = () => {
-    return formData.password && formData.password === formData.confirm_password;
+    errors.password = !formData.password ? 'Password is required.' : '';
+    errors.confirm_password = formData.password !== formData.confirm_password ? 'Passwords do not match.' : '';
+    return !errors.password && !errors.confirm_password;
 };
 
 // Step Navigation
@@ -196,10 +234,9 @@ const nextStep = () => {
         currentStep.value++;
     } else if (currentStep.value === 3 && isValidStep3()) {
         handleSubmit();
-    } else {
-        alert('Please complete all required fields correctly.');
     }
 };
+
 
 const prevStep = () => {
     if (currentStep.value > 1) {
