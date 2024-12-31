@@ -14,12 +14,12 @@
                     </button>
                 </div>
                 <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                    Reset your password
+                    {{ t('reset') }}
                 </h2>
                 <p class="mt-2 text-center text-sm text-gray-600">
-                    Or
+                    {{ t('or') }}
                     <router-link to="/signin" class="font-medium text-sky-400 hover:text-sky-500">
-                        return to sign in
+                        {{ t('return') }}
                     </router-link>
                 </p>
 
@@ -37,12 +37,11 @@
                             </div>
                             <div class="ml-3">
                                 <h3 class="text-sm font-medium text-green-800">
-                                    Reset instructions sent
+                                    {{ t('resetSent') }}
                                 </h3>
                                 <div class="mt-2 text-sm text-green-700">
                                     <p>
-                                        We've sent password reset instructions to your email address. Please check your
-                                        inbox.
+                                        {{ t('instructions') }}
                                     </p>
                                 </div>
                             </div>
@@ -51,8 +50,9 @@
 
                     <form v-else class="space-y-6" @submit.prevent="handleSubmit">
                         <div>
-                            <label for="email" class="block text-sm font-medium text-gray-700">
-                                Email address
+                            <label for="email"
+                                class="block text-sm font-medium text-gray-700 bg-white px-1 ml-2 -mb-3 z-10 relative w-fit">
+                                {{ t('email') }}
                             </label>
                             <div class="mt-1">
                                 <input id="email" v-model="form.email" type="email" required
@@ -76,9 +76,9 @@
                                             d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
                                         </path>
                                     </svg>
-                                    Processing...
+                                    {{ t('process') }}
                                 </span>
-                                <span v-else>Send reset instructions</span>
+                                <span v-else> {{ t('send') }}</span>
                             </button>
                         </div>
                     </form>

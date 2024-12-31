@@ -20,7 +20,7 @@
                     <div class="flex justify-between mb-2">
                         <span
                             class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-white bg-sky-400">
-                            Step {{ currentStep }} of 3
+                            {{ t('step') }} {{ currentStep }} {{ t('of') }} 3
                         </span>
                     </div>
                     <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-blue-200">
@@ -71,7 +71,7 @@
                         <div class="mb-4">
                             <label for="date_of_birth"
                                 class="block text-sm font-medium text-gray-700 bg-white px-1 ml-2 -mb-3 z-10 relative w-fit">
-                                Date of Birth
+                                {{ t('dateOfBirth') }}
                             </label>
                             <input id="date_of_birth" v-model="formData.date_of_birth" type="date"
                                 class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-400 focus:border-sky-400" />
@@ -80,17 +80,17 @@
                             </p>
                         </div>
                         <div class="mb-6">
-                            <label class="block text-sm font-semibold text-gray-700 mb-3">Gender</label>
+                            <label class="block text-sm font-semibold text-gray-700 mb-3"> {{ t('gender') }}</label>
                             <div class="flex items-center space-x-6">
                                 <label class="inline-flex items-center cursor-pointer">
                                     <input type="radio" v-model="formData.gender" value="male"
                                         class="form-radio text-sky-400 border-gray-300 rounded-full focus:ring-2 focus:ring-sky-400" />
-                                    <span class="ml-2 text-gray-800">Male</span>
+                                    <span class="ml-2 text-gray-800">{{ t('male') }}</span>
                                 </label>
                                 <label class="inline-flex items-center cursor-pointer">
                                     <input type="radio" v-model="formData.gender" value="female"
                                         class="form-radio text-sky-400 border-gray-300 rounded-full focus:ring-2 focus:ring-sky-400" />
-                                    <span class="ml-2 text-gray-800">Female</span>
+                                    <span class="ml-2 text-gray-800">{{ t('female') }}</span>
                                 </label>
                             </div>
                             <!-- Error message -->
@@ -123,7 +123,7 @@
                         <div class="mb-4">
                             <label for="confirm-password"
                                 class="block text-sm font-medium text-gray-700 bg-white px-1 ml-2 -mb-3 z-10 relative w-fit">
-                                Confirm Password
+                                {{ t('confirmpass') }}
                             </label>
                             <input id="confirm-password" v-model="formData.confirm_password" type="password" required
                                 class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-400 focus:border-sky-400" />
@@ -137,12 +137,13 @@
                     <div class="flex justify-between mt-6">
                         <button v-if="currentStep > 1" @click.prevent="prevStep"
                             class="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-sky-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-400">
-                            Previous
+                            {{ t('previous') }}
                         </button>
                         <button type="submit"
                             class="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-sky-400 hover:bg-sky-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-400">
-                            {{ currentStep === 3 ? 'Submit' : 'Next' }}
+                            {{ currentStep === 3 ? t('submit') : t('next') }}
                         </button>
+
                     </div>
                 </form>
 
@@ -183,7 +184,7 @@ const formData = reactive({
     gender: '',
     email: '',
     password: '',
-    confirm_password: '', 
+    confirm_password: '',
 });
 
 const errors = reactive({
