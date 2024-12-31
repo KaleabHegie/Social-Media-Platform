@@ -173,24 +173,7 @@ const validateForm = () => {
 };
 
 
-
-const changeLanguage = () => {
-  if (selectedLanguage.value === 'am') {
-    router.push('/signin-amharic');
-  } else {
-    router.push('/signin');
-  }
-};
-
-
-
-
 const authStore = useAuthStore();
-
-
-
-
-
 
 const handleSubmit = async () => {
   if (!validateForm()) return;
