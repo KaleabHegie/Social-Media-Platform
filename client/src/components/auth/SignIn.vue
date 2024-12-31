@@ -71,12 +71,12 @@
                 {{ t('remember') }}
               </label>
             </div>
-
             <div class="text-sm">
-              <a href="#" class="font-medium text-sky-400 hover:text-sky-500">
+              <router-link to="/forgot-password" class="font-medium text-sky-400 hover:text-sky-500">
                 {{ t('forgot') }}
-              </a>
+              </router-link>
             </div>
+
           </div>
 
           <!-- Submit Button -->
