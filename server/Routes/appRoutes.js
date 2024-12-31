@@ -38,7 +38,12 @@ router.post(
   validateToken,
   commentController.makeComment
 );
-// router.delete("/deletePost", validateToken, commentController.deleteComment);
+router.delete("/deleteComment", validateToken, commentController.deleteComment);
+
+router.get("/getComments", validateToken, commentController.getComments);
+
+router.post("/likeComment", validateToken, commentController.likeComment);
+
 
 
 
