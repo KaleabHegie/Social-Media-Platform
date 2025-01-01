@@ -5,6 +5,7 @@ const nodemailer = require("nodemailer");
 const cloudinary = require("cloudinary").v2;
 const { constants } = require("../Utils/constants");
 const crypto = require("crypto");
+const Post = require("../Models/PostModel");
 
 // Configure Cloudinary
 cloudinary.config({
@@ -376,6 +377,108 @@ const userController = {
       console.error("Error following/unfollowing user:", error.toString());
       return res.status(constants.SERVER_ERROR).json({
         message: "An error occurred while processing your request",
+      });
+    }
+  },
+
+  getMyUserProfile: async (req, res) => {
+    try {
+      if (!req.user) {
+        return res.status(constants.UNAUTHORIZED).json({
+          message: "Need to Login to See your Profile",
+        });
+      }
+
+      const userId = req.user.id; // Get the logged-in user's ID
+
+      // Fetch user details
+      const user = await User.findById(userId).select(
+        "-password -resetToken -tokenExpiry"
+      ); // Exclude sensitive fields
+      if (!user) {
+        return res.status(constants.NOT_FOUND).json({ message: "User not found" });
+      }
+
+      // Fetch user's posts
+      const userPosts = await Post.find({ user: userId }).sort({ createdAt: -1 });
+
+      // Fetch user's liked posts
+      const likedPosts = await Post.find({ "likes.userId": userId }).sort({
+        createdAt: -1,
+      });
+
+      return res.json({
+        profile: user,
+        myposts: userPosts,
+        likedPosts,
+      });
+    } catch (error) {
+      console.error("Error fetching user profile:", error.toString());
+      return res.status(constants.SERVER_ERROR).json({
+        message: "An error occurred while fetching your profile",
+      });
+    }
+  },
+
+  getUserProfile: async (req, res) => {
+    try {
+      if (!req.user) {
+        return res.status(constants.UNAUTHORIZED).json({
+          message: "Need to Login to See Users Profile",
+        });
+      }
+
+      const userIdOfPersonToSeeProfile = req.query.userId; // User ID to fetch profile
+      const requestingUserId = req.user.id; // ID of the user making the request
+
+      // Validate the required fields
+      if (!userIdOfPersonToSeeProfile) {
+        return res
+          .status(constants.VALIDATION_ERRORS)
+          .json({ message: "User ID is required" });
+      }
+
+      // Fetch the user's profile
+      const userToSeeProfile = await User.findById(userIdOfPersonToSeeProfile).select(
+        "-password -resetToken -tokenExpiry"
+      ); // Exclude sensitive fields
+      if (!userToSeeProfile) {
+        return res.status(constants.NOT_FOUND).json({ message: "User not found" });
+      }
+
+      // Handle private accounts
+      if (
+        userToSeeProfile.is_private &&
+        !userToSeeProfile.followers.some(
+          (follower) => follower.user.toString() === requestingUserId.toString()
+        )
+      ) {
+        return res.status(constants.FORBIDDEN).json({
+          message: "This account is private. Only Followers can see this Profile",
+        });
+      }
+
+      // Fetch user's posts
+      const userPosts = await Post.find({ user: userIdOfPersonToSeeProfile }).sort({
+        createdAt: -1,
+      });
+
+      // Fetch user's liked posts
+      const likedPosts = await Post.find({
+        "likes.userId": userIdOfPersonToSeeProfile,
+      }).sort({
+        createdAt: -1,
+      });
+
+      return res.json({
+        profile: userToSeeProfile,
+        usersposts: userPosts,
+        likedPosts,
+      });
+    } catch (error) {
+      console.error("Error fetching user profile:", error.toString());
+      return res.status(constants.SERVER_ERROR).json({
+        message: "An error occurred while fetching the user's profile",
       });
     }
   },
