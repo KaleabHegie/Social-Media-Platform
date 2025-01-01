@@ -19,7 +19,12 @@ router.post("/followUser", validateToken, userController.followUser);
 
 router.get("/getMyUserProfile", validateToken, userController.getMyUserProfile);
 
+
 router.get("/getUserProfile", validateToken, userController.getUserProfile);
+
+router.post("/dismissNotifications", validateToken, userController.dismissNotifications);
+
+router.get("/getNotifications", validateToken, userController.getNotifications);
 
 
 

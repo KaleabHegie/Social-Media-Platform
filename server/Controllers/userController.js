@@ -248,6 +248,69 @@ const userController = {
     }
   },
 
+  dismissNotifications: async (req, res) => {
+    try {
+      // Check if the user is logged in
+      if (!req.user) {
+        return res.status(constants.UNAUTHORIZED).json({
+          message: "You must be logged in to dismiss notifications.",
+        });
+      }
+
+      // Find the user by ID
+      const user = await User.findById(req.user.id);
+
+      if (!user) {
+        return res.status(constants.NOT_FOUND).json({
+          message: "User not found.",
+        });
+      }
+
+      // Clear all notifications
+      user.notifications = [];
+      await user.save();
+
+      return res.json({
+        message: "Notifications have been dismissed successfully.",
+      });
+    } catch (error) {
+      console.error("Error dismissing notifications:", error.toString());
+      return res.status(constants.SERVER_ERROR).json({
+        message: "An error occurred while dismissing notifications.",
+      });
+    }
+  },
+
+  getNotifications: async (req, res) => {
+    try {
+      // Check if the user is logged in
+      if (!req.user) {
+        return res.status(constants.UNAUTHORIZED).json({
+          message: "You must be logged in to view notifications.",
+        });
+      }
+
+      // Find the user by ID and fetch notifications
+      const user = await User.findById(req.user.id).select("notifications");
+
+      if (!user) {
+        return res.status(constants.NOT_FOUND).json({
+          message: "User not found.",
+        });
+      }
+
+      return res.json({
+        message: "Notifications retrieved successfully.",
+        notifications: user.notifications,
+      });
+    } catch (error) {
+      console.error("Error retrieving notifications:", error.toString());
+      return res.status(constants.SERVER_ERROR).json({
+        message: "An error occurred while retrieving notifications.",
+      });
+    }
+  },
+
   deleteAccount: async (req, res) => {
     try {
       // Check if the user is logged in
@@ -391,7 +454,7 @@ const userController = {
 
       // Fetch user details
       const user = await User.findById(userId).select(
-        "-password -resetToken -tokenExpiry"
+        "-password -resetToken -tokenExpiry -notifications"
       ); // Exclude sensitive fields
       if (!user) {
         return res.status(constants.NOT_FOUND).json({ message: "User not found" });
@@ -438,7 +501,7 @@ const userController = {
 
       // Fetch the user's profile
       const userToSeeProfile = await User.findById(userIdOfPersonToSeeProfile).select(
-        "-password -resetToken -tokenExpiry"
+        "-password -resetToken -tokenExpiry -notifications"
       ); // Exclude sensitive fields
       if (!userToSeeProfile) {
         return res.status(constants.NOT_FOUND).json({ message: "User not found" });
