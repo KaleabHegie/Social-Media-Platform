@@ -5,7 +5,7 @@
       <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
         <!-- Logo Section -->
         <div class="text-center -mt-24 h-64">
-          <img src="@/assets/logo.png" alt="Tsede Logo" />
+          <img src="@/assets/logo.svg" alt="Tsede Logo" />
         </div>
 
         <!-- Language Dropdown -->
@@ -71,12 +71,12 @@
                 {{ t('remember') }}
               </label>
             </div>
-
             <div class="text-sm">
-              <a href="#" class="font-medium text-sky-400 hover:text-sky-500">
+              <router-link to="/forgot-password" class="font-medium text-sky-400 hover:text-sky-500">
                 {{ t('forgot') }}
-              </a>
+              </router-link>
             </div>
+
           </div>
 
           <!-- Submit Button -->
