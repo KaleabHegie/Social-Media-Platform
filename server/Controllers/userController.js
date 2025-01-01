@@ -217,13 +217,7 @@ const userController = {
       // Check if the user is logged in
       if (!req.user) {
         return res.status(constants.UNAUTHORIZED).json({
-          message: "Can't set Account Visibility  if user is not logged in",
-        });
-      }
-      let { is_private } = req.body;
-      if (!is_private) {
-        return res.status(constants.VALIDATION_ERRORS).json({
-          message: "Visibility Value is required",
+          message: "Can't set Account Visibility if user is not logged in",
         });
       }
 
@@ -236,11 +230,15 @@ const userController = {
         });
       }
 
-      user.is_private = is_private;
+      // Toggle the is_private field
+      user.is_private = !user.is_private;
       await user.save();
 
       res.json({
-        message: "Account Visibility updated successfully",
+        message: `Account visibility updated successfully. Your account is now ${
+          user.is_private ? "private" : "public"
+        }.`,
+        is_private: user.is_private,
       });
     } catch (error) {
       console.error("Error setting Account Visibility:", error.toString());
