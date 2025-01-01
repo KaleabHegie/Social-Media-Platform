@@ -6,7 +6,9 @@ const multer = require("multer");
 const upload = multer({ storage: multer.memoryStorage() });
 
 router.post("/register", userController.register);
-router.get("/login", userController.login);
+router.post("/login", userController.login);
+router.post("/forgot-password", userController.forgotPassword);
+router.post("/reset-password/:token", userController.resetPassword);
 router.post("/setBio", validateToken, userController.setBio);
 
 router.post("/deleteAccount", validateToken, userController.deleteAccount);

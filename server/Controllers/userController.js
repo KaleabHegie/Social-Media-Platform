@@ -1,8 +1,10 @@
 const User = require("../Models/UserModel");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const nodemailer = require('nodemailer');
 const cloudinary = require("cloudinary").v2;
 const { constants } = require("../Utils/constants");
+const crypto = require('crypto');
 
 // Configure Cloudinary
 cloudinary.config({
@@ -11,11 +13,21 @@ cloudinary.config({
   api_secret: "zfWlXCOgJU0q4p3yVHZEEo74PnY",
 });
 
+
+const transporter = nodemailer.createTransport({
+  service: 'Gmail',
+  auth: {
+    user: 'benjiyg400@gmail.com', // Your email
+    pass: 'fafwygqthjwmzscv', // Your email password
+  },
+});
+
 const userController = {
   register: async (req, res) => {
     try {
       const { first_name, last_name, user_name, date_of_birth, email, gender, password } =
         req.body;
+        console.log(req.body)
 
       // Validate required fields
       if (!first_name || !last_name || !user_name || !email || !password) {
@@ -60,20 +72,16 @@ const userController = {
       res.status(constants.SERVER_ERROR).json({ message: "Error registering user", error });
     }
   },
+
   login: async (req, res) => {
     try {
-      const password = req.body.password;
-      const user_name = req.body.username;
+      const { username, password } = req.body;
 
-      // Check if both username and password are provided
-      if (!user_name || !password) {
+      if (!username || !password) {
         return res.status(400).json({ message: "Please provide username and password" });
       }
-
-      // Find the user by username
-      const user = await User.findOne({ user_name });
-
-      // Verify the user exists and the password is correct
+      const user = await User.findOne({ user_name: username });
+  
       if (user && (await bcrypt.compare(password, user.password))) {
         const accessToken = jwt.sign(
           {
@@ -85,11 +93,9 @@ const userController = {
             },
           },
           process.env.ACCESS_TOKEN_SECRET,
-          {
-            expiresIn: "30d",
-          }
+          { expiresIn: "30d" }
         );
-
+  
         return res.status(200).json({ accessToken });
       } else {
         return res.status(401).json({ message: "Invalid username or password" });
@@ -99,6 +105,7 @@ const userController = {
       return res.status(500).json({ message: "An internal server error occurred" });
     }
   },
+  
 
   setProfileImage: async (req, res) => {
     try {
@@ -264,6 +271,99 @@ const userController = {
       });
     }
   },
+
+  forgotPassword: async (req, res) => {
+    console.log(req)
+    try {
+      const { email } = await req.body;
+
+      console.log(req.body)
+  
+      // Validate required fields
+      if (!email) {
+        return res.status(400).json({
+          message: "Email is required to initiate password reset.",
+        });
+      }
+  
+      const user = await User.findOne({ email });
+  
+      if (!user) {
+        return res.status(404).json({
+          message: "No user found with this email address.",
+        });
+      }
+  
+      // Generate a reset token
+      const resetToken = crypto.randomBytes(32).toString('hex');
+      const tokenExpiry = Date.now() + 3600000; // Token valid for 1 hour
+  
+      user.resetToken = resetToken;
+      user.tokenExpiry = tokenExpiry;
+      await user.save();
+  
+      const resetLink = `http://localhost:5173/reset-password/${resetToken}`;
+  
+      // Send the reset link via email
+      await transporter.sendMail({
+        to: email,
+        subject: "Password Reset Request",
+        html: `
+          <p>You requested a password reset. Click the link below to reset your password:</p>
+          <a href="${resetLink}">${resetLink}</a>
+          <p>If you did not request this, please ignore this email.</p>
+        `,
+      });
+  
+      res.json({ message: "Password reset link sent successfully." });
+    } catch (error) {
+      console.error("Forgot Password Error:", error); // Log full error for debugging
+      res.status(500).json({
+        message: "Error initiating password reset",
+        error: error.message || error.toString(),
+      });
+    }
+  },
+  
+  resetPassword: async (req, res) => {
+    try {
+      const { token } = req.params;
+      const { password } = req.body;
+  
+      console.log(req.body);
+  
+      // Validate required fields
+      if (!password) {
+        return res.status(400).json({
+          message: "New password is required to reset password.",
+        });
+      }
+  
+      const user = await User.findOne({
+        resetToken: token,
+        tokenExpiry: { $gt: Date.now() }, // Ensure the token has not expired
+      });
+  
+      if (!user) {
+        return res.status(400).json({
+          message: "Invalid or expired reset token.",
+        });
+      }
+  
+      const hashedPassword = await bcrypt.hash(password, 10);
+  
+      user.password = hashedPassword;
+      user.resetToken = undefined;
+      user.tokenExpiry = undefined;
+      await user.save();
+  
+      res.json({ message: "Password reset successfully." });
+    } catch (error) {
+      console.log(error.toString());
+      res.status(500).json({ message: "Error resetting password", error });
+    }
+  },
+  
 };
 
 module.exports = userController;

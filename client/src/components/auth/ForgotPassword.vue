@@ -1,10 +1,7 @@
 <template>
     <div
         class=" min-h-screen bg-white rounded-lg shadow-xl overflow-hidden flex items-center justify-center py-12 sm:px-6 lg:px-8">
-        <div class="absolute inset-0 z-0">
-            <img src="@/assets/whitebg.png" alt="" class="fixed w-full h-full object-cover opacity-40 dark:opacity-10" />
-        </div>
-        <div class="w-full max-w-md z-10">
+        <div class="w-full max-w-md">
             <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
                 <!-- Logo Section -->
                 <div class="text-center -mt-24 h-64">
@@ -16,9 +13,7 @@
                         {{ currentLanguage === 'en' ? 'አማ' : 'Eng' }}
                     </button>
                 </div>
-                <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                    {{ t('reset') }}
-                </h2>
+                <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">{{ t('reset') }}</h2>
                 <p class="mt-2 text-center text-sm text-gray-600">
                     {{ t('or') }}
                     <router-link to="/signin" class="font-medium text-sky-400 hover:text-sky-500">
@@ -31,11 +26,8 @@
                         <div class="flex">
                             <div class="flex-shrink-0">
                                 <!-- Heroicon name: check-circle -->
-                                <svg class="h-5 w-5 text-green-400" xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd"
-                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                        clip-rule="evenodd" />
+                                <svg class="h-5 w-5 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                                 </svg>
                             </div>
                             <div class="ml-3">
@@ -53,8 +45,7 @@
 
                     <form v-else class="space-y-6" @submit.prevent="handleSubmit">
                         <div>
-                            <label for="email"
-                                class="block text-sm font-medium text-gray-700 bg-white px-1 ml-2 -mb-3 z-10 relative w-fit">
+                            <label for="email" class="block text-sm font-medium text-gray-700 bg-white px-1 ml-2 -mb-3 z-10 relative w-fit">
                                 {{ t('email') }}
                             </label>
                             <div class="mt-1">
@@ -71,13 +62,9 @@
                             <button type="submit" :disabled="loading"
                                 class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-sky-400 hover:bg-sky-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500">
                                 <span v-if="loading" class="flex items-center">
-                                    <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                            stroke-width="4"></circle>
-                                        <path class="opacity-75" fill="currentColor"
-                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                        </path>
+                                    <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                     </svg>
                                     {{ t('process') }}
                                 </span>
@@ -93,9 +80,11 @@
 
 <script setup>
 import { ref, reactive } from 'vue';
+import { useAuthStore } from '@/stores/authStore';  // Assuming this store exists
 import { useLanguageStore } from '@/stores/languageStore';
 
 const { currentLanguage, switchLanguage, t } = useLanguageStore();
+const { forgotPassword, error } = useAuthStore();  // Assuming forgotPassword is a method in your authStore
 
 // Form data and state
 const form = reactive({
@@ -119,18 +108,21 @@ const validateForm = () => {
 
 // Submit handler
 const handleSubmit = async () => {
-    if (!validateForm()) return;
+  if (!validateForm()) return;
 
-    loading.value = true;
-    try {
-        // Simulate API call here
-        await new Promise((resolve) => setTimeout(resolve, 1500));
-        emailSent.value = true;
-    } catch (error) {
-        console.error('Error sending reset instructions:', error);
-        errors.email = t('unable_to_process');
-    } finally {
-        loading.value = false;
+  loading.value = true;
+  try {
+    const response = await forgotPassword(form.email);
+    
+    if (response) {
+      emailSent.value = true;
+    } else {
+      errors.email = t('unable_to_process');
     }
+  } catch (error) {
+    console.error('Error sending reset instructions:', error);
+  } finally {
+    loading.value = false;
+  }
 };
 </script>

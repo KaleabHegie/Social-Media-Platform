@@ -248,10 +248,11 @@ const prevStep = () => {
     }
 };
 
+const router = useRouter();
 // Form Submission
 const handleSubmit = async () => {
     const authStore = useAuthStore();
-    const router = useRouter();
+    
 
     try {
         const success = await authStore.register(formData);

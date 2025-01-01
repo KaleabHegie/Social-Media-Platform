@@ -52,6 +52,9 @@ const UserSchema = new mongoose.Schema(
     ],
     is_admin: { type: Boolean, default: false },
     notifications: [NotificationSchema],
+
+    resetToken: { type: String, default: null },  // To store the reset token
+    tokenExpiry: { type: Date, default: null },
   },
   {
     timestamps: true,
