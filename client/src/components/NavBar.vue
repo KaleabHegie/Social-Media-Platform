@@ -36,7 +36,7 @@
     </div>
 
     <!-- Floating bottom navbar for mobile -->
-    <div class="lg:hidden fixed bottom-4 left-4 right-4">
+    <div class="lg:hidden fixed bottom-4 left-4 right-4 z-50">
       <nav
         class="bg-white dark:bg-gray-800 rounded-full shadow-lg border border-gray-200 dark:border-gray-700 p-2 backdrop-blur-sm bg-opacity-90 dark:bg-opacity-90">
         <ul class="flex justify-around items-center">

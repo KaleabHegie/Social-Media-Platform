@@ -13,7 +13,8 @@ import {
   RiUserLine,
   RiLogoutBoxLine,
   RiThumbUpLine,
-  RiChat1Line
+  RiChat1Line,
+  RiSearchLine 
 } from "oh-vue-icons/icons";
 
 addIcons(
@@ -24,7 +25,8 @@ addIcons(
   RiUserLine,
   RiLogoutBoxLine,
   RiThumbUpLine,
-  RiChat1Line
+  RiChat1Line,
+  RiSearchLine,
 );
 
 
