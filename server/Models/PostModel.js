@@ -5,10 +5,9 @@ const CommentSchema = new mongoose.Schema(
   {
     sender: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     content: { type: String, required: true },
-    like: [
+    likes: [
       {
         user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-        created_at: { type: Date, default: Date.now },
       },
     ],
     parent: { type: mongoose.Schema.Types.ObjectId, ref: "Comment" },
@@ -32,10 +31,9 @@ const PostSchema = new mongoose.Schema(
     caption: { type: String },
     likes_count: { type: Number, default: 0 },
     hashtags: [{ type: String }],
-    like: [
+    likes: [
       {
         user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-        created_at: { type: Date, default: Date.now },
       },
     ],
     type: { type: String, enum: ["post", "story"], required: true },
