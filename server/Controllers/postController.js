@@ -189,6 +189,66 @@ const postController = {
         .json({ message: "An error occurred while fetching hashtags" });
     }
   },
+
+  likePost: async (req, res) => {
+    try {
+      if (!req.user) {
+        return res.status(constants.UNAUTHORIZED).json({
+          message: "User must be logged in to like a post.",
+        });
+      }
+  
+      const { postId } = req.query; // Assuming postId is passed as a query parameter
+      const userId = req.user.id; // Get the logged-in user's ID
+  
+      // Validate the required fields
+      if (!postId) {
+        return res.status(constants.VALIDATION_ERRORS).json({
+          message: "Post ID is required",
+        });
+      }
+  
+      // Find the post by ID
+      const post = await Post.findById(postId);
+      if (!post) {
+        return res.status(constants.NOT_FOUND).json({ message: "Post not found" });
+      }
+  
+      // Check if the user has already liked the post
+      const likeIndex = post.likes.findIndex(
+        (like) => like.userId && like.userId === userId.toString()
+      );
+  
+      let isLiked;
+  
+      if (likeIndex === -1) {
+        // User hasn't liked the post, so add the like
+        post.likes.push({ userId: userId.toString() }); // Make sure userId is correctly stored
+        isLiked = true;
+        post.likes_count += 1; // Increment the likes count
+      } else {
+        // User has already liked the post, so remove the like
+        post.likes.splice(likeIndex, 1);
+        isLiked = false;
+        post.likes_count -= 1; // Decrement the likes count
+      }
+  
+      // Save the updated post
+      await post.save();
+  
+      return res.json({
+        message: isLiked ? "Post liked successfully" : "Post unliked successfully",
+        isLiked,
+        likesCount: post.likes_count, // Return the updated like count
+      });
+    } catch (error) {
+      console.error("Error liking/unliking post:", error.toString());
+      return res.status(constants.SERVER_ERROR).json({
+        message: "An error occurred while processing your request",
+      });
+    }
+  },
+  
 };
 
 module.exports = postController;

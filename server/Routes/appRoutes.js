@@ -24,6 +24,9 @@ router.delete("/deletePost", validateToken, postController.deletePost);
 
 router.get("/getHashTags", postController.getHashTags);
 
+router.post("/likePost", validateToken, postController.likePost);
+
+
 
 
 
