@@ -15,6 +15,9 @@ router.post("/deleteAccount", validateToken, userController.deleteAccount);
 
 router.post("/setAccountVisibility", validateToken, userController.setAccountVisibility);
 
+router.post("/followUser", validateToken, userController.followUser);
+
+
 
 router.post(
   "/setProfileImage",

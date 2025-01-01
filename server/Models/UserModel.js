@@ -10,7 +10,6 @@ const NotificationSchema = new mongoose.Schema(
       default: "other",
       required: true,
     },
-    post: { type: mongoose.Schema.Types.ObjectId, ref: "Post", required: true },
     content: { type: String, required: true },
     seen: { type: Boolean, default: false },
   },
