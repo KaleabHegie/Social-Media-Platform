@@ -193,7 +193,7 @@ const handleSubmit = async () => {
   loading.value = false;
 
   if (success) {
-    router.push('/dashboard'); // Navigate to the dashboard after login
+    router.push('/tesde'); // Navigate to the dashboard after login
   } else {
     errors.general = authStore.error || 'Login failed';
   }
