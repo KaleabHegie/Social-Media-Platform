@@ -27,7 +27,6 @@ const userController = {
     try {
       const { first_name, last_name, user_name, date_of_birth, email, gender, password } =
         req.body;
-      console.log(req.body);
 
       // Validate required fields
       if (!first_name || !last_name || !user_name || !email || !password) {
@@ -107,6 +106,34 @@ const userController = {
       return res.status(500).json({ message: "An internal server error occurred" });
     }
   },
+
+  checkUsername: async (req, res) => {
+    try {
+      const { user_name } = req.body;
+      const user = await User.findOne({ user_name });
+  
+      // Return a JSON object with 'isUnique' property
+      return res.status(200).json({ isUnique: !user }); // true if no user found, false if user exists
+    } catch (error) {
+      console.error("Error checking username:", error);
+      return res.status(500).json({ isUnique: false }); // Assume not unique if there's an error
+    }
+  },
+  
+  
+  
+   checkEmail : async (req, res) => {
+    try {
+      const { email } = req.body;
+      const user = await User.findOne({ email });
+  
+      return res.status(200).json({ isUnique: !user });
+    } catch (error) {
+      console.error("Error checking email:", error);
+      return res.status(500).json(false);
+    }
+  },
+  
 
   setProfileImage: async (req, res) => {
     try {
