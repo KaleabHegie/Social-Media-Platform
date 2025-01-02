@@ -103,7 +103,7 @@
         <router-link
           v-for="tag in props.post.hashtags"
           :key="tag"
-          :to="`/tag/${tag}`"
+          :to="`/home`"
           class="text-sky-500 dark:text-sky-400 text-sm hover:underline"
         >
           #{{ tag }}

@@ -6,16 +6,11 @@
 
         <!-- Search Input Field -->
         <div class="relative">
-          <input 
-            v-model="searchQuery"
-            type="text" 
-            placeholder="Search posts..." 
-            class="pl-10 pr-4 py-2 rounded-lg bg-white dark:bg-gray-800 text-gray-800 dark:text-white border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-sky-500 w-64"
-          />
-          <OhVueIcon 
-            :name="RiSearchLine"
-            class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400"
-          />
+          <input v-model="searchQuery" type="text" placeholder="Search posts..."
+            class="pl-10 pr-4 py-2 rounded-lg bg-white dark:bg-gray-800 text-gray-800 dark:text-white border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-sky-500 w-64" />
+          <v-icon name="ri-search-line"
+            class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400"></v-icon>
+
         </div>
       </div>
 
@@ -49,7 +44,7 @@ const searchQuery = ref('');
 
 // Filtered posts based on search query
 const filteredPosts = computed(() => {
-  return explorePosts.value.filter(post => 
+  return explorePosts.value.filter(post =>
     post.description.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
     post.hashtags.some(tag => tag.toLowerCase().includes(searchQuery.value.toLowerCase()))
   );
