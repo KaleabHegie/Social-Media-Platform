@@ -7,7 +7,7 @@
         <!-- Explore text with icon before it -->
         <div class="flex items-center space-x-2">
           <v-icon name="ri-search-line" class="text-gray-500 dark:text-gray-400 text-2xl" />
-          <h1 class="text-3xl text-gray-800 dark:text-white">Explore</h1>
+          <h1 class="text-3xl text-gray-800 dark:text-white">{{ t('explore') }}</h1>
         </div>
 
 
@@ -33,7 +33,8 @@
 <script setup>
 import { ref, computed } from 'vue';
 import ExplorePostCard from '@/components/ExplorePostCard.vue';
-
+import { useLanguageStore } from '@/stores/languageStore';
+const { t } = useLanguageStore(); // Translation function
 // Sample data for explore posts
 const explorePosts = ref(Array(20).fill(null).map((_, index) => ({
   id: index,
