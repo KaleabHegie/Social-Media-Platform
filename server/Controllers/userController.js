@@ -111,7 +111,7 @@ const userController = {
     try {
       const { user_name } = req.body;
       const user = await User.findOne({ user_name });
-  
+
       // Return a JSON object with 'isUnique' property
       return res.status(200).json({ isUnique: !user }); // true if no user found, false if user exists
     } catch (error) {
@@ -119,21 +119,18 @@ const userController = {
       return res.status(500).json({ isUnique: false }); // Assume not unique if there's an error
     }
   },
-  
-  
-  
-   checkEmail : async (req, res) => {
+
+  checkEmail: async (req, res) => {
     try {
       const { email } = req.body;
       const user = await User.findOne({ email });
-  
+
       return res.status(200).json({ isUnique: !user });
     } catch (error) {
       console.error("Error checking email:", error);
       return res.status(500).json(false);
     }
   },
-  
 
   setProfileImage: async (req, res) => {
     try {
@@ -567,6 +564,61 @@ const userController = {
       console.error("Error fetching user profile:", error.toString());
       return res.status(constants.SERVER_ERROR).json({
         message: "An error occurred while fetching the user's profile",
+      });
+    }
+  },
+  searchUsers: async (req, res) => {
+    try {
+      // Check if the user is logged in
+      if (!req.user) {
+        return res.status(constants.UNAUTHORIZED).json({
+          message: "User must be logged in to search for users",
+        });
+      }
+
+      const { query } = req.query;
+
+      const loggedInUserId = req.user.id;
+
+      // Search for users based on the query or fetch all users if the query is empty
+      const searchCriteria =
+        query && query.trim() !== ""
+          ? {
+              $or: [
+                { user_name: { $regex: query, $options: "i" } },
+                { first_name: { $regex: query, $options: "i" } },
+                { last_name: { $regex: query, $options: "i" } },
+              ],
+            }
+          : {};
+
+      const users = await User.find(searchCriteria)
+        .select("user_name first_name last_name profile_photo_url followers") // Only return relevant fields
+        .lean();
+
+      // Add the `isFollowing` status, along with user ID and avatar URL
+      const updatedUsers = users.map((user) => {
+        const isFollowing = user.followers.some(
+          (follower) => follower.user.toString() === loggedInUserId
+        );
+        return {
+          id: user._id, // Append user ID
+          user_name: user.user_name,
+          first_name: user.first_name,
+          last_name: user.last_name,
+          avatar_url: user.profile_photo_url, // Use avatar_url for profile photo
+          isFollowing,
+        };
+      });
+
+      return res.json({
+        message: "Search results fetched successfully",
+        users: updatedUsers,
+      });
+    } catch (error) {
+      console.error("Error searching users:", error.toString());
+      return res.status(constants.SERVER_ERROR).json({
+        message: "An error occurred while searching for users",
       });
     }
   },

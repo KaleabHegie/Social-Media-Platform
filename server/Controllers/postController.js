@@ -48,7 +48,7 @@ const postController = {
       // Validate raw hashtags string length
       if (rawHashtags && rawHashtags.length > 300) {
         return res.status(constants.VALIDATION_ERRORS).json({
-          message: "Hashtags string is too long",
+          message: "Hashtags is too long (Max 300 letters)",
         });
       }
 
@@ -324,7 +324,7 @@ const postController = {
   },
   
 
-  //@todo Implement the explore feed algo and Search Functionality By Hastag Matching
+  //@todo Implement the explore feed algo and Search Functionality By Hastag Matching, Pagination
   getExploreFeed: async (req, res) => {
     try {
       // Check if the user is logged in

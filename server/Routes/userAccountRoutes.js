@@ -34,6 +34,9 @@ router.post("/dismissNotifications", validateToken, userController.dismissNotifi
 
 router.get("/getNotifications", validateToken, userController.getNotifications);
 
+router.get("/searchUsers", validateToken, userController.searchUsers);
+
+
 
 
 
