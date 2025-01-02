@@ -68,7 +68,7 @@
           @click="toggleCaption" 
           class="text-sky-500 dark:text-sky-400 text-sm mt-2"
         >
-          {{ showFullCaption ? 'Read Less' : 'Read More' }}
+          {{ showFullCaption ? t('readLess') : t('readMore') }}
         </button>
       </div>
 
@@ -117,7 +117,8 @@
 <script setup>
   import { ref, computed } from 'vue';
   import { format } from 'date-fns';
-
+  import { useLanguageStore } from '@/stores/languageStore';
+  const { t } = useLanguageStore(); // Translation function
   const props = defineProps({
     post: {
       type: Object,

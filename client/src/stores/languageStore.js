@@ -145,6 +145,42 @@ const translations = {
     en: "Last name is required",
     am: "አባት ስም አስፈላጊ ነው",
   },
+  home:{
+    en: "Home",
+    am: "ዋና ገጽ"
+  },
+  explore:{
+    en: "Explore",
+    am:"አሳሽ ገጽ"
+  },
+  createPost:{
+    en: "Create Post",
+    am: "ፖስት ይፍጠሩ"
+  },
+  message:{
+    en: "Messages",
+    am: "መልክት"
+  },
+  account:{
+    en: "Account",
+    am: "መለያ"
+  },
+  feed:{
+    en: "Feed",
+    am: "መግለጫ"
+  },
+  stories:{
+    en:"Stories",
+    am:"ታሪኮች"
+  },
+  readMore:{
+    en:"Read More",
+    am:"ተጨማሪ አንብብ"
+  },
+  readLess:{
+    en:"Read Less",
+    am:"ያነሰ አንብብ"
+  },
 };
 
 

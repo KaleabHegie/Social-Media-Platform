@@ -7,7 +7,6 @@
 
           <!-- Stories for mobile -->
           <div class="lg:hidden mb-6">
-            <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">Stories</h2>
             <div class="flex space-x-4 overflow-x-auto pb-4 hide-scrollbar" style="scroll-snap-type: x mandatory;">
               <StoryCard v-for="story in stories" :key="story.id" :story="story"
                 class="flex-shrink-0 w-[25%] max-w-[100px] sm:max-w-[120px]" style="scroll-snap-align: start;" />
@@ -15,21 +14,26 @@
           </div>
 
 
-          <!-- Feed -->
-          <div>
-            <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">Feed</h2>
+          <!-- Feed-->
+          <div class="hidden lg:block w-80 order-1 lg:order-2" >
+            <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">    {{ t('feed') }}</h2>
             <div class="space-y-6 w-full sm:w-80 md:w-[28rem] lg:w-[36rem] xl:w-[42rem] mx-auto">
               <PostCard v-for="post in posts" :key="post.id" :post="post" class="w-full h-auto" />
             </div>
           </div>
-
+             <!-- Feed for mobile -->
+          <div class="lg:hidden mb-6" >
+            <div class="space-y-6 w-full sm:w-80 md:w-[28rem] lg:w-[36rem] xl:w-[42rem] mx-auto">
+              <PostCard v-for="post in posts" :key="post.id" :post="post" class="w-full h-auto" />
+            </div>
+          </div>
 
         </div>
 
         <!-- Stories for desktop -->
         <div class="hidden lg:block w-80 order-1 lg:order-2">
           <div class="sticky top-4">
-            <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">Stories</h2>
+            <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">{{ t('stories') }}</h2>
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4">
               <div class="grid grid-cols-3 gap-4">
                 <StoryCard v-for="story in stories" :key="story.id" :story="story" />
@@ -46,7 +50,8 @@
 import PostCard from '@/components/PostCard.vue';
 import StoryCard from '@/components/StoryCard.vue';
 import { ref } from 'vue';
-
+import { useLanguageStore } from '@/stores/languageStore';
+const { t } = useLanguageStore(); // Translation function
 // Sample data - in real app this would come from an API
 const posts = ref(Array(20).fill(null).map((_, index) => ({
   id: index,
