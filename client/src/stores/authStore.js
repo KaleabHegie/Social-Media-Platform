@@ -76,7 +76,6 @@ export const useAuthStore = defineStore("auth", {
       try {
         const response = await MyHttpService.post("/register", { body: userData });
       } catch (error) {
-        console.error("Registration error:", error);
         this.error = error.response?.data?.message || "Registration failed";
         return false;
       } finally {

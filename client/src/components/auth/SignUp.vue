@@ -166,6 +166,9 @@ import { ref, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import { useLanguageStore } from '@/stores/languageStore';
 import { useAuthStore } from '@/stores/authStore';
+import ToastService from '@/utils/toast.js';
+
+const toast = ToastService();
 
 // Store access
 const languageStore = useLanguageStore();
@@ -247,19 +250,18 @@ const prevStep = () => {
 
 const router = useRouter();
 // Form Submission
+
 const handleSubmit = async () => {
     const authStore = useAuthStore();
-    
 
     try {
-        const success = await authStore.register(formData);
-        if (success) {
+            const success = await authStore.register(formData);
+            toast.success('Registration successful!', { position: "top-center" });
             router.push('/signin');
-        } else {
-            alert(authStore.error || 'Registration failed.');
-        }
+        
     } catch (err) {
-        console.error('Error submitting form:', err);
+        toast.error('An unexpected error occurred.', { position: "top-center" });
     }
 };
+
 </script>
