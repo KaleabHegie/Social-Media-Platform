@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-2xl mx-auto p-6 mt-20 mb-36  bg-white dark:bg-gray-800 rounded-xl shadow-sm">
+  <div class="max-w-2xl mx-auto p-6 mt-20 mb-36   bg-white dark:bg-gray-800 rounded-xl shadow-sm">
     <h1 class="text-2xl font-bold text-center mb-8 text-gray-800 dark:text-white">Create New Post</h1>
 
     <!-- Post Type Selection -->
