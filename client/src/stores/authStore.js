@@ -76,7 +76,6 @@ export const useAuthStore = defineStore("auth", {
       try {
         const response = await MyHttpService.post("/register", { body: userData });
       } catch (error) {
-        console.error("Registration error:", error);
         this.error = error.response?.data?.message || "Registration failed";
         return false;
       } finally {
@@ -131,6 +130,26 @@ export const useAuthStore = defineStore("auth", {
         this.isLoading = false;
       }
     },
+
+    async checkUniqueness(data) {
+      try {
+        // Determine the endpoint and payload based on the data type
+        const endpoint = data.type === "email" ? "/check-email" : "/check-username";
+        const payload = data.type === "email" ? { email: data.email } : { user_name: data.user_name };
+        
+        // Send the request to the server
+        const response = await MyHttpService.post(endpoint, {body : payload}); // Ensure payload is passed correctly
+      
+        console.log(payload , endpoint)
+       
+        // Return the uniqueness status from the response (assumed structure)
+        return response;  // Expected structure: { isUnique: true/false }
+      } catch (error) {
+        console.error('Error checking uniqueness:', error);
+        return false;  // Assume not unique if there's an error
+      }
+    },    
+  
     
     logout() {
       this.clearToken();

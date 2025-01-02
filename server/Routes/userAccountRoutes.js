@@ -5,6 +5,10 @@ const router = express.Router();
 const multer = require("multer");
 const upload = multer({ storage: multer.memoryStorage() });
 
+router.post("/check-username", userController.checkUsername);
+
+router.post('/check-email', userController.checkEmail);
+
 router.post("/register", userController.register);
 
 router.post("/login", userController.login);

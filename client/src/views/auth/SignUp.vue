@@ -169,6 +169,12 @@ import { ref, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import { useLanguageStore } from '@/stores/languageStore';
 import { useAuthStore } from '@/stores/authStore';
+import ToastService from '@/utils/toast.js';
+
+
+const authStore = useAuthStore();
+
+const toast = ToastService();
 
 // Store access
 const languageStore = useLanguageStore();
@@ -202,10 +208,17 @@ const errors = reactive({
 });
 
 // Validation Functions with Error Messages
-const isValidStep1 = () => {
+const isValidStep1 = async () => {
     errors.user_name = !formData.user_name ? 'Username is required.' : '';
     errors.first_name = !formData.first_name ? 'First name is required.' : '';
     errors.last_name = !formData.last_name ? 'Last name is required.' : '';
+    if (!errors.user_name) {
+        // Check username uniqueness
+        const isUnique = await authStore.checkUniqueness({ type: "user_name", user_name: formData.user_name });
+        if (isUnique.isUnique == false) {
+            errors.user_name = 'Username is already taken.';
+        }
+    }
     return !errors.user_name && !errors.first_name && !errors.last_name;
 };
 
@@ -224,19 +237,28 @@ const isValidStep2 = () => {
     return !errors.date_of_birth && !errors.gender;
 };
 
-const isValidStep3 = () => {
+const isValidStep3 = async () => {
+    errors.email = !formData.email ? 'Email is required.' : '';
     errors.password = !formData.password ? 'Password is required.' : '';
     errors.confirm_password = formData.password !== formData.confirm_password ? 'Passwords do not match.' : '';
-    return !errors.password && !errors.confirm_password;
+    if (!errors.email) {
+        // Check username uniqueness
+        const isUnique = await authStore.checkUniqueness({ type: "email", email: formData.email });
+        if (isUnique.isUnique == false) {
+            errors.email = 'Email is already taken.';
+        }
+    }
+    return !errors.email && !errors.password && !errors.confirm_password;
 };
 
 // Step Navigation
-const nextStep = () => {
-    if (currentStep.value === 1 && isValidStep1()) {
+const nextStep = async () => {
+    if (currentStep.value === 1 && await isValidStep1()) {
+        console.log(isValidStep1())
         currentStep.value++;
     } else if (currentStep.value === 2 && isValidStep2()) {
         currentStep.value++;
-    } else if (currentStep.value === 3 && isValidStep3()) {
+    } else if (currentStep.value === 3 && await isValidStep3()) {
         handleSubmit();
     }
 };
@@ -250,19 +272,17 @@ const prevStep = () => {
 
 const router = useRouter();
 // Form Submission
+
 const handleSubmit = async () => {
-    const authStore = useAuthStore();
-    
 
     try {
-        const success = await authStore.register(formData);
-        if (success) {
+            const success = await authStore.register(formData);
             router.push('/signin');
-        } else {
-            alert(authStore.error || 'Registration failed.');
-        }
+            toast.success('Registration successful!', { position: "top-center" });
+        
     } catch (err) {
-        console.error('Error submitting form:', err);
+        toast.error('An unexpected error occurred.', { position: "top-center" });
     }
 };
+
 </script>

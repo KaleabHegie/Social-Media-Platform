@@ -78,6 +78,11 @@ import { useAuthStore } from '@/stores/authStore';
 
 import { useRoute } from 'vue-router';
 
+import ToastService from '@/utils/toast.js';
+
+const toast = ToastService();
+
+
 const route = useRoute();
 const token = route.params.token;
 // Store access
@@ -141,9 +146,10 @@ const handleSubmit = async () => {
     try {
         const success = await authStore.resetPassword(formData);
         if (success) {
-            router.push('/signin');
+            toast.success('Password update successful!', { position: "top-center" });
+            route.push('/signin');
         } else {
-            alert(authStore.error || 'Password Reset failed.');
+            toast.success('Password update failed.', { position: "top-center" });
         }
     } catch (err) {
         console.error('Error submitting form:', err);
