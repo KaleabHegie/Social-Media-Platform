@@ -25,9 +25,11 @@
         </ul>
       </nav>
 
-      <!-- Dark Mode Toggleer -->
-      <DarkModeToggle />
-
+      <!-- Dark Mode Toggleer and change language -->
+      <div class="flex items-center space-x-4 m-3">
+        <LanguageSelector />
+        <DarkModeToggle />
+      </div>
 
       <!-- Logout button -->
       <div class="p-4 border-t border-gray-200 dark:border-gray-700">
@@ -65,6 +67,8 @@
 import { useRoute } from 'vue-router';
 import { computed } from 'vue';
 import DarkModeToggle from '@/components/DarkModeToggle.vue';
+import LanguageSelector from '@/components/LanguageSelector.vue';
+
 
 // Navigation items with Oh Vue Icons
 const navItems = [

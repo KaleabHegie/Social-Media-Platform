@@ -1,5 +1,5 @@
 <template>
-  <main class="min-h-screen bg-sky-100 dark:bg-gray-900 pt-4 pb-20 px-4 lg:px-8">
+  <main class="min-h-screen pt-4 pb-20 px-4 lg:px-8">
     <div class="max-w-6xl mx-auto">
       <div class="flex flex-col lg:flex-row lg:space-x-8">
         <!-- Main content area -->

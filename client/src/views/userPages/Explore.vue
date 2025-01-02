@@ -1,5 +1,5 @@
 <template>
-  <main class="min-h-screen bg-sky-100 dark:bg-gray-900 pt-4 pb-20 px-4">
+  <main class="min-h-screen pt-4 pb-20 px-4">
     <div class="max-w-7xl mx-auto">
 
       <!-- Explore and Search bar -->
