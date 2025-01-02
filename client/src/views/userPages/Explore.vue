@@ -1,18 +1,23 @@
 <template>
   <main class="min-h-screen bg-sky-100 dark:bg-gray-900 pt-4 pb-20 px-4">
     <div class="max-w-7xl mx-auto">
+
+      <!-- Explore and Search bar -->
       <div class="flex items-center justify-between mb-6">
-        <h1 class="text-3xl font-bold text-gray-800 dark:text-white">Explore</h1>
+        <!-- Explore text with icon before it -->
+        <div class="flex items-center space-x-2">
+          <v-icon name="ri-search-line" class="text-gray-500 dark:text-gray-400 text-2xl" />
+          <h1 class="text-3xl text-gray-800 dark:text-white">Explore</h1>
+        </div>
+
 
         <!-- Search Input Field -->
         <div class="relative">
           <input v-model="searchQuery" type="text" placeholder="Search posts..."
-            class="pl-10 pr-4 py-2 rounded-lg bg-white dark:bg-gray-800 text-gray-800 dark:text-white border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-sky-500 w-64" />
-          <v-icon name="ri-search-line"
-            class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400"></v-icon>
-
+            class="pl-4 pr-4 py-2 rounded-lg bg-white dark:bg-gray-800 text-gray-800 dark:text-white border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-1 focus:ring-sky-200 w-64 md:w-96" />
         </div>
       </div>
+
 
       <!-- Masonry Layout Container for Explore Post Cards -->
       <div v-if="filteredPosts.length > 0" class="explore-grid">

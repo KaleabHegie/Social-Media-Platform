@@ -17,22 +17,27 @@
             <router-link :to="item.path"
               class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
               :class="{ 'bg-sky-100 dark:bg-sky-900 text-sky-600 dark:text-sky-400': isActive(item.path) }">
-              <v-icon :name="item.icon" class="text-xl"
+              <v-icon :name="item.icon" class="text-2xl font-bold"
                 :class="isActive(item.path) ? 'text-sky-600 dark:text-sky-400' : 'text-gray-500 dark:text-gray-400'" />
-              <span>{{ item.name }}</span>
+              <span class="text-lg font-semibold">{{ item.name }}</span>
             </router-link>
-          </li> 
+          </li>
         </ul>
       </nav>
+
+      <!-- Dark Mode Toggleer -->
+      <DarkModeToggle />
+
 
       <!-- Logout button -->
       <div class="p-4 border-t border-gray-200 dark:border-gray-700">
         <button @click="logout"
           class="flex items-center space-x-3 w-full px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">
-          <v-icon name="ri-logout-box-line" class="text-xl text-gray-500 dark:text-gray-400" />
-          <span>Logout</span>
+          <v-icon name="ri-logout-box-line" class="text-2xl font-bold text-gray-500 dark:text-gray-400" />
+          <span class="text-lg font-semibold">Logout</span>
         </button>
       </div>
+
     </div>
 
     <!-- Floating bottom navbar for mobile -->
@@ -44,20 +49,22 @@
             <router-link :to="item.path"
               class="flex flex-col items-center p-3 rounded-full text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
               :class="{ 'text-sky-600 dark:text-sky-400': isActive(item.path) }">
-              <v-icon :name="item.icon" class="text-xl mb-1"
+              <v-icon :name="item.icon" class="text-2xl font-bold mb-1"
                 :class="isActive(item.path) ? 'text-sky-600 dark:text-sky-400' : 'text-gray-500 dark:text-gray-400'" />
-              <!-- <span class="text-xs">{{ item.name }}</span> -->
             </router-link>
           </li>
         </ul>
       </nav>
     </div>
+
+
   </div>
 </template>
 
 <script setup>
 import { useRoute } from 'vue-router';
 import { computed } from 'vue';
+import DarkModeToggle from '@/components/DarkModeToggle.vue';
 
 // Navigation items with Oh Vue Icons
 const navItems = [
