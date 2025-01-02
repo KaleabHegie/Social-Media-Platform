@@ -1,5 +1,5 @@
 <template>
-  <div
+  <router-link :to="`/viewPost`"
     class="relative overflow-hidden rounded-lg shadow-lg mb-3 break-inside-avoid transform transition-transform duration-300 hover:scale-105">
     <img :src="post.mediaUrl" :alt="post.description" class="w-full h-auto object-cover" />
     <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
@@ -12,7 +12,7 @@
         </span>
       </div>
     </div>
-  </div>
+  </router-link>
 </template>
 
 <script setup>
