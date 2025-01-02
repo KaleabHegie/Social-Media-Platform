@@ -5,7 +5,7 @@
       <div class="flex space-x-4">
         <button 
           @click="activeTab = 'groups'" 
-          :class="{'text-blue-500 dark:text-blue-400': activeTab === 'groups'}" 
+          :class="{'text-sky-400 dark:text-blue-400': activeTab === 'groups'}" 
           class="font-semibold flex items-center"
         >
           <v-icon name="bi-people" class="mr-1" />
@@ -13,7 +13,7 @@
         </button>
         <button 
           @click="activeTab = 'personal'" 
-          :class="{'text-blue-500 dark:text-blue-400': activeTab === 'personal'}" 
+          :class="{'text-sky-400 dark:text-blue-400': activeTab === 'personal'}" 
           class="font-semibold flex items-center"
         >
           <v-icon name="bi-person" class="mr-1" />
@@ -35,7 +35,7 @@
               v-model="searchQuery"
               type="text"
               placeholder="Search"
-              class="w-full px-10 py-2 bg-white dark:bg-gray-700 rounded-full border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+              class="w-full px-10 py-2 bg-white dark:bg-gray-700 rounded-full border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-sky-400 dark:focus:ring-blue-400 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
             />
             <v-icon name="bi-search" class="absolute left-3 top-2.5 text-gray-400" />
           </div>
@@ -50,7 +50,7 @@
               @click="selectContact(group)"
               class="flex items-center p-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
             >
-              <div class="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center text-xl font-bold text-white">
+              <div class="w-12 h-12 rounded-full bg-sky-400 flex items-center justify-center text-xl font-bold text-white">
                 {{ group.name.charAt(0) }}
               </div>
               <div class="ml-3">
@@ -85,7 +85,7 @@
               v-model="searchQuery"
               type="text"
               placeholder="Search"
-              class="w-full px-10 py-2 bg-white dark:bg-gray-700 rounded-full border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+              class="w-full px-10 py-2 bg-white dark:bg-gray-700 rounded-full border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-sky-400 dark:focus:ring-blue-400 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
             />
             <v-icon name="bi-search" class="absolute left-3 top-2.5 text-gray-400" />
           </div>
@@ -100,7 +100,7 @@
               class="flex items-center p-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
               :class="{ 'bg-gray-200 dark:bg-gray-700': selectedContact === group }"
             >
-              <div class="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center text-xl font-bold text-white">
+              <div class="w-12 h-12 rounded-full bg-sky-400 flex items-center justify-center text-xl font-bold text-white">
                 {{ group.name.charAt(0) }}
               </div>
               <div class="ml-3">
@@ -143,7 +143,7 @@
                   class="w-full h-full object-cover"
                 />
               </div>
-              <div v-else class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-lg font-bold text-white">
+              <div v-else class="w-10 h-10 rounded-full bg-sky-400 flex items-center justify-center text-lg font-bold text-white">
                 {{ selectedContact.name.charAt(0) }}
               </div>
               <h2 class="ml-3 font-semibold">{{ selectedContact.name }}</h2>
@@ -158,7 +158,7 @@
             <div v-for="message in messages" :key="message.id" class="flex" :class="{ 'justify-end': message.isSent }">
               <div
                 class="max-w-xs px-4 py-2 rounded-lg"
-                :class="message.isSent ? 'bg-blue-500 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100'"
+                :class="message.isSent ? 'bg-sky-400 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100'"
               >
                 {{ message.text }}
               </div>
@@ -171,11 +171,11 @@
               v-model="newMessage"
               type="text"
               placeholder="Type a message..."
-              class="flex-1 bg-white dark:bg-gray-700 rounded-full px-4 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+              class="flex-1 bg-white dark:bg-gray-700 rounded-full px-4 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-sky-400 dark:focus:ring-blue-400"
             />
             <button
               @click="sendMessage"
-              class="ml-2 p-2 rounded-full bg-blue-500 hover:bg-blue-600 text-white"
+              class="ml-2 p-2 rounded-full bg-sky-400 hover:bg-blue-600 text-white"
             >
               <v-icon name="bi-send" />
             </button>
