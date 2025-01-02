@@ -13,9 +13,7 @@
                 </div>
                 <!-- Language Dropdown -->
                 <div class="text-right mb-10">
-                    <button @click="switchLanguage" class="bg-sky-400 hover:bg-sky-400 text-white px-3 py-1 rounded">
-                        {{ currentLanguage === 'en' ? 'አማ' : 'Eng' }}
-                    </button>
+                    <LanguageSelector />
                 </div>
                 <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">{{ t('reset') }}</h2>
                 <p class="mt-2 text-center text-sm text-gray-600">
@@ -94,8 +92,9 @@
 import { ref, reactive } from 'vue';
 import { useAuthStore } from '@/stores/authStore';  // Assuming this store exists
 import { useLanguageStore } from '@/stores/languageStore';
+import LanguageSelector from '@/components/LanguageSelector.vue';
 
-const { currentLanguage, switchLanguage, t } = useLanguageStore();
+const { currentLanguage, t } = useLanguageStore();
 const { forgotPassword, error } = useAuthStore();  // Assuming forgotPassword is a method in your authStore
 
 // Form data and state

@@ -2,7 +2,8 @@
     <div
         class="min-h-screen bg-white rounded-lg shadow-xl overflow-hidden flex items-center justify-center py-12 sm:px-6 lg:px-8">
         <div class="absolute inset-0 z-0">
-            <img src="@/assets/whitebg.png" alt="" class="fixed w-full h-full object-cover opacity-40 dark:opacity-10" />
+            <img src="@/assets/whitebg.png" alt=""
+                class="fixed w-full h-full object-cover opacity-40 dark:opacity-10" />
         </div>
         <div class="w-full max-w-md z-10">
             <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
@@ -13,9 +14,7 @@
 
                 <!-- Language Dropdown -->
                 <div class="text-right mb-10">
-                    <button @click="switchLanguage" class="bg-sky-400 hover:bg-sky-400 text-white px-3 py-1 rounded">
-                        {{ currentLanguage === 'en' ? 'አማ' : 'Eng' }}
-                    </button>
+                    <LanguageSelector />
                 </div>
 
                 <!-- Progress Bar -->
@@ -170,6 +169,7 @@ import { useRouter } from 'vue-router';
 import { useLanguageStore } from '@/stores/languageStore';
 import { useAuthStore } from '@/stores/authStore';
 import ToastService from '@/utils/toast.js';
+import LanguageSelector from '@/components/LanguageSelector.vue';
 
 
 const authStore = useAuthStore();
@@ -177,11 +177,8 @@ const authStore = useAuthStore();
 const toast = ToastService();
 
 // Store access
-const languageStore = useLanguageStore();
-const t = (key) => languageStore.t.value(key);
+const { currentLanguage, t } = useLanguageStore();
 
-const currentLanguage = languageStore.currentLanguage;
-const switchLanguage = languageStore.switchLanguage;
 
 // Reactive Data
 const currentStep = ref(1);
@@ -276,10 +273,10 @@ const router = useRouter();
 const handleSubmit = async () => {
 
     try {
-            const success = await authStore.register(formData);
-            router.push('/signin');
-            toast.success('Registration successful!', { position: "top-center" });
-        
+        const success = await authStore.register(formData);
+        router.push('/signin');
+        toast.success('Registration successful!', { position: "top-center" });
+
     } catch (err) {
         toast.error('An unexpected error occurred.', { position: "top-center" });
     }

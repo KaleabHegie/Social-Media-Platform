@@ -13,9 +13,7 @@
 
         <!-- Language Dropdown -->
         <div class="text-right mb-10">
-          <button @click="switchLanguage" class="bg-sky-400 hover:bg-sky-400 text-white px-3 py-1 rounded">
-            {{ currentLanguage === 'en' ? 'አማ' : 'Eng' }}
-          </button>
+          <LanguageSelector />
         </div>
 
         <!-- Form Section -->
@@ -108,9 +106,10 @@ import { ref, reactive, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useLanguageStore } from '@/stores/languageStore';
 import { useAuthStore } from '@/stores/authStore';
+import LanguageSelector from '@/components/LanguageSelector.vue';
 
 // Access the language store
-const { currentLanguage, switchLanguage, t } = useLanguageStore();
+const { currentLanguage, t } = useLanguageStore();
 
 // Define form data and state
 const form = reactive({
@@ -187,7 +186,7 @@ const handleSubmit = async () => {
   };
 
 
-  
+
 
   const success = await authStore.login(credentials);
   loading.value = false;

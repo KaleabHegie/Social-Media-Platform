@@ -14,9 +14,7 @@
 
                 <!-- Language Dropdown -->
                 <div class="text-right mb-10">
-                    <button @click="switchLanguage" class="bg-sky-400 hover:bg-sky-400 text-white px-3 py-1 rounded">
-                        {{ currentLanguage === 'en' ? 'አማ' : 'Eng' }}
-                    </button>
+                    <LanguageSelector />
                 </div>
 
                 <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">{{ t('reset') }}</h2>
@@ -75,6 +73,7 @@ import { ref, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import { useLanguageStore } from '@/stores/languageStore';
 import { useAuthStore } from '@/stores/authStore';
+import LanguageSelector from '@/components/LanguageSelector.vue';
 
 import { useRoute } from 'vue-router';
 
@@ -86,11 +85,7 @@ const toast = ToastService();
 const route = useRoute();
 const token = route.params.token;
 // Store access
-const languageStore = useLanguageStore();
-const t = (key) => languageStore.t.value(key);
-
-const currentLanguage = languageStore.currentLanguage;
-const switchLanguage = languageStore.switchLanguage;
+const { currentLanguage, t } = useLanguageStore();
 
 const formData = reactive({
     password: '',

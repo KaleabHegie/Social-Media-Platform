@@ -1,4 +1,6 @@
-import { reactive, computed } from "vue";
+// stores/languageStore.js
+import { defineStore } from 'pinia';
+import { computed, reactive } from 'vue';
 
 const translations = {
   Username: {
@@ -143,20 +145,27 @@ const translations = {
   },
 };
 
-export const useLanguageStore = () => {
+
+
+
+export const useLanguageStore = defineStore('language', () => {
   const state = reactive({
-    currentLanguage: "en",
+    currentLanguage: 'en',
   });
 
+
+
+  // Function to switch between languages
   const switchLanguage = () => {
-    state.currentLanguage = state.currentLanguage === "en" ? "am" : "en";
+    state.currentLanguage = state.currentLanguage === 'en' ? 'am' : 'en';
   };
 
-  const t = computed(() => (key) => translations[key][state.currentLanguage]);
+  // Computed property to get the translation for a key
+  const t = computed(() => (key) => translations[key]?.[state.currentLanguage] || key);
 
   return {
     currentLanguage: computed(() => state.currentLanguage),
     switchLanguage,
     t,
   };
-};
+});
