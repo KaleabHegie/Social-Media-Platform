@@ -13,6 +13,7 @@ import Explore from "@/views/userPages/Explore.vue";
 import Account from "@/views/userPages/Account.vue";
 import CreatePost from "@/views/userPages/CreatePost.vue";
 import Messages from "@/views/userPages/Messages.vue";
+import ViewPost from "@/views/userPages/ViewPost.vue";
 
 // Define routes
 const routes = [
@@ -68,6 +69,15 @@ const routes = [
           {
             path: "",
             component: Messages,
+          },
+        ],
+      },
+      {
+        path: "/viewPost",
+        children: [
+          {
+            path: "",
+            component: ViewPost,
           },
         ],
       },
