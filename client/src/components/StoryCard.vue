@@ -1,6 +1,6 @@
 <template>
     <div class="relative w-20 h-20 cursor-pointer group">
-      <div class="absolute inset-0 bg-gradient-to-br from-pink-500 to-yellow-500 rounded-lg p-0.5">
+      <div class="absolute inset-0 bg-gradient-to-br from-sky-500 to-sky-100 rounded-lg p-0.5">
         <div class="w-full h-full bg-white dark:bg-gray-800 rounded-lg overflow-hidden">
           <img 
             :src="story.mediaUrl" 

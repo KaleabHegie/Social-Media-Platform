@@ -3,7 +3,7 @@
     @click="toggleDarkMode"
     @keydown.space.prevent="toggleDarkMode"
     class="relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 dark:focus:ring-gray-400"
-    :class="isDarkMode ? 'bg-gray-700' : 'bg-gray-300'"
+    :class="isDarkMode ? 'bg-gray-700' : 'bg-sky-100'"
     role="switch"
     :aria-checked="isDarkMode"
     aria-label="Toggle dark mode"
