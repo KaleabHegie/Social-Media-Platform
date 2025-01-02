@@ -1,8 +1,8 @@
 const cloudinary = require("cloudinary").v2;
 const { constants } = require("../Utils/constants");
 const User = require("../Models/UserModel");
+const Comment = require("../Models/commentModel");
 const Post = require("../Models/PostModel");
-const Hashtag = require("../Models/HashTagModel");
 
 const commentController = {
   /************************************************************************
@@ -20,7 +20,7 @@ const commentController = {
       // Check if the user is logged in
       if (!req.user) {
         return res.status(constants.UNAUTHORIZED).json({
-          message: "Can't make comments if the user is not logged in",
+          message: "User must be logged in to make a comment.",
         });
       }
 
@@ -29,50 +29,48 @@ const commentController = {
       // Validate the required fields
       if (!postId || !content) {
         return res.status(constants.VALIDATION_ERRORS).json({
-          message: "Post ID and content are required",
+          message: "Post ID and content are required.",
         });
       }
 
       // Check if the post exists
       const post = await Post.findById(postId);
       if (!post) {
-        return res.status(constants.NOT_FOUND).json({ message: "Post not found" });
+        return res.status(constants.NOT_FOUND).json({ message: "Post not found." });
       }
 
-      // Check if the parent comment exists, if provided
+      // Check if the parent comment exists (optional)
       let parentComment = null;
       if (parentId) {
-        parentComment = await Post.findOne(
-          { "comments._id": parentId },
-          { "comments.$": 1 }
-        );
-        if (!parentComment || !parentComment.comments.length) {
+        parentComment = await Comment.findById(parentId);
+        if (!parentComment) {
           return res
             .status(constants.NOT_FOUND)
-            .json({ message: "Parent comment not found" });
+            .json({ message: "Parent comment not found." });
         }
       }
 
       // Create the new comment
-      const newComment = {
+      const newComment = new Comment({
+        postId,
         sender: req.user.id,
         content,
-        parent: parentComment ? parentComment.comments[0]._id : null,
-        created_at: new Date(),
-      };
+        parent: parentComment ? parentComment._id : null, // Directly reference parent comment ID
+      });
 
-      // Add the new comment to the post's comments array
-      post.comments.push(newComment);
-      post.comments_count += 1; // Increment comment count
+      // Save the new comment
+      await newComment.save();
 
+      // Increment comment count only after saving the comment
+      post.comments_count += 1;
       await post.save();
 
-      return res.json({ message: "Comment created successfully", comment: newComment });
+      return res.json({ message: "Comment created successfully.", comment: newComment });
     } catch (error) {
       console.error("Error making comment:", error.toString());
-      res
-        .status(constants.SERVER_ERROR)
-        .json({ message: "An error occurred while creating the comment" });
+      return res.status(constants.SERVER_ERROR).json({
+        message: "An error occurred while creating the comment.",
+      });
     }
   },
 
@@ -88,75 +86,56 @@ const commentController = {
    ************************************************************************/
   deleteComment: async (req, res) => {
     try {
-      // Check if the user is logged in
+      // Ensure the user is logged in
       if (!req.user) {
         return res.status(constants.UNAUTHORIZED).json({
-          message: "Can't delete comments if the user is not logged in",
+          message: "User must be logged in to delete a comment.",
         });
       }
 
       const { commentId } = req.body;
 
-      // Validate the required field
+      // Validate the comment ID
       if (!commentId) {
         return res.status(constants.VALIDATION_ERRORS).json({
-          message: "Comment ID is required",
+          message: "Comment ID is required.",
         });
       }
 
-      // Find the post that contains the comment
-      const post = await Post.findOne({ "comments._id": commentId });
-      if (!post) {
-        return res.status(constants.NOT_FOUND).json({ message: "Comment not found" });
-      }
+      // Find the comment to delete
+      const commentToDelete = await Comment.findById(commentId);
 
-      // Find the comment within the post's comments array
-      const comment = post.comments.find(
-        (comment) => comment._id.toString() === commentId
-      );
-
-      if (!comment) {
-        return res.status(constants.NOT_FOUND).json({ message: "Comment not found" });
+      if (!commentToDelete) {
+        return res.status(constants.NOT_FOUND).json({ message: "Comment not found." });
       }
 
       // Check if the logged-in user is the sender of the comment
-      if (comment.sender.toString() !== req.user.id) {
+      if (commentToDelete.sender.toString() !== req.user.id.toString()) {
         return res.status(constants.UNAUTHORIZED).json({
-          message: "Only Authors of the Comment Can Delete the Comment",
+          message: "Only the author of the comment can delete it.",
         });
       }
 
-      // Delete all child comments (those with parentId as the deleted comment's _id)
-      const deletedCommentParentId = comment._id;
+      const postId = commentToDelete.postId;
 
-      // Find all child comments (comments whose parent is the deleted comment)
-      const childComments = post.comments.filter(
-        (c) => c.parent && c.parent.toString() === deletedCommentParentId.toString()
-      );
+      // Delete replies to the comment
+      await Comment.deleteMany({ parent: commentToDelete._id });
 
-      // Remove the comment and its child comments from the post's comments array
-      post.comments = post.comments.filter(
-        (comment) => comment._id.toString() !== deletedCommentParentId.toString()
-      );
+      // Delete the comment itself
+      await commentToDelete.remove();
 
-      // Remove child comments as well
-      post.comments = post.comments.filter(
-        (comment) =>
-          !childComments.some((child) => child._id.toString() === comment._id.toString())
-      );
+      // Update the post's comments count
+      if (postId) {
+        const newCount = await Comment.countDocuments({ postId });
+        await Post.findByIdAndUpdate(postId, { comments_count: newCount });
+      }
 
-      // Update comments_count: decrement by 1 for each deleted comment (including child comments)
-      post.comments_count -= 1 + childComments.length;
-
-      // Save the post after deletion
-      await post.save();
-
-      return res.json({ message: "Comment and Comment Replies Deleted successfully" });
+      return res.json({ message: "Comment and replies deleted successfully." });
     } catch (error) {
-      console.error("Error deleting comment:", error.toString());
-      res
-        .status(constants.SERVER_ERROR)
-        .json({ message: "An error occurred while deleting the comment" });
+      console.error("Error deleting comment:", error);
+      return res.status(constants.SERVER_ERROR).json({
+        message: "An error occurred while deleting the comment.",
+      });
     }
   },
 
@@ -172,7 +151,7 @@ const commentController = {
    ************************************************************************/
   getComments: async (req, res) => {
     try {
-      const { postId } = req.query; // Assuming postId is passed as a URL parameter
+      const { postId } = req.query; // Assuming postId is passed as a query parameter
 
       if (!postId) {
         return res.status(constants.VALIDATION_ERRORS).json({
@@ -186,16 +165,19 @@ const commentController = {
         return res.status(constants.NOT_FOUND).json({ message: "Post not found" });
       }
 
+      // Find all comments related to this post (either direct comments or replies)
+      const comments = await Comment.find({ postId: postId }).sort({ createdAt: -1 }); // Sorting by creation time (or change it to likes_count if needed)
+
       // Separate outer comments and replies
       const outerComments = [];
       const repliesMap = new Map();
 
-      post.comments.forEach((comment) => {
+      comments.forEach((comment) => {
         if (!comment.parent) {
           // This is an outer comment
           outerComments.push({
             ...comment.toObject(),
-            replies: [],
+            replies: [], // Initialize replies as an empty array
           });
         } else {
           // This is a reply
@@ -207,7 +189,7 @@ const commentController = {
       });
 
       // Sort function by like count
-      const sortByLikes = (a, b) => b.like.length - a.like.length;
+      const sortByLikes = (a, b) => b.likes.length - a.likes.length;
 
       // Sort outer comments by like count
       outerComments.sort(sortByLikes);
@@ -224,7 +206,7 @@ const commentController = {
       });
     } catch (error) {
       console.error("Error getting comments:", error.toString());
-      res.status(constants.SERVER_ERROR).json({
+      return res.status(constants.SERVER_ERROR).json({
         message: "An error occurred while fetching the comments",
       });
     }
@@ -242,39 +224,38 @@ const commentController = {
    ************************************************************************/
   likeComment: async (req, res) => {
     try {
-      const { commentId } = req.query;
-      const userId = req.user._id;
-
-      // Find the post containing the comment
-      const post = await Post.findOne({ "comments._id": commentId });
-
-      if (!post) {
-        return res.status(constants.NOT_FOUND).json({
-          message: "Comment not found",
+      if (!req.user) {
+        return res.status(constants.UNAUTHORIZED).json({
+          message: "User must be logged in to Like a comment.",
         });
       }
 
-      // Find the comment in the post's comments array
-      const comment = post.comments.id(commentId);
+      const { commentId } = req.query; // Assuming commentId is passed as a query parameter
+      const userId = req.user.id; // Get the logged-in user's ID
 
-      if (!comment) {
-        return res.status(constants.NOT_FOUND).json({
-          message: "Comment not found",
+      // Validate the required fields
+      if (!commentId) {
+        return res.status(constants.VALIDATION_ERRORS).json({
+          message: "Comment ID is required",
         });
+      }
+
+      // Find the comment by ID
+      const comment = await Comment.findById(commentId);
+      if (!comment) {
+        return res.status(constants.NOT_FOUND).json({ message: "Comment not found" });
       }
 
       // Check if the user has already liked the comment
       const likeIndex = comment.likes.findIndex(
-        (like) => like.user.toString() === userId.toString()
+        (like) => like.userId && like.userId === userId.toString()
       );
 
       let isLiked;
 
       if (likeIndex === -1) {
         // User hasn't liked the comment, so add the like
-        comment.likes.push({
-          user: userId,
-        });
+        comment.likes.push({ userId: userId.toString() }); // Make sure userId is correctly stored
         isLiked = true;
       } else {
         // User has already liked the comment, so remove the like
@@ -282,12 +263,13 @@ const commentController = {
         isLiked = false;
       }
 
-      // Save the updated post
-      await post.save();
+      // Save the updated comment
+      await comment.save();
 
       return res.json({
         message: isLiked ? "Comment liked successfully" : "Comment unliked successfully",
-        isLiked: isLiked,
+        isLiked,
+        likesCount: comment.likes.length,
       });
     } catch (error) {
       console.error("Error liking/unliking comment:", error.toString());

@@ -15,7 +15,6 @@ const validateToken = (req, res, next) => {
           .status(constants.INVALID_TOKEN)
           .json({ message: "Invalid Auth token | Token Expired" });
       }
-
       // Attach user info to the request object
       req.user = decoded.user;
       return next(); // Forward the request

@@ -1,7 +1,11 @@
 <template>
     <div
         class="min-h-screen bg-white rounded-lg shadow-xl overflow-hidden flex items-center justify-center py-12 sm:px-6 lg:px-8">
-        <div class="w-full max-w-md">
+        <div class="absolute inset-0 z-0">
+            <img src="@/assets/whitebg.png" alt=""
+                class="fixed w-full h-full object-cover opacity-40 dark:opacity-10" />
+        </div>
+        <div class="w-full max-w-md z-10">
             <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
                 <!-- Logo Section -->
                 <div class="text-center -mt-24 h-64">
@@ -91,7 +95,7 @@ const switchLanguage = languageStore.switchLanguage;
 const formData = reactive({
     password: '',
     confirm_password: '',
-    token : token
+    token: token
 });
 
 const errors = reactive({
@@ -101,40 +105,40 @@ const errors = reactive({
 
 // Validation function that runs only on submit
 const isValid = () => {
-  // First, check if the password is provided
-  if (!formData.password) {
-    errors.password = 'Password is required.';
-    return false;
-  }
+    // First, check if the password is provided
+    if (!formData.password) {
+        errors.password = 'Password is required.';
+        return false;
+    }
 
-  // Password validations
-  const hasLetter = /[A-Za-z]/.test(formData.password);
-  const hasNumber = /\d/.test(formData.password);
-  const hasSpecialChar = /[@$!%*#?&]/.test(formData.password);
-  const isLongEnough = formData.password.length >= 8;
+    // Password validations
+    const hasLetter = /[A-Za-z]/.test(formData.password);
+    const hasNumber = /\d/.test(formData.password);
+    const hasSpecialChar = /[@$!%*#?&]/.test(formData.password);
+    const isLongEnough = formData.password.length >= 8;
 
-  if (!isLongEnough) {
-    errors.password = 'Password must be at least 8 characters long.';
-  } else if (!hasLetter) {
-    errors.password = 'Password must include at least one letter.';
-  } else if (!hasNumber) {
-    errors.password = 'Password must include at least one number.';
-  } else if (!hasSpecialChar) {
-    errors.password = 'Password must include at least one special character (@, $, !, %, *, #, ?, &).';
-  }
+    if (!isLongEnough) {
+        errors.password = 'Password must be at least 8 characters long.';
+    } else if (!hasLetter) {
+        errors.password = 'Password must include at least one letter.';
+    } else if (!hasNumber) {
+        errors.password = 'Password must include at least one number.';
+    } else if (!hasSpecialChar) {
+        errors.password = 'Password must include at least one special character (@, $, !, %, *, #, ?, &).';
+    }
 
-  // Check if the confirm password matches the password
-  errors.confirm_password = formData.password !== formData.confirm_password ? 'Passwords do not match.' : '';
+    // Check if the confirm password matches the password
+    errors.confirm_password = formData.password !== formData.confirm_password ? 'Passwords do not match.' : '';
 
-  // Return true if no errors are found
-  return !errors.password && !errors.confirm_password;
+    // Return true if no errors are found
+    return !errors.password && !errors.confirm_password;
 };
 
 
 // Form Submission
 const handleSubmit = async () => {
     if (!isValid()) {
-        return; 
+        return;
     }
 
     const authStore = useAuthStore();

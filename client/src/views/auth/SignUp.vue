@@ -1,7 +1,10 @@
 <template>
     <div
         class="min-h-screen bg-white rounded-lg shadow-xl overflow-hidden flex items-center justify-center py-12 sm:px-6 lg:px-8">
-        <div class="w-full max-w-md">
+        <div class="absolute inset-0 z-0">
+            <img src="@/assets/whitebg.png" alt="" class="fixed w-full h-full object-cover opacity-40 dark:opacity-10" />
+        </div>
+        <div class="w-full max-w-md z-10">
             <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
                 <!-- Logo Section -->
                 <div class="text-center -mt-24 h-64">

@@ -6,14 +6,32 @@ const multer = require("multer");
 const upload = multer({ storage: multer.memoryStorage() });
 
 router.post("/register", userController.register);
+
 router.post("/login", userController.login);
+
 router.post("/forgot-password", userController.forgotPassword);
+
 router.post("/reset-password/:token", userController.resetPassword);
+
 router.post("/setBio", validateToken, userController.setBio);
 
 router.post("/deleteAccount", validateToken, userController.deleteAccount);
 
 router.post("/setAccountVisibility", validateToken, userController.setAccountVisibility);
+
+router.post("/followUser", validateToken, userController.followUser);
+
+router.get("/getMyUserProfile", validateToken, userController.getMyUserProfile);
+
+
+router.get("/getUserProfile", validateToken, userController.getUserProfile);
+
+router.post("/dismissNotifications", validateToken, userController.dismissNotifications);
+
+router.get("/getNotifications", validateToken, userController.getNotifications);
+
+
+
 
 
 router.post(

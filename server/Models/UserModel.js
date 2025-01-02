@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 
+
 // Notification Sub-Schema
 const NotificationSchema = new mongoose.Schema(
   {
@@ -9,7 +10,6 @@ const NotificationSchema = new mongoose.Schema(
       default: "other",
       required: true,
     },
-    post: { type: mongoose.Schema.Types.ObjectId, ref: "Post", required: true },
     content: { type: String, required: true },
     seen: { type: Boolean, default: false },
   },
