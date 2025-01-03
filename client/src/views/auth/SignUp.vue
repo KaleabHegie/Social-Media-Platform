@@ -112,27 +112,75 @@
                             <!-- Error message -->
                             <p v-if="errors.email" class="text-sm text-red-600 mt-1">{{ errors.email }}</p>
                         </div>
-                        <div class="mb-4">
+                        <!-- Password Field -->
+                        <div class="relative mb-4">
                             <label for="password"
-                                class="block text-sm font-medium text-gray-700 bg-white px-1 ml-2 -mb-3 z-10 relative w-fit">
+                                class="absolute -top-2 left-2 bg-white text-sm font-medium text-gray-700 px-1">
                                 {{ t('password') }}
                             </label>
-                            <input id="password" v-model="formData.password" type="password" required
-                                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-400 focus:border-sky-400" />
-                            <!-- Error message -->
-                            <p v-if="errors.password" class="text-sm text-red-600 mt-1">{{ errors.password }}</p>
+                            <div class="mt-2">
+                                <input id="password" v-model="formData.password"
+                                    :type="showPassword ? 'text' : 'password'" required
+                                    class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-sky-500 focus:border-sky-500 sm:text-sm"
+                                    :class="{ 'border-red-500': errors.password }" />
+                                <!-- Toggle Password Visibility -->
+                                <button type="button" @click="togglePasswordVisibility"
+                                    class="absolute right-3 top-3 text-sky-400 hover:text-sky-500"
+                                    aria-label="Toggle password visibility">
+                                    <svg v-if="showPassword" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
+                                        fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path
+                                            d="M1 12C2.732 7.943 7.02 5 12 5s9.268 2.943 11 7c-1.732 4.057-6.02 7-11 7s-9.268-2.943-11-7z" />
+                                        <circle cx="12" cy="12" r="3" />
+                                    </svg>
+                                    <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path
+                                            d="M1 12C2.732 7.943 7.02 5 12 5s9.268 2.943 11 7c-1.732 4.057-6.02 7-11 7s-9.268-2.943-11-7z" />
+                                        <path
+                                            d="M3.515 3.515l17 17M9.172 9.172A3.001 3.001 0 0112 9c1.657 0 3 1.343 3 3 0 .828-.336 1.578-.88 2.121m-.948.947a2.999 2.999 0 01-4.24-4.24" />
+                                    </svg>
+                                </button>
+                            </div>
+                            <!-- Display error -->
+                            <p v-if="errors.password" class="text-sm text-red-500 mt-1">{{ errors.password }}</p>
                         </div>
-                        <div class="mb-4">
+
+                        <!-- Confirm Password Field -->
+                        <div class="relative mb-4">
                             <label for="confirm-password"
-                                class="block text-sm font-medium text-gray-700 bg-white px-1 ml-2 -mb-3 z-10 relative w-fit">
+                                class="absolute -top-2 left-2 bg-white text-sm font-medium text-gray-700 px-1">
                                 {{ t('confirmpass') }}
                             </label>
-                            <input id="confirm-password" v-model="formData.confirm_password" type="password" required
-                                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-400 focus:border-sky-400" />
-                            <!-- Error message -->
-                            <p v-if="errors.confirm_password" class="text-sm text-red-600 mt-1">{{
+                            <div class="mt-2">
+                                <input id="confirm-password" v-model="formData.confirm_password"
+                                    :type="showPassword ? 'text' : 'password'" required
+                                    class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-sky-500 focus:border-sky-500 sm:text-sm"
+                                    :class="{ 'border-red-500': errors.confirm_password }" />
+                                <!-- Toggle Password Visibility -->
+                                <button type="button" @click="togglePasswordVisibility"
+                                    class="absolute right-3 top-3 text-sky-400 hover:text-sky-500"
+                                    aria-label="Toggle password visibility">
+                                    <svg v-if="showPassword" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
+                                        fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path
+                                            d="M1 12C2.732 7.943 7.02 5 12 5s9.268 2.943 11 7c-1.732 4.057-6.02 7-11 7s-9.268-2.943-11-7z" />
+                                        <circle cx="12" cy="12" r="3" />
+                                    </svg>
+                                    <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path
+                                            d="M1 12C2.732 7.943 7.02 5 12 5s9.268 2.943 11 7c-1.732 4.057-6.02 7-11 7s-9.268-2.943-11-7z" />
+                                        <path
+                                            d="M3.515 3.515l17 17M9.172 9.172A3.001 3.001 0 0112 9c1.657 0 3 1.343 3 3 0 .828-.336 1.578-.88 2.121m-.948.947a2.999 2.999 0 01-4.24-4.24" />
+                                    </svg>
+                                </button>
+                            </div>
+                            <!-- Display error -->
+                            <p v-if="errors.confirm_password" class="text-sm text-red-500 mt-1">{{
                                 errors.confirm_password }}</p>
                         </div>
+
                     </div>
 
                     <!-- Navigation Buttons -->
@@ -171,14 +219,12 @@ import { useAuthStore } from '@/stores/authStore';
 import ToastService from '@/utils/toast.js';
 import LanguageSelector from '@/components/LanguageSelector.vue';
 
-
 const authStore = useAuthStore();
 
 const toast = ToastService();
 
 // Store access
-const { currentLanguage, t } = useLanguageStore();
-
+const {  t } = useLanguageStore();
 
 // Reactive Data
 const currentStep = ref(1);
@@ -203,6 +249,14 @@ const errors = reactive({
     password: '',
     confirm_password: '',
 });
+
+// Password visibility toggles
+const showPassword = ref(false);
+
+// Toggle visibility for both password fields
+const togglePasswordVisibility = () => {
+    showPassword.value = !showPassword.value;
+};
 
 // Validation Functions with Error Messages
 const isValidStep1 = async () => {
@@ -235,16 +289,40 @@ const isValidStep2 = () => {
 };
 
 const isValidStep3 = async () => {
+    // Email validation
     errors.email = !formData.email ? 'Email is required.' : '';
-    errors.password = !formData.password ? 'Password is required.' : '';
-    errors.confirm_password = formData.password !== formData.confirm_password ? 'Passwords do not match.' : '';
     if (!errors.email) {
-        // Check username uniqueness
+        // Check email uniqueness
         const isUnique = await authStore.checkUniqueness({ type: "email", email: formData.email });
-        if (isUnique.isUnique == false) {
+        if (!isUnique.isUnique) {
             errors.email = 'Email is already taken.';
         }
     }
+
+    // Password validation
+    const hasLetter = /[A-Za-z]/.test(formData.password);
+    const hasNumber = /\d/.test(formData.password);
+    const hasSpecialChar = /[@$!%*#?&]/.test(formData.password);
+    const isLongEnough = formData.password && formData.password.length >= 8;
+    if (!formData.password) {
+        errors.password = 'Password is required.';
+    } else if (!isLongEnough) {
+        errors.password = 'Password must be at least 8 characters long.';
+    } else if (!hasLetter) {
+        errors.password = 'Password must include at least one letter.';
+    } else if (!hasNumber) {
+        errors.password = 'Password must include at least one number.';
+    } else if (!hasSpecialChar) {
+        errors.password = 'Password must include at least one special character (@, $, !, %, *, #, ?, &).';
+    } else {
+        errors.password = '';
+    }
+
+    // Confirm password validation
+    errors.confirm_password = formData.password !== formData.confirm_password
+        ? 'Passwords do not match.'
+        : '';
+
     return !errors.email && !errors.password && !errors.confirm_password;
 };
 
@@ -260,7 +338,6 @@ const nextStep = async () => {
     }
 };
 
-
 const prevStep = () => {
     if (currentStep.value > 1) {
         currentStep.value--;
@@ -269,17 +346,13 @@ const prevStep = () => {
 
 const router = useRouter();
 // Form Submission
-
 const handleSubmit = async () => {
-
     try {
         const success = await authStore.register(formData);
         router.push('/signin');
         toast.success('Registration successful!', { position: "top-center" });
-
     } catch (err) {
         toast.error('An unexpected error occurred.', { position: "top-center" });
     }
 };
-
 </script>

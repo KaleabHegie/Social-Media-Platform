@@ -154,23 +154,6 @@ const validateForm = () => {
       errors.username = 'Username must be at least 3 characters long.';
     }
   }
-
-  // Password validation
-  const hasLetter = /[A-Za-z]/.test(form.password);
-  const hasNumber = /\d/.test(form.password);
-  const hasSpecialChar = /[@$!%*#?&]/.test(form.password);
-  const isLongEnough = form.password.length >= 8;
-
-  if (!isLongEnough) {
-    errors.password = 'Password must be at least 8 characters long.';
-  } else if (!hasLetter) {
-    errors.password = 'Password must include at least one letter.';
-  } else if (!hasNumber) {
-    errors.password = 'Password must include at least one number.';
-  } else if (!hasSpecialChar) {
-    errors.password = 'Password must include at least one special character (@, $, !, %, *, #, ?, &).';
-  }
-
   return Object.keys(errors).length === 0;
 };
 
