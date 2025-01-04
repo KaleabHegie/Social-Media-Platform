@@ -1,5 +1,6 @@
 <template>
-  <div class=" min-h-screen bg-white rounded-lg shadow-xl overflow-hidden flex items-center justify-center py-12 sm:px-6 lg:px-8">
+  <div
+    class=" min-h-screen bg-white rounded-lg shadow-xl overflow-hidden flex items-center justify-center py-12 sm:px-6 lg:px-8">
     <div class="w-full max-w-md">
       <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
         <!-- Logo Section -->
@@ -10,7 +11,7 @@
         <!-- Language Dropdown -->
         <div class="text-right mb-10">
           <button @click="switchLanguage" class="bg-sky-400 hover:bg-sky-400 text-white px-3 py-1 rounded">
-            {{ currentLanguage === 'en' ? 'አማርኛ' : 'English' }}
+            {{ currentLanguage === 'en' ? 'አማ' : 'Eng' }}
           </button>
         </div>
 
@@ -19,7 +20,7 @@
           <!-- Username or Email -->
           <div class="relative">
             <label for="username" class="absolute -top-2 left-2 bg-white text-sm font-medium text-gray-700 px-1">
-              Username or email
+              {{ t('Username') }}
             </label>
             <div class="mt-2">
               <input id="username" v-model="form.username" type="text" required
@@ -33,7 +34,7 @@
           <!-- Password -->
           <div class="relative">
             <label for="password" class="absolute -top-2 left-2 bg-white text-sm font-medium text-gray-700 px-1">
-              Password
+              {{ t('password') }}
             </label>
             <div class="mt-2">
               <input id="password" v-model="form.password" :type="showPassword ? 'text' : 'password'" required
@@ -67,13 +68,13 @@
               <input id="remember-me" v-model="form.rememberMe" type="checkbox"
                 class="h-4 w-4 text-sky-600 focus:ring-sky-500 border-gray-300 rounded" />
               <label for="remember-me" class="ml-2 block text-sm text-gray-900">
-                Remember me
+                {{ t('remember') }}
               </label>
             </div>
 
             <div class="text-sm">
               <a href="#" class="font-medium text-sky-400 hover:text-sky-500">
-                Forgot your password?
+                {{ t('forgot') }}
               </a>
             </div>
           </div>
@@ -82,15 +83,15 @@
           <div>
             <button type="submit" :disabled="loading"
               class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-sky-400 hover:bg-sky-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500">
-              <span v-if="loading">Signing in...</span>
-              <span v-else>Sign in</span>
+              <span v-if="loading">{{ t(' signingin') }}</span>
+              <span v-else>{{ t('signin') }}</span>
             </button>
           </div>
           <!-- Sign Up Section -->
           <p class="text-sm text-center text-gray-900">
-            Don't have an account?
+            {{ t('noaccount') }}
             <router-link to="/signup" class="font-medium text-sky-400 hover:text-sky-500">
-              Sign up
+              {{ t('signup') }}
             </router-link>
           </p>
         </form>
@@ -117,7 +118,6 @@ const form = reactive({
 const errors = reactive({});
 const loading = ref(false);
 const showPassword = ref(false);
-const selectedLanguage = ref('en'); // Default language
 
 // Router instance
 const router = useRouter();
@@ -186,8 +186,8 @@ const handleSubmit = async () => {
   };
 
 
-  
-  
+
+
   const success = await authStore.login(credentials);
   loading.value = false;
 

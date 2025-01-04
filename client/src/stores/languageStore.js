@@ -5,26 +5,59 @@ const translations = {
     en: " Username or email",
     am: " የተጠቃሚ ስም ወይም ኢሜይል"
   },
-  about: {
-    en: "About Us",
-    am: "ስለ እኛ"
+  email: {
+    en: "Email",
+    am: "ኢሜይል"
   },
-  services: {
-    en: "Our Services",
-    am: "አገልግሎቶቻችን"
+  usernameonly: {
+    en: " Username",
+    am: " የተጠቃሚ ስም"
   },
-  contact: {
-    en: "Contact Us",
-    am: "ያግኙን"
+  first_name: {
+    en: " First Name",
+    am: " የመጀመሪያ ስም"
   },
-  description: {
-    en: "We provide high-quality services to meet your needs.",
-    am: "ፍላጎትዎን ለማሟላት ጥራት ያለው አገልግሎት እንሰጣለን።"
+  last_name: {
+    en: " Last Name",
+    am: " የአባት ስም"
   },
-  learnMore: {
-    en: "Learn More",
-    am: "ተጨማሪ ይወቁ"
-  }
+  password: {
+    en: "Password",
+    am: "የይለፍ ቃል"
+  },
+  remember: {
+    en: "Remember me",
+    am: "አስታውሰኝ"
+  },
+  forgot: {
+    en: "Forgot your password?",
+    am: "የይለፍ ቃልዎን ረስተዋል?"
+  },
+  signingin: {
+    en: "Signing in...",
+    am: "እየገባ ነው..."
+  },
+  signin: {
+    en: "Sign in",
+    am: "ግባ"
+  },
+  noaccount: {
+    en: "Don't have an account?",
+    am: "አካውንትዎ የለህም?"
+  },
+  signup: {
+    en: "Sign up",
+    am: "አዲስ አካውንት ይፍጠሩ"
+  },
+  haveaccount: {
+    en: "Already have an account?",
+    am: "መለያ አለህ?"
+  },
+  emailerror: {
+    en: "Email must include an '@' symbol.",
+    am: "ኢሜል የ'@' ምልክት ማካተት አለበት።"
+  },
+
 }
 
 export const useLanguageStore = () => {

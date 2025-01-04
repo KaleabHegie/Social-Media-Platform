@@ -4,108 +4,75 @@ const User = require("../Models/UserModel");
 const Post = require("../Models/PostModel");
 const Hashtag = require("../Models/HashTagModel");
 
-// // Configure Cloudinary
-// cloudinary.config({
-//   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-//   api_key: process.env.CLOUDINARY_API_KEY,
-//   api_secret: process.env.CLOUDINARY_API_SECRET,
-// });
-
-// Configure Cloudinary
-cloudinary.config({
-  cloud_name: "dwkvbn1vu",
-  api_key: "922675774229729",
-  api_secret: "zfWlXCOgJU0q4p3yVHZEEo74PnY",
-});
-
-const postController = {
+const commentController = {
   /************************************************************************
    *
    *
    *
-   * To Upload Post  - POST /api/uploadPost
+   * To Make a Comment  - POST /api/makeComment
    *
    *
    *
    *
    ************************************************************************/
-  uploadPost: async (req, res) => {
+  makeComment: async (req, res) => {
     try {
       // Check if the user is logged in
       if (!req.user) {
         return res.status(constants.UNAUTHORIZED).json({
-          message: "Can't upload posts if user is not logged in",
+          message: "Can't make comments if the user is not logged in",
         });
       }
 
-      const { caption, hashtags, type } = req.body;
+      const { postId, content, parentId } = req.body;
 
-      if (!type) {
+      // Validate the required fields
+      if (!postId || !content) {
         return res.status(constants.VALIDATION_ERRORS).json({
-          message: "Post type is required",
+          message: "Post ID and content are required",
         });
       }
 
-      if (hashtags && hashtags.length > 5) {
-        return res.status(constants.VALIDATION_ERRORS).json({
-          message: "Too Many HashTags",
-        });
+      // Check if the post exists
+      const post = await Post.findById(postId);
+      if (!post) {
+        return res.status(constants.NOT_FOUND).json({ message: "Post not found" });
       }
 
-      const files = req.files;
-
-      const uploadedMediaUrls = [];
-
-      // Upload files to Cloudinary
-      for (const file of files) {
-        const result = await new Promise((resolve, reject) => {
-          const stream = cloudinary.uploader.upload_stream(
-            { resource_type: "auto", folder: type === "post" ? "posts" : "stories" },
-            (error, result) => {
-              if (error) {
-                reject(error);
-              } else {
-                resolve(result);
-              }
-            }
-          );
-
-          stream.end(file.buffer);
-        });
-
-        uploadedMediaUrls.push(result.secure_url);
+      // Check if the parent comment exists, if provided
+      let parentComment = null;
+      if (parentId) {
+        parentComment = await Post.findOne(
+          { "comments._id": parentId },
+          { "comments.$": 1 }
+        );
+        if (!parentComment || !parentComment.comments.length) {
+          return res
+            .status(constants.NOT_FOUND)
+            .json({ message: "Parent comment not found" });
+        }
       }
 
-      // Find the user by ID
-      const user = await User.findById(req.user.id);
+      // Create the new comment
+      const newComment = {
+        sender: req.user.id,
+        content,
+        parent: parentComment ? parentComment.comments[0]._id : null,
+        created_at: new Date(),
+      };
 
-      // Check if the user exists
-      if (!user) {
-        return res.status(constants.UNAUTHORIZED).json({ error: "User not found" });
-      }
+      // Add the new comment to the post's comments array
+      post.comments.push(newComment);
+      post.comments_count += 1; // Increment comment count
 
-      // Create a new post and associate it with the user
-      const newPost = new Post({
-        user: user._id,
-        medias: uploadedMediaUrls,
-        caption,
-        hashtags,
-        type,
-      });
+      await post.save();
 
-      // Save the post
-      await newPost.save();
-
-      // Optionally, update the user's post count
-      user.post_count++;
-      await user.save();
-
-      res.status(200).json({ message: "Post created successfully", post: newPost });
+      return res.json({ message: "Comment created successfully", comment: newComment });
     } catch (error) {
-      console.error("Error creating post:", error.toString());
+      console.error("Error making comment:", error.toString());
       res
         .status(constants.SERVER_ERROR)
-        .json({ error: "An error occurred while creating the post" });
+        .json({ message: "An error occurred while creating the comment" });
     }
   },
 
@@ -191,4 +158,4 @@ const postController = {
   },
 };
 
-module.exports = postController;
+module.exports = commentController;
