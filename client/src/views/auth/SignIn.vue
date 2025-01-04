@@ -1,18 +1,19 @@
 <template>
   <div
     class=" min-h-screen bg-white rounded-lg shadow-xl overflow-hidden flex items-center justify-center py-12 sm:px-6 lg:px-8">
-    <div class="w-full max-w-md">
+    <div class="absolute inset-0 z-0">
+      <img src="@/assets/whitebg.png" alt="" class="fixed w-full h-full object-cover opacity-40 dark:opacity-10" />
+    </div>
+    <div class="w-full max-w-md z-10">
       <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
         <!-- Logo Section -->
         <div class="text-center -mt-24 h-64">
-          <img src="@/assets/logo.png" alt="Tsede Logo" />
+          <img src="@/assets/logo.svg" alt="Tsede Logo" />
         </div>
 
         <!-- Language Dropdown -->
         <div class="text-right mb-10">
-          <button @click="switchLanguage" class="bg-sky-400 hover:bg-sky-400 text-white px-3 py-1 rounded">
-            {{ currentLanguage === 'en' ? 'አማ' : 'Eng' }}
-          </button>
+          <LanguageSelector />
         </div>
 
         <!-- Form Section -->
@@ -71,12 +72,12 @@
                 {{ t('remember') }}
               </label>
             </div>
-
             <div class="text-sm">
-              <a href="#" class="font-medium text-sky-400 hover:text-sky-500">
+              <router-link to="/forgot-password" class="font-medium text-sky-400 hover:text-sky-500">
                 {{ t('forgot') }}
-              </a>
+              </router-link>
             </div>
+
           </div>
 
           <!-- Submit Button -->
@@ -105,9 +106,10 @@ import { ref, reactive, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useLanguageStore } from '@/stores/languageStore';
 import { useAuthStore } from '@/stores/authStore';
+import LanguageSelector from '@/components/LanguageSelector.vue';
 
 // Access the language store
-const { currentLanguage, switchLanguage, t } = useLanguageStore();
+const { currentLanguage, t } = useLanguageStore();
 
 // Define form data and state
 const form = reactive({
@@ -152,23 +154,6 @@ const validateForm = () => {
       errors.username = 'Username must be at least 3 characters long.';
     }
   }
-
-  // Password validation
-  const hasLetter = /[A-Za-z]/.test(form.password);
-  const hasNumber = /\d/.test(form.password);
-  const hasSpecialChar = /[@$!%*#?&]/.test(form.password);
-  const isLongEnough = form.password.length >= 8;
-
-  if (!isLongEnough) {
-    errors.password = 'Password must be at least 8 characters long.';
-  } else if (!hasLetter) {
-    errors.password = 'Password must include at least one letter.';
-  } else if (!hasNumber) {
-    errors.password = 'Password must include at least one number.';
-  } else if (!hasSpecialChar) {
-    errors.password = 'Password must include at least one special character (@, $, !, %, *, #, ?, &).';
-  }
-
   return Object.keys(errors).length === 0;
 };
 
@@ -192,7 +177,7 @@ const handleSubmit = async () => {
   loading.value = false;
 
   if (success) {
-    router.push('/dashboard'); // Navigate to the dashboard after login
+    router.push('/tesde'); // Navigate to the dashboard after login
   } else {
     errors.general = authStore.error || 'Login failed';
   }

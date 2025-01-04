@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import {jwtDecode} from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import MyHttpService from "@/stores/MyHttpService"; // Ensure this points to your MyHttpService configuration
 
 export const useAuthStore = defineStore("auth", {
@@ -48,16 +48,15 @@ export const useAuthStore = defineStore("auth", {
     async login(credentials) {
       this.isLoading = true;
       this.error = null;
-  
+
       try {
         const response = await MyHttpService.post("/login", { body: credentials });
-       
 
         if (response.error) {
           throw new Error(response.error);
         }
 
-        console.log("Login response:", response.accessToken)
+        console.log("Login response:", response.accessToken);
         this.setToken(response.accessToken);
         this.user = jwtDecode(this.token);
         return true;
@@ -75,16 +74,8 @@ export const useAuthStore = defineStore("auth", {
       this.error = null;
 
       try {
-        const response = await MyHttpService.post("/register", userData);
-
-        // Optionally, automatically log the user in after registration
-        if (response.data.accessToken) {
-          this.setToken(response.data.accessToken);
-          this.user = jwtDecode(this.token);
-        }
-        return true;
+        const response = await MyHttpService.post("/register", { body: userData });
       } catch (error) {
-        console.error("Registration error:", error);
         this.error = error.response?.data?.message || "Registration failed";
         return false;
       } finally {
@@ -92,6 +83,74 @@ export const useAuthStore = defineStore("auth", {
       }
     },
 
+    async forgotPassword(email) {
+      this.isLoading = true;
+      this.error = null;
+
+      try {
+        // Call the API to send a reset password email
+        const response = await MyHttpService.post("/forgot-password", { body : {"email" : email} });
+
+        if (response.error) {
+          throw new Error(response.error);
+        }
+
+        console.log("Password reset email sent:", response);
+        return true; // Return true if reset email was sent successfully
+      } catch (error) {
+        console.error("Reset password error:", error);
+        this.error = error.response?.data?.message || "Failed to send reset password email";
+        return false;
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
+    async resetPassword(data) {
+      this.isLoading = true;
+      this.error = null;
+    
+      const { password, token } = data; // Destructure from `data` passed as an argument.
+    
+      try {
+        // Call the API to reset the password
+        const response = await MyHttpService.post(`/reset-password/${token}`, { body : {"password" : password} });
+    
+        if (response.error) {
+          throw new Error(response.error);
+        }
+    
+        console.log("Password reset successful:", response);
+        return true; // Return true if the password reset was successful
+      } catch (error) {
+        console.error("Reset password error:", error);
+        this.error = error.response?.data?.message || "Failed to reset password";
+        return false;
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
+    async checkUniqueness(data) {
+      try {
+        // Determine the endpoint and payload based on the data type
+        const endpoint = data.type === "email" ? "/check-email" : "/check-username";
+        const payload = data.type === "email" ? { email: data.email } : { user_name: data.user_name };
+        
+        // Send the request to the server
+        const response = await MyHttpService.post(endpoint, {body : payload}); // Ensure payload is passed correctly
+      
+        console.log(payload , endpoint)
+       
+        // Return the uniqueness status from the response (assumed structure)
+        return response;  // Expected structure: { isUnique: true/false }
+      } catch (error) {
+        console.error('Error checking uniqueness:', error);
+        return false;  // Assume not unique if there's an error
+      }
+    },    
+  
+    
     logout() {
       this.clearToken();
       this.user = null;

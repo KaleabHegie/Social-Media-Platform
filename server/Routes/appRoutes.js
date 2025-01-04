@@ -24,6 +24,18 @@ router.delete("/deletePost", validateToken, postController.deletePost);
 
 router.get("/getHashTags", postController.getHashTags);
 
+router.post("/likePost", validateToken, postController.likePost);
+
+router.get("/getHomeFeed", validateToken, postController.getHomeFeed);
+
+router.get("/getStories", validateToken, postController.getStories);
+
+router.get("/getExploreFeed", validateToken, postController.getExploreFeed);
+
+
+
+
+
 
 
 
@@ -38,7 +50,12 @@ router.post(
   validateToken,
   commentController.makeComment
 );
-// router.delete("/deletePost", validateToken, commentController.deleteComment);
+router.delete("/deleteComment", validateToken, commentController.deleteComment);
+
+router.get("/getComments", validateToken, commentController.getComments);
+
+router.post("/likeComment", validateToken, commentController.likeComment);
+
 
 
 
