@@ -1,9 +1,10 @@
 <template>
   <div class="max-w-4xl mx-auto p-4">
     <!-- Loading or Error State -->
-    <div v-if="isLoading" class="text-center text-gray-500 dark:text-gray-400">
-      Loading profile...
-    </div>
+    <div v-if="isLoading" class="flex justify-center items-center h-full">
+  <div class="loader"></div>
+</div>
+
     <div v-else-if="!profile" class="text-center text-gray-500 dark:text-gray-400">
       No profile data available.
     </div>
@@ -17,7 +18,12 @@
           <div class="relative">
             <img :src="profile.profile_photo_url" alt="Profile Photo"
               class="w-24 h-24 sm:w-32 sm:h-32 rounded-full object-cover">
-           
+            <button @click="triggerFileInput"
+              class="absolute bottom-0 right-0 bg-blue-500 rounded-full p-1.5 sm:p-2 text-white">
+              <OhVueIcon name="RiPencilLine" class="w-3 h-3 sm:w-4 sm:h-4" />
+            </button>
+            <input type="file" ref="fileInput" accept="image/*" @change="handlePhotoUpload" class="hidden">
+
           </div>
           <!-- User Info -->
           <div class="flex-grow text-center sm:text-left">
@@ -28,14 +34,7 @@
 
             <!-- Follow/Unfollow and Message Buttons -->
             <div class="mt-3 space-x-2">
-              <button @click="toggleFollow"
-                class="px-3 py-1.5 sm:px-4 sm:py-2 bg-blue-500 text-white text-sm sm:text-base rounded-md hover:bg-blue-600 transition duration-300">
-                {{ isFollowing ? 'Unfollow' : 'Follow' }}
-              </button>
-              <button @click="sendMessage"
-                class="px-3 py-1.5 sm:px-4 sm:py-2 bg-gray-200 text-gray-800 text-sm sm:text-base rounded-md hover:bg-gray-300 transition duration-300">
-                Message
-              </button>
+              <h1 class="text-gray-600 dark:text-gray-300"> {{ profile.bio }} </h1>
             </div>
           </div>
         </div>
@@ -58,11 +57,31 @@
 
         <!-- Bio -->
         <div class="mt-4">
-          <h1 class="text-sm sm:text-base text-gray-600 dark:text-gray-300">Bio : {{ profile.bio }}</h1>
+          <input v-model="profile.bio"
+            class="w-full p-2 text-gray-900 dark:text-white bg-transparent border-b border-gray-300 dark:border-gray-600 focus:outline-none focus:border-blue-500 transition duration-300"
+            placeholder="Enter your bio...">
+          <button @click="updateBio"
+            class="mt-2 px-4 py-2 bg-blue-500 text-white text-sm rounded-lg hover:bg-blue-600 transition duration-300">
+            Update Bio
+          </button>
         </div>
 
         <!-- Privacy Toggle -->
-     
+        <div class="mt-4 flex items-center justify-between sm:justify-start">
+          <span class="text-sm sm:text-base text-gray-700 dark:text-gray-200">Private Account</span>
+          <label class="switch ml-2">
+            <input type="checkbox" v-model="profile.is_private" @change="togglePrivacy">
+            <span class="slider round"></span>
+          </label>
+        </div>
+
+        <!-- Delete Account Button -->
+        <div class="mt-6">
+          <button @click="deleteAccount"
+            class="px-3 py-1.5 sm:px-4 sm:py-2 bg-red-500 text-white text-sm sm:text-base rounded-md hover:bg-red-600 transition duration-300 w-full sm:w-auto">
+            Delete Account
+          </button>
+        </div>
       </div>
 
       <!-- Tabbed View -->
@@ -74,18 +93,19 @@
           </button>
         </div>
 
+
         <!-- Tab Content -->
         <div v-if="currentTab === 'posts'">
-          <ExplorePostCard v-for="post in posts" :key="post.id" :post="post" :showHashtags="false" />
+          <PostCard v-for="post in myposts" :key="post.id" :post="post" :showHashtags="false" />
         </div>
         <div v-else-if="currentTab === 'likedposts'">
-          <ExplorePostCard v-for="post in posts" :key="post.id" :post="post" :showHashtags="false" />
+          <PostCard v-for="post in likedposts" :key="post.id" :post="post" :showHashtags="false" />
         </div>
         <div v-else-if="currentTab === 'following'">
-          <UserProfileSmall v-for="index in 20" :key="index" />
+          <UserProfileSmall v-for="follow in following" :key="follow.id" :follow="follow" />
         </div>
         <div v-else-if="currentTab === 'followers'">
-          <UserProfileSmall v-for="index in 20" :key="index" />
+          <UserProfileSmall v-for="follow in followers" :key="follow.id" :follow="follow" />
         </div>
       </div>
     </div>
@@ -96,14 +116,18 @@
 import { ref, onMounted } from 'vue';
 import { OhVueIcon, addIcons } from "oh-vue-icons";
 import { RiPencilLine } from "oh-vue-icons/icons";
-import ExplorePostCard from '@/components/ExplorePostCard.vue';
+import PostCard from '@/components/PostCard.vue';
 import UserProfileSmall from '@/components/UserProfileSmall.vue';
 import { usePostStoryStore } from '../../stores/homePageStore';
+import ToastService from '@/utils/toast.js';
 
 addIcons(RiPencilLine);
 
+const toast = ToastService();
 const postStoryStore = usePostStoryStore();
 const profile = ref(null);
+const myposts = ref([]);
+const likedposts = ref([]);
 const isLoading = ref(true);
 const currentTab = ref('posts');
 const tabs = [
@@ -115,8 +139,11 @@ const tabs = [
 
 onMounted(async () => {
   try {
-    await postStoryStore.fetchOtherUserProfile();
+    const response = await postStoryStore.fetchUserProfile();
     profile.value = postStoryStore.myProfile;
+    myposts.value = postStoryStore.myPosts;
+    likedposts.value = postStoryStore.likedPosts;
+
   } catch (error) {
     console.error("Error loading profile:", error);
   } finally {
@@ -124,17 +151,76 @@ onMounted(async () => {
   }
 });
 
+const fileInput = ref(null);
 
-const sendMessage = () => console.log('Message sent');
-const toggleFollow = () => console.log('Follow toggled');
+const triggerFileInput = () => {
+  fileInput.value.click();
+};
+
+const handlePhotoUpload = async (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  try {
+    await postStoryStore.updateProfilePhoto(file);
+    toast.success('Profile photo updated successfully!', { position: 'top-center' });
+    // Optionally, refresh profile data
+  } catch (error) {
+    toast.error('Failed to update profile photo.', { position: 'top-center' });
+    console.error('Error uploading photo:', error.message);
+  } finally {
+    event.target.value = ''; // Reset input
+  }
+};
+
+const togglePrivacy = async () => {
+  try {
+    const response = await postStoryStore.updateAccountType(profile.value.is_private);
+    toast.success('Account type changed successful!', { position: "top-center" });
+  }
+  catch (error) {
+    console.error('Error creating post:', error.message);
+  }
+}
+const deleteAccount = () => console.log('Delete account');
+const updateBio = async () => {
+  try {
+    const response = await postStoryStore.updateBio(profile.value.bio);
+    toast.success('Bio Updated successful!', { position: "top-center" });
+  }
+  catch (error) {
+    console.error('Error creating post:', error.message);
+  }
+}
 </script>
 
 
 
 <style scoped>
+.loader {
+  border: 4px solid #f3f3f3; /* Light grey */
+  border-top: 4px solid #3498db; /* Blue */
+  border-radius: 50%;
+  align-items: center;
+  margin-top: 300px;
+  width: 70px;
+  height: 70px;
+  animation: spin 1s linear infinite;
+}
+
+
 .grid-layout {
   column-gap: 1rem;
   column-count: 3;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 @media (max-width: 768px) {

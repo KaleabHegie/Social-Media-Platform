@@ -75,8 +75,7 @@ console.log("Body:", req.body);
         message: "Too many hashtags (Max 30 allowed)",
       });
     }
-    
-    console.log('passed---')
+
     const allowedMimeTypes = ["image/jpeg", "image/png", "video/mp4"];
     for (const file of req.files) {
       if (!allowedMimeTypes.includes(file.mimetype)) {

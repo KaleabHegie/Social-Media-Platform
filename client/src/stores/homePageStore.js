@@ -8,6 +8,8 @@ export const usePostStoryStore = defineStore('postStory', {
     stories: [],
     explore : [],
     myProfile : [],
+    myPosts : [],
+    likedPosts : [],
     isLoading: false,
     error: null,
   }),
@@ -22,12 +24,9 @@ export const usePostStoryStore = defineStore('postStory', {
       this.isLoading = true;
       this.error = null;
       try {
-        console.log("Fetching posts...");
         const response = await MyHttpService.get('/getHomeFeed', { useJWT: true });
-        console.log("Posts Response:", response);
         this.posts = Array.isArray(response.posts) ? response.posts : [];
       } catch (error) {
-        console.error("Error fetching posts:", error.response || error.message);
         this.error = error.response?.message || 'Failed to fetch posts.';
       } finally {
         this.isLoading = false;
@@ -38,12 +37,9 @@ export const usePostStoryStore = defineStore('postStory', {
       this.isLoading = true;
       this.error = null;
       try {
-        console.log("Fetching stories...");
         const response = await MyHttpService.get('/getStories', { useJWT: true });
-        console.log("Stories Response:", response);
         this.stories = Array.isArray(response.stories) ? response.stories : [];
       } catch (error) {
-        console.error("Error fetching stories:", error.response || error.message);
         this.error = error.response?.message || 'Failed to fetch stories.';
       } finally {
         this.isLoading = false;
@@ -82,21 +78,14 @@ export const usePostStoryStore = defineStore('postStory', {
         });
       }
 
-      for (let [key, value] of formData.entries()) {
-        console.log(key, value);
-      }
-
-      
+    
       this.isLoading = true;
       this.error = null;
       try {
-        console.log("Creating post...");
-        
         // Don't manually set 'Content-Type' since FormData will set it correctly
         const response = await MyHttpService.post('/uploadPost', { body: formData, useJWT: true });
-        console.log("Post created successfully:", formData);
+        return response;
       } catch (error) {
-        console.error("Error creating post:", error.response || error.message);
         this.error = error.response?.message || 'Failed to create post.';
       } finally {
         this.isLoading = false;
@@ -107,10 +96,7 @@ export const usePostStoryStore = defineStore('postStory', {
       this.isLoading = true;
       this.error = null;
       try {
-        console.log("Fetching user profile...");
         const response = await MyHttpService.get('/getMyUserProfile', { useJWT: true });
-        console.log("User Profile Response:", response);
-        
         if (response.profile) {
           this.myProfile = response.profile;       // Store the profile data
           this.myPosts = response.myposts || [];      // Store the user's posts
@@ -122,6 +108,70 @@ export const usePostStoryStore = defineStore('postStory', {
         this.isLoading = false;
       }
     },
+
+
+    async fetchOtherUserProfile() {
+      this.isLoading = true;
+      this.error = null;
+      try {
+        const response = await MyHttpService.get('/getUserProfile', { useJWT: true });
+        console.log(response);
+        if (response.profile) {
+          this.myProfile = response.profile;       // Store the profile data
+          this.myPosts = response.myposts || [];      // Store the user's posts
+          this.likedPosts = response.likedPosts || []; // Store the liked posts
+        }
+      } catch (error) {
+        this.error = error.response?.message || 'Failed to fetch profile.';
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
+
+    async updateBio(bio) {
+
+      
+      this.isLoading = true;
+      this.error = null;
+      try {
+        const response = await MyHttpService.post('/setBio', { body: {'bio' : bio}, useJWT: true });
+      } catch (error) {
+        this.error = error.response?.message || 'Failed to update bio.';
+      } finally {
+        this.isLoading = false;
+      }
+    }, 
+
+    async updateAccountType(type) {
+
+      
+      this.isLoading = true;
+      this.error = null;
+      try {
+        const response = await MyHttpService.post('/setAccountVisibility', { body: {'type' : type}, useJWT: true });
+      } catch (error) {
+        this.error = error.response?.message || 'Failed to update account.';
+      } finally {
+        this.isLoading = false;
+      }
+    }, 
+
+    async updateProfilePhoto(file) {
+      this.isLoading = true;
+      this.error = null;
+      try {
+        const formData = new FormData();
+        formData.append('profileImg', file);
+        const response = await MyHttpService.post('/setProfileImage', { body: formData, useJWT: true });
+      } catch (error) {
+        this.error = error.response?.message || 'Failed to update profile picture.';
+      } finally {
+        this.isLoading = false;    
+      }
+    },
+
+
 
     clearData() {
       this.posts = [];

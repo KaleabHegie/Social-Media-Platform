@@ -14,6 +14,7 @@ import Account from "@/views/userPages/Account.vue";
 import CreatePost from "@/views/userPages/CreatePost.vue";
 import Messages from "@/views/userPages/Messages.vue";
 import ViewPost from "@/views/userPages/ViewPost.vue";
+import MyAccount from "../views/userPages/MyAccount.vue";
 
 // Routes
 const routes = [
@@ -28,10 +29,11 @@ const routes = [
     children: [
       { path: "home", component: Home, meta: { requiresAuth: true } },
       { path: "explore", component: Explore, meta: { requiresAuth: true } },
-      { path: "account", component: Account, meta: { requiresAuth: true } },
+      { path: "account", component: MyAccount, meta: { requiresAuth: true } },
+      { path: "viewAccount/:id", component: Account, meta: { requiresAuth: true } },
       { path: "createpost", component: CreatePost, meta: { requiresAuth: true } },
       { path: "messages", component: Messages, meta: { requiresAuth: true } },
-      { path: "viewpost", component: ViewPost, meta: { requiresAuth: true } },
+      { path: "viewpost/:id", component: ViewPost, meta: { requiresAuth: true } },
     ],
   },
 

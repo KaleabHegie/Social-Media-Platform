@@ -206,7 +206,7 @@ const userController = {
           message: "Can't set Bio if user is not logged in",
         });
       }
-      let { newBio } = req.body;
+      let newBio  = req.body.bio;
       if (!newBio) {
         return res.status(constants.VALIDATION_ERRORS).json({
           message: "Bio is required",
@@ -517,7 +517,8 @@ const userController = {
         });
       }
 
-      const userIdOfPersonToSeeProfile = req.query.userId; // User ID to fetch profile
+      const userIdOfPersonToSeeProfile = req.params;
+       // User ID to fetch profile
       const requestingUserId = req.user.id; // ID of the user making the request
 
       // Validate the required fields
@@ -526,7 +527,6 @@ const userController = {
           .status(constants.VALIDATION_ERRORS)
           .json({ message: "User ID is required" });
       }
-
       // Fetch the user's profile
       const userToSeeProfile = await User.findById(userIdOfPersonToSeeProfile).select(
         "-password -resetToken -tokenExpiry -notifications"
@@ -628,7 +628,6 @@ const userController = {
   },
 
   forgotPassword: async (req, res) => {
-    console.log(req);
     try {
       const { email } = await req.body;
 
