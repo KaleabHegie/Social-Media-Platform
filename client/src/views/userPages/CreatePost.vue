@@ -141,6 +141,7 @@ import {
   RiUserLine,
   RiAddLine,
 } from "oh-vue-icons/icons";
+import { usePostStoryStore } from '@/stores/homePageStore';
 
 addIcons(
   RiImageAddLine,
@@ -161,6 +162,10 @@ const hashtagSuggestions = ref([])
 const showCamera = ref(false)
 const videoElement = ref(null)
 const stream = ref(null)
+
+
+const postStore = usePostStoryStore();
+
 
 // Assume we have a predefined array of hashtags
 const availableHashtags = [
@@ -255,14 +260,28 @@ const capturePhoto = () => {
   }, 'image/jpeg')
 }
 
-const submitPost = () => {
-  // Handle post submission
-  console.log({
+const submitPost = async () => {
+  const content = {
     type: postType.value,
     media: mediaFiles.value,
     caption: caption.value,
     hashtags: selectedHashtags.value
-  })
+  }
+  console.log(content)
+  // Handle post submission
+  try {
+    if (content.type == 'post' && (!content.media || !content.caption)) {
+      throw 'Important Inputs are missing';
+    }
+    else if (content.type == 'story' && (!content.media)) {
+      throw 'Important Inputs are missing';
+    }
+    const response = await postStore.createPost(content);
+    console.log(content)
+  }
+  catch (error) {
+    console.error('Error creating post:', error.message);
+  }
 }
 
 // Cleanup

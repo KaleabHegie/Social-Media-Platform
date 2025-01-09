@@ -1,0 +1,55 @@
+[
+    {
+      "user": "6778e9bd59eec65db85a64dc",
+      "medias": [
+        "https://example.com/media1.jpg",
+        "https://example.com/media2.mp4"
+      ],
+      "caption": "Exploring the beauty of nature 🌿🌞 #NatureLovers",
+      "likes_count": 10,
+      "hashtags": ["NatureLovers", "Explore"],
+      "likes": [
+        { "userId": "676ef442eb9888e5378c06f3" },
+        { "userId": "677267321d442e8117a92a02" }
+      ],
+      "type": "post",
+      "comments_count": 2,
+      "createdAt": "2025-01-01T12:00:00Z",
+      "updatedAt": "2025-01-01T12:05:00Z"
+    },
+    {
+      "user": "6778e9bd59eec65db85a64dc",
+      "medias": [
+        "https://example.com/story1.png"
+      ],
+      "caption": "Just a quick update! 🚀",
+      "likes_count": 5,
+      "hashtags": ["Update", "QuickStory"],
+      "likes": [
+        { "userId": "676ef442eb9888e5378c06f3" }
+      ],
+      "type": "story",
+      "comments_count": 1,
+      "createdAt": "2025-01-02T09:00:00Z",
+      "updatedAt": "2025-01-02T09:15:00Z"
+    },
+    {
+      "user": "6778e9bd59eec65db85a64dc",
+      "medias": [
+        "https://example.com/media3.jpg",
+        "https://example.com/media4.mp4"
+      ],
+      "caption": "Weekend vibes with friends 🎉🍕 #Weekend",
+      "likes_count": 20,
+      "hashtags": ["Weekend", "Friends"],
+      "likes": [
+        { "userId": "676ef442eb9888e5378c06f3" },
+        { "userId": "677267321d442e8117a92a02" }
+      ],
+      "type": "post",
+      "comments_count": 5,
+      "createdAt": "2025-01-03T18:30:00Z",
+      "updatedAt": "2025-01-03T18:45:00Z"
+    }
+  ]
+  

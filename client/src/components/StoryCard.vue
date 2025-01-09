@@ -3,7 +3,7 @@
       <div class="absolute inset-0 bg-gradient-to-br from-sky-500 to-sky-100 rounded-lg p-0.5">
         <div class="w-full h-full bg-white dark:bg-gray-800 rounded-lg overflow-hidden">
           <img 
-            :src="story.mediaUrl" 
+            :src="story.medias[0]" 
             :alt="`${story.username}'s story`"
             class="w-full h-full object-cover"
           />

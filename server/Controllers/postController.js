@@ -4,6 +4,9 @@ const User = require("../Models/UserModel");
 const Post = require("../Models/PostModel");
 const Hashtag = require("../Models/HashTagModel");
 
+const multer = require('multer');
+const upload = multer(); 
+
 // // Configure Cloudinary
 // cloudinary.config({
 //   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -29,93 +32,105 @@ const postController = {
    *
    *
    ************************************************************************/
-  uploadPost: async (req, res) => {
-    try {
-      // Check if the user is logged in
-      if (!req.user) {
-        return res.status(constants.UNAUTHORIZED).json({
-          message: "Can't upload posts if user is not logged in",
-        });
-      }
-      const { caption, rawHashtags, type } = req.body;
 
-      if (!type) {
+
+uploadPost: async (req, res) => {
+ console.log("Files:", req.files); // Check if files are received
+console.log("Body:", req.body);  
+  try {
+    if (!req.user) {
+      return res.status(constants.UNAUTHORIZED).json({
+        message: "Can't upload posts if user is not logged in",
+      });
+    }
+    
+
+    const { caption, rawHashtags, type } = req.body;
+    if (!type) {
+      return res.status(constants.VALIDATION_ERRORS).json({
+        message: `Post type is required`,
+      });
+    }
+
+    if (!req.files || req.files.length === 0) {
+      return res.status(constants.VALIDATION_ERRORS).json({
+        message: "At least one media file is required",
+      });
+    }
+    if (rawHashtags && rawHashtags.length > 300) {
+      return res.status(constants.VALIDATION_ERRORS).json({
+        message: "Hashtags are too long (Max 300 characters)",
+      });
+    }
+    
+    const hashtags = rawHashtags
+      ? rawHashtags
+          .split("#")
+          .map((tag) => tag.trim().replace(/\s+/g, "_"))
+          .filter((tag) => tag.length > 0)
+      : [];
+
+    if (hashtags.length > 30) {
+      return res.status(constants.VALIDATION_ERRORS).json({
+        message: "Too many hashtags (Max 30 allowed)",
+      });
+    }
+    
+    console.log('passed---')
+    const allowedMimeTypes = ["image/jpeg", "image/png", "video/mp4"];
+    for (const file of req.files) {
+      if (!allowedMimeTypes.includes(file.mimetype)) {
         return res.status(constants.VALIDATION_ERRORS).json({
-          message: "Post type is required",
+          message: "Invalid file type",
         });
       }
-
-      // Validate raw hashtags string length
-      if (rawHashtags && rawHashtags.length > 300) {
+      if (file.size > 5 * 1024 * 1024) {
         return res.status(constants.VALIDATION_ERRORS).json({
-          message: "Hashtags is too long (Max 300 letters)",
+          message: "File size exceeds the limit of 5MB",
         });
       }
+    }
 
-      let hashtags = [];
-
-      // Parse hashtags from raw string
-      if (rawHashtags) {
-        hashtags = rawHashtags
-          .split("#") // Split by "#"
-          .map((tag) => tag.trim().replace(/\s+/g, "_")) // Trim and replace spaces within hashtags
-          .filter((tag) => tag.length > 0); // Remove empty entries
-      }
-
-      const files = req.files;
-
-      const uploadedMediaUrls = [];
-
-      // Upload files to Cloudinary
-      for (const file of files) {
-        const result = await new Promise((resolve, reject) => {
+    const uploadedMediaUrls = await Promise.all(
+      req.files.map((file) =>
+        new Promise((resolve, reject) => {
           const stream = cloudinary.uploader.upload_stream(
             { resource_type: "auto", folder: type === "post" ? "posts" : "stories" },
             (error, result) => {
-              if (error) {
-                reject(error);
-              } else {
-                resolve(result);
-              }
+              if (error) reject(error);
+              else resolve(result.secure_url);
             }
           );
-
           stream.end(file.buffer);
-        });
+        })
+      )
+    );
 
-        uploadedMediaUrls.push(result.secure_url);
-      }
-
-      // Find the user by ID
-      const user = await User.findById(req.user.id);
-
-      if (!user) {
-        return res.status(constants.UNAUTHORIZED).json({ error: "User not found" });
-      }
-
-      // Create a new post and associate it with the user
-      const newPost = new Post({
-        user: user._id,
-        medias: uploadedMediaUrls,
-        caption,
-        hashtags,
-        type,
-      });
-
-      // Save the post
-      await newPost.save();
-
-      user.post_count++;
-      await user.save();
-
-      res.status(200).json({ message: "Post created successfully", post: newPost });
-    } catch (error) {
-      console.error("Error creating post:", error.toString());
-      res
-        .status(constants.SERVER_ERROR)
-        .json({ error: "An error occurred while creating the post" });
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(constants.UNAUTHORIZED).json({ error: "User not found" });
     }
-  },
+
+    const newPost = new Post({
+      user: user._id,
+      medias: uploadedMediaUrls,
+      caption,
+      hashtags,
+      type,
+    });
+    await newPost.save();
+
+    await User.findByIdAndUpdate(user._id, { $inc: { post_count: 1 } });
+
+    res.status(200).json({ message: "Post created successfully", post: newPost });
+  } catch (error) {
+    console.error("Error creating post:", error.toString());
+    res.status(constants.SERVER_ERROR).json({
+      error: error.message || "An error occurred while creating the post",
+    });
+  }
+},
+
 
   /************************************************************************
    *

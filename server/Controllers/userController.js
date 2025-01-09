@@ -77,12 +77,16 @@ const userController = {
   login: async (req, res) => {
     try {
       const { username, password } = req.body;
-
+  
       if (!username || !password) {
-        return res.status(400).json({ message: "Please provide username and password" });
+        return res.status(400).json({ message: "Please provide a username/email and password" });
       }
-      const user = await User.findOne({ user_name: username });
-
+  
+      // Find user by either username or email
+      const user = await User.findOne({
+        $or: [{ user_name: username }, { email: username }],
+      });
+  
       if (user && (await bcrypt.compare(password, user.password))) {
         const accessToken = jwt.sign(
           {
@@ -96,16 +100,16 @@ const userController = {
           process.env.ACCESS_TOKEN_SECRET,
           { expiresIn: "30d" }
         );
-
         return res.status(200).json({ accessToken });
       } else {
-        return res.status(401).json({ message: "Invalid username or password" });
+        return res.status(401).json({ message: "Invalid username/email or password" });
       }
     } catch (error) {
       console.error("Error during login:", error);
       return res.status(500).json({ message: "An internal server error occurred" });
     }
   },
+  
 
   checkUsername: async (req, res) => {
     try {
