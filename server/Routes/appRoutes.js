@@ -20,6 +20,8 @@ router.post(
   upload.array("files"),
   postController.uploadPost
 );
+
+
 router.delete("/deletePost", validateToken, postController.deletePost);
 
 router.get("/getHashTags", postController.getHashTags);

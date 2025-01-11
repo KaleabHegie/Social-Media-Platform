@@ -516,8 +516,7 @@ const userController = {
           message: "Need to Login to See Users Profile",
         });
       }
-
-      const userIdOfPersonToSeeProfile = req.params;
+      const userIdOfPersonToSeeProfile = req.query.user_id
        // User ID to fetch profile
       const requestingUserId = req.user.id; // ID of the user making the request
 

@@ -33,6 +33,15 @@ export const usePostStoryStore = defineStore('postStory', {
       }
     },
 
+    async getPostById(postId) {
+      const post = this.posts.find((post) => post._id === postId) || null;
+      return post;
+    },
+
+    getStoryById(postId) {
+      return this.posts.find((post) => post._id === postId) || null;
+    },
+
     async fetchStories() {
       this.isLoading = true;
       this.error = null;
@@ -90,7 +99,21 @@ export const usePostStoryStore = defineStore('postStory', {
       } finally {
         this.isLoading = false;
       }
-    },    
+    }, 
+    
+    async addComment(content) {
+      this.isLoading = true;
+      this.error = null;
+      try {
+        // Don't manually set 'Content-Type' since FormData will set it correctly
+        const response = await MyHttpService.post('/makeComment', { body: content , useJWT: true });
+        return response;
+      } catch (error) {
+        this.error = error.response?.message || 'Failed to create post.';
+      } finally {
+        this.isLoading = false;
+      }
+    }, 
 
     async fetchUserProfile() {
       this.isLoading = true;
@@ -110,15 +133,15 @@ export const usePostStoryStore = defineStore('postStory', {
     },
 
 
-    async fetchOtherUserProfile() {
+    async fetchOtherUserProfile(user_id) {
       this.isLoading = true;
       this.error = null;
       try {
-        const response = await MyHttpService.get('/getUserProfile', { useJWT: true });
+        const response = await MyHttpService.get('/getUserProfile', { query : {'user_id' : user_id} , useJWT: true });
         console.log(response);
         if (response.profile) {
           this.myProfile = response.profile;       // Store the profile data
-          this.myPosts = response.myposts || [];      // Store the user's posts
+          this.usersposts = response.usersposts || [];      // Store the user's posts
           this.likedPosts = response.likedPosts || []; // Store the liked posts
         }
       } catch (error) {

@@ -21,6 +21,8 @@ cloudinary.config({
   api_secret: "zfWlXCOgJU0q4p3yVHZEEo74PnY",
 });
 
+
+
 const postController = {
   /************************************************************************
    *
@@ -34,6 +36,9 @@ const postController = {
    ************************************************************************/
 
 
+
+  
+  
 uploadPost: async (req, res) => {
  console.log("Files:", req.files); // Check if files are received
 console.log("Body:", req.body);  
@@ -285,13 +290,21 @@ console.log("Body:", req.body);
 
       // Fetch posts with user details populated
       const posts = await Post.find({ type: "post" })
-        .populate({
-          path: "user",
-          select: "user_name profile_photo_url _id", // Only fetch these fields from the user schema
-        })
-        .sort({ createdAt: -1 }) // Sort posts by creation date (newest first)
-        .limit(20); // Limit to 20 posts (can be made dynamic via query params)
-
+      .populate({
+        path: "user",
+        select: "user_name profile_photo_url _id", // Only fetch these fields from the user schema
+      })
+      .populate({
+        path: "comments", // Populate the comments for each post
+        select: "content sender createdAt likes", // Fields you want to retrieve from the Comment schema
+        populate: {
+          path: "sender", // Optionally populate the sender to get user details
+          select: "user_name profile_photo_url _id", // Fields from the User schema
+        },
+      })
+      .sort({ createdAt: -1 }) // Sort posts by creation date (newest first)
+      .limit(20); // Limit to 20 posts
+    
       return res.json({
         message: "Home feed fetched successfully",
         posts,
@@ -303,6 +316,8 @@ console.log("Body:", req.body);
       });
     }
   },
+
+
 
   //@TODO Implment u should only see stories of people you follow
   getStories: async (req, res) => {

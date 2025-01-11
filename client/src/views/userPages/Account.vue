@@ -60,6 +60,7 @@
         <div class="mt-4">
           <h1 class="text-sm sm:text-base text-gray-600 dark:text-gray-300">Bio : {{ profile.bio }}</h1>
         </div>
+        
 
         <!-- Privacy Toggle -->
      
@@ -76,16 +77,16 @@
 
         <!-- Tab Content -->
         <div v-if="currentTab === 'posts'">
-          <ExplorePostCard v-for="post in posts" :key="post.id" :post="post" :showHashtags="false" />
+          <PostCard v-for="post in myposts" :key="post.id" :post="post" :showHashtags="false" />
         </div>
         <div v-else-if="currentTab === 'likedposts'">
-          <ExplorePostCard v-for="post in posts" :key="post.id" :post="post" :showHashtags="false" />
+          <PostCard v-for="post in likedposts" :key="post.id" :post="post" :showHashtags="false" />
         </div>
         <div v-else-if="currentTab === 'following'">
-          <UserProfileSmall v-for="index in 20" :key="index" />
+          <UserProfileSmall v-for="follow in following" :key="follow.id" :follow="follow" />
         </div>
         <div v-else-if="currentTab === 'followers'">
-          <UserProfileSmall v-for="index in 20" :key="index" />
+          <UserProfileSmall v-for="follow in followers" :key="follow.id" :follow="follow" />
         </div>
       </div>
     </div>
@@ -96,16 +97,22 @@
 import { ref, onMounted } from 'vue';
 import { OhVueIcon, addIcons } from "oh-vue-icons";
 import { RiPencilLine } from "oh-vue-icons/icons";
-import ExplorePostCard from '@/components/ExplorePostCard.vue';
+import PostCard from '@/components/PostCard.vue';
 import UserProfileSmall from '@/components/UserProfileSmall.vue';
 import { usePostStoryStore } from '../../stores/homePageStore';
+import { useRoute } from 'vue-router';
+
+const route = useRoute();
+const userId = route.params.id;
 
 addIcons(RiPencilLine);
 
 const postStoryStore = usePostStoryStore();
 const profile = ref(null);
+const myposts = ref([]);
+const likedposts = ref([]);
 const isLoading = ref(true);
-const currentTab = ref('posts');
+const currentTab = ref('posts')
 const tabs = [
   { id: 'posts', name: 'Posts' },
   { id: 'likedposts', name: 'Liked' },
@@ -113,10 +120,14 @@ const tabs = [
   { id: 'followers', name: 'Followers' },
 ];
 
+
 onMounted(async () => {
   try {
-    await postStoryStore.fetchOtherUserProfile();
+    await postStoryStore.fetchOtherUserProfile(userId);
     profile.value = postStoryStore.myProfile;
+    myposts.value = postStoryStore.usersposts;
+    likedposts.value = postStoryStore.likedPosts;
+
   } catch (error) {
     console.error("Error loading profile:", error);
   } finally {
