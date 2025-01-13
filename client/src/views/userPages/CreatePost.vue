@@ -105,10 +105,12 @@
     </div>
 
     <!-- Submit Button -->
-    <button @click="submitPost"
-      class="w-full py-3 bg-[#87CEEB] dark:bg-[#4FA4D3] text-white rounded-lg hover:bg-[#7BBED9] dark:hover:bg-[#458DB8] transition-colors focus:outline-none focus:ring-2 focus:ring-[#87CEEB] dark:focus:ring-[#4FA4D3] focus:ring-offset-2">
+    <!-- Submit Button -->
+    <button @click="submitPost" :disabled="isSubmitting"
+      class="w-full py-3 bg-[#87CEEB] dark:bg-[#4FA4D3] text-white rounded-lg hover:bg-[#7BBED9] dark:hover:bg-[#458DB8] transition-colors focus:outline-none focus:ring-2 focus:ring-[#87CEEB] dark:focus:ring-[#4FA4D3] focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed">
       Submit Post
     </button>
+
   </div>
 
   <!-- Camera Modal -->
@@ -141,6 +143,11 @@ import {
   RiUserLine,
   RiAddLine,
 } from "oh-vue-icons/icons";
+import { usePostStoryStore } from '@/stores/homePageStore';
+
+import ToastService from '@/utils/toast.js';
+
+const toast = ToastService();
 
 addIcons(
   RiImageAddLine,
@@ -161,6 +168,10 @@ const hashtagSuggestions = ref([])
 const showCamera = ref(false)
 const videoElement = ref(null)
 const stream = ref(null)
+
+const isSubmitting = ref(false);
+const postStore = usePostStoryStore();
+
 
 // Assume we have a predefined array of hashtags
 const availableHashtags = [
@@ -255,15 +266,37 @@ const capturePhoto = () => {
   }, 'image/jpeg')
 }
 
-const submitPost = () => {
-  // Handle post submission
-  console.log({
+const submitPost = async () => {
+  const content = {
     type: postType.value,
     media: mediaFiles.value,
     caption: caption.value,
-    hashtags: selectedHashtags.value
-  })
-}
+    hashtags: selectedHashtags.value,
+  };
+
+  try {
+    if (content.type == 'post' && (!content.media || !content.caption)) {
+      throw 'Important Inputs are missing';
+    } else if (content.type == 'story' && !content.media) {
+      throw 'Important Inputs are missing';
+    }
+
+    isSubmitting.value = true; // Disable the button during submission
+    const response = await postStore.createPost(content);
+
+    if (response.error) {
+      toast.error(`Error creating post: ${response.error}`, { position: 'top-center' });
+    } else {
+      toast.success(`${content.type} Created successfully!`, { position: 'top-center' });
+    }
+  } catch (error) {
+    console.error('Error creating post:', error.message);
+    toast.error(`Error creating post: ${error.message}`, { position: 'top-center' });
+  } finally {
+    isSubmitting.value = false; // Re-enable the button after response
+  }
+};
+
 
 // Cleanup
 onUnmounted(() => {

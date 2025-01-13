@@ -77,12 +77,16 @@ const userController = {
   login: async (req, res) => {
     try {
       const { username, password } = req.body;
-
+  
       if (!username || !password) {
-        return res.status(400).json({ message: "Please provide username and password" });
+        return res.status(400).json({ message: "Please provide a username/email and password" });
       }
-      const user = await User.findOne({ user_name: username });
-
+  
+      // Find user by either username or email
+      const user = await User.findOne({
+        $or: [{ user_name: username }, { email: username }],
+      });
+  
       if (user && (await bcrypt.compare(password, user.password))) {
         const accessToken = jwt.sign(
           {
@@ -96,16 +100,16 @@ const userController = {
           process.env.ACCESS_TOKEN_SECRET,
           { expiresIn: "30d" }
         );
-
         return res.status(200).json({ accessToken });
       } else {
-        return res.status(401).json({ message: "Invalid username or password" });
+        return res.status(401).json({ message: "Invalid username/email or password" });
       }
     } catch (error) {
       console.error("Error during login:", error);
       return res.status(500).json({ message: "An internal server error occurred" });
     }
   },
+  
 
   checkUsername: async (req, res) => {
     try {
@@ -120,6 +124,8 @@ const userController = {
     }
   },
 
+  
+
   checkEmail: async (req, res) => {
     try {
       const { email } = req.body;
@@ -131,6 +137,32 @@ const userController = {
       return res.status(500).json(false);
     }
   },
+
+  getAllUsers : async (req , res) => {
+    try {
+      if (!req.user) {
+        return res.status(constants.UNAUTHORIZED).json({
+          message: "Can't set profile image if user is not logged in",
+        });
+      }
+      const user = await User.find({});
+
+      if (!user) {
+        return res.status(constants.UNAUTHORIZED).json({
+          message: "User not found",
+        });
+      }
+       res.json({
+        message: "Users fetched successusfully",
+        allUsers: user,
+      });
+    } catch (error) {
+      console.error("Error Fetching users:", error.toString());
+      res.status(constants.SERVER_ERROR).json({
+        message: "An error occurred while setting the Bio",
+      });
+    }
+  }, 
 
   setProfileImage: async (req, res) => {
     try {
@@ -202,7 +234,7 @@ const userController = {
           message: "Can't set Bio if user is not logged in",
         });
       }
-      let { newBio } = req.body;
+      let newBio  = req.body.bio;
       if (!newBio) {
         return res.status(constants.VALIDATION_ERRORS).json({
           message: "Bio is required",
@@ -512,8 +544,8 @@ const userController = {
           message: "Need to Login to See Users Profile",
         });
       }
-
-      const userIdOfPersonToSeeProfile = req.query.userId; // User ID to fetch profile
+      const userIdOfPersonToSeeProfile = req.query.user_id
+       // User ID to fetch profile
       const requestingUserId = req.user.id; // ID of the user making the request
 
       // Validate the required fields
@@ -522,7 +554,6 @@ const userController = {
           .status(constants.VALIDATION_ERRORS)
           .json({ message: "User ID is required" });
       }
-
       // Fetch the user's profile
       const userToSeeProfile = await User.findById(userIdOfPersonToSeeProfile).select(
         "-password -resetToken -tokenExpiry -notifications"
@@ -544,6 +575,7 @@ const userController = {
       }
 
       // Fetch user's posts
+      
       const userPosts = await Post.find({ user: userIdOfPersonToSeeProfile }).sort({
         createdAt: -1,
       });
@@ -554,7 +586,7 @@ const userController = {
       }).sort({
         createdAt: -1,
       });
-
+      console.log(userPosts)
       return res.json({
         profile: userToSeeProfile,
         usersposts: userPosts,
@@ -624,7 +656,6 @@ const userController = {
   },
 
   forgotPassword: async (req, res) => {
-    console.log(req);
     try {
       const { email } = await req.body;
 

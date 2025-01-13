@@ -22,6 +22,7 @@
       </div>
     </div>
 
+
     <div class="flex flex-1 overflow-hidden">
       <!-- Message list (visible on mobile when no chat is selected) -->
       <div v-if="(isMobile && !selectedContact) || !isMobile" class="w-full md:w-1/3 lg:w-1/4 bg-gray-50 dark:bg-gray-800 flex flex-col">
@@ -41,7 +42,7 @@
               class="flex items-center p-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">
               <div
                 class="w-12 h-12 rounded-full bg-sky-400 flex items-center justify-center text-xl font-bold text-white">
-                {{ group.name.charAt(0) }}
+                {{ group.name }}
               </div>
               <div class="ml-3">
                 <p class="font-semibold">{{ group.name }}</p>
@@ -52,9 +53,9 @@
           <div v-if="activeTab === 'personal' || activeTab === 'all'">
             <div v-for="contact in filteredContacts" :key="contact.id" @click="selectContact(contact)"
               class="flex items-center p-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">
-              <img :src="contact.avatar" alt="avatar" class="w-12 h-12 rounded-full object-cover" />
+              <img :src="contact.profile_photo_url" alt="avatar" class="w-12 h-12 rounded-full object-cover" />
               <div class="ml-3">
-                <p class="font-semibold">{{ contact.name }}</p>
+                <p class="font-semibold">{{ contact.user_name }}</p>
                 <p class="text-sm text-gray-500 dark:text-gray-400 truncate">{{ contact.lastMessage }}</p>
               </div>
             </div>
@@ -78,10 +79,11 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed , onMounted } from 'vue'
 import { OhVueIcon, addIcons } from "oh-vue-icons";
 import { BiSearch, BiSend, BiChatDots, BiPeople, BiPerson, BiSun, BiMoon, BiX, BiArrowLeft } from "oh-vue-icons/icons";
 import ChatBox from '@/components/ChatBox.vue';
+import { usePostStoryStore } from '../../stores/homePageStore';
 
 addIcons(BiSearch, BiSend, BiChatDots, BiPeople, BiPerson, BiSun, BiMoon, BiX, BiArrowLeft);
 
@@ -89,23 +91,22 @@ const activeTab = ref('all')
 const searchQuery = ref('')
 const isMobile = ref(window.innerWidth < 768)
 
+
+const isLoading = ref(true);
+
+
+const postStoryStore = usePostStoryStore();
+
 const groups = ref([
-  { id: 'g1', name: 'Work Team', lastMessage: 'Meeting at 3 PM' },
-  { id: 'g2', name: 'Family', lastMessage: 'Mom: Don\'t forget dinner!' },
+  // { id: 'g1', name: 'Work Team', lastMessage: 'Meeting at 3 PM' },
+  // { id: 'g2', name: 'Family', lastMessage: 'Mom: Don\'t forget dinner!' },
 ])
 
-const contacts = ref([
-  { id: 1, name: 'John Doe', avatar: '/placeholder.svg?height=48&width=48', lastMessage: 'Hey, how are you?' },
-  { id: 2, name: 'Jane Smith', avatar: '/placeholder.svg?height=48&width=48', lastMessage: 'See you tomorrow!' },
-  { id: 3, name: 'Bob Johnson', avatar: '/placeholder.svg?height=48&width=48', lastMessage: 'Thanks for your help!' },
-])
+const contacts = ref([])
 
-const messages = ref([
-  { id: 1, text: 'Hi there!', isSent: false, sender: 'John Doe', timestamp: new Date('2023-05-01T09:00:00') },
-  { id: 2, text: 'Hello! How are you?', isSent: true, sender: 'You', timestamp: new Date('2023-05-01T09:05:00') },
-  { id: 3, text: 'I\'m doing great, thanks for asking!', isSent: false, sender: 'Jane Smith', timestamp: new Date('2023-05-01T09:10:00') },
-  { id: 4, text: 'That\'s wonderful to hear!', isSent: true, sender: 'You', timestamp: new Date('2023-05-01T09:15:00') },
-])
+
+
+const messages = ref([])
 
 const selectedContact = ref(null)
 const newMessage = ref('')
@@ -140,10 +141,23 @@ const filteredGroups = computed(() => {
 
 const filteredContacts = computed(() => {
   return contacts.value.filter(contact =>
-    contact.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    contact.lastMessage.toLowerCase().includes(searchQuery.value.toLowerCase())
+    contact.user_name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+    contact.last_name.toLowerCase().includes(searchQuery.value.toLowerCase())
   )
 })
+
+
+onMounted(async () => {
+  try {
+    await postStoryStore.fetchAllUsers();
+    contacts.value = postStoryStore.allUsers;
+
+  } catch (error) {
+    console.error("Error loading profile:", error);
+  } finally {
+    isLoading.value = false;
+  }
+});
 
 // Update isMobile on window resize
 window.addEventListener('resize', () => {

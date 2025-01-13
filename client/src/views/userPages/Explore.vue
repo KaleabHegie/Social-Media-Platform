@@ -11,48 +11,63 @@
         </div>
         <!-- Search Input Field with Icon -->
         <div class="relative w-full sm:w-64 md:w-96">
-          <v-icon name="ri-search-line"
-            class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 text-xl" />
+          <i class="ri-search-line absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 text-xl"></i>
           <input v-model="searchQuery" type="text" placeholder="Search posts..."
             class="pl-10 pr-4 py-2 rounded-lg bg-white dark:bg-gray-800 text-gray-800 dark:text-white border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-1 focus:ring-sky-200 w-full" />
         </div>
       </div>
       <!-- Masonry Layout Container for Explore Post Cards -->
-      <div v-if="filteredPosts.length > 0" class="explore-grid">
+      <div v-if="!postStoryStore.isLoading && filteredPosts.length > 0" class="explore-grid">
         <ExplorePostCard v-for="post in filteredPosts" :key="post.id" :post="post" />
       </div>
-      <div v-else class="text-center text-gray-600 dark:text-gray-400 mt-8">
+      <div v-else-if="!postStoryStore.isLoading && !postStoryStore.error" class="text-center text-gray-600 dark:text-gray-400 mt-8">
         No posts to explore at the moment.
+      </div>
+      <div v-if="postStoryStore.isLoading" class="text-center text-gray-600 dark:text-gray-400 mt-8">
+        Loading posts...
+      </div>
+      <div v-if="error" class="text-center text-red-500 dark:text-red-400 mt-8">
+        {{ error }}
       </div>
     </div>
   </main>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
-import ExplorePostCard from '@/components/ExplorePostCard.vue';
+import { ref, computed, onMounted } from 'vue';
+import { usePostStoryStore } from '@/stores/homePageStore'; // Import Pinia store
 import { useLanguageStore } from '@/stores/languageStore';
-const { t } = useLanguageStore(); // Translation function
-// Sample data for explore posts
-const explorePosts = ref(Array(20).fill(null).map((_, index) => ({
-  id: index,
-  mediaUrl: `https://via.assets.so/game.png?id=${index + 1}&q=95&w=360&h=${360 + (index % 5) * 20}&fit=fill`,
-  description: `Explore post ${index + 1}`,
-  hashtags: ['photography', 'nature', 'travel', 'art', 'food', 'fashion', 'technology']
-    .sort(() => 0.5 - Math.random())
-    .slice(0, 3 + Math.floor(Math.random() * 3)),
-})));
+import ExplorePostCard from '@/components/ExplorePostCard.vue';
 
-// Search query
+const { t } = useLanguageStore(); // Translation function
+
+// Access the Pinia store
+const postStoryStore = usePostStoryStore();
+
+
+
+// Local state for search
 const searchQuery = ref('');
+
+// Reactive store properties
+const { isLoading, error, posts } = postStoryStore;
+
+
 
 // Filtered posts based on search query
 const filteredPosts = computed(() => {
-  return explorePosts.value.filter(post =>
-    post.description.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    post.hashtags.some(tag => tag.toLowerCase().includes(searchQuery.value.toLowerCase()))
+  return postStoryStore.posts.filter(
+    (post) =>
+      post.hashtags.some((tag) => tag.toLowerCase().includes(searchQuery.value.toLowerCase()))
   );
 });
+
+// Fetch posts on component mount
+onMounted(() => {
+  postStoryStore.fetchExplore(); // Fetch explore feed
+});
+
+console.log(postStoryStore);
 </script>
 
 <style scoped>

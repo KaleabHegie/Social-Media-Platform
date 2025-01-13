@@ -23,7 +23,7 @@ const commentController = {
           message: "User must be logged in to make a comment.",
         });
       }
-
+      console.log(req.body , req.user);
       const { postId, content, parentId } = req.body;
 
       // Validate the required fields
@@ -33,6 +33,7 @@ const commentController = {
         });
       }
 
+      
       // Check if the post exists
       const post = await Post.findById(postId);
       if (!post) {
@@ -58,8 +59,13 @@ const commentController = {
         parent: parentComment ? parentComment._id : null, // Directly reference parent comment ID
       });
 
+      // Add the new comment to the post's comments array
+      
+
       // Save the new comment
       await newComment.save();
+
+      post.comments.push(newComment);
 
       // Increment comment count only after saving the comment
       post.comments_count += 1;

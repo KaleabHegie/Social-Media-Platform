@@ -27,7 +27,6 @@ router.post("/followUser", validateToken, userController.followUser);
 
 router.get("/getMyUserProfile", validateToken, userController.getMyUserProfile);
 
-
 router.get("/getUserProfile", validateToken, userController.getUserProfile);
 
 router.post("/dismissNotifications", validateToken, userController.dismissNotifications);
@@ -35,6 +34,8 @@ router.post("/dismissNotifications", validateToken, userController.dismissNotifi
 router.get("/getNotifications", validateToken, userController.getNotifications);
 
 router.get("/searchUsers", validateToken, userController.searchUsers);
+
+router.get("/getAllUsers" , validateToken, userController.getAllUsers)
 
 
 

@@ -108,6 +108,10 @@ import { useLanguageStore } from '@/stores/languageStore';
 import { useAuthStore } from '@/stores/authStore';
 import LanguageSelector from '@/components/LanguageSelector.vue';
 
+import ToastService from '@/utils/toast.js';
+
+const toast = ToastService();
+
 // Access the language store
 const { currentLanguage, t } = useLanguageStore();
 
@@ -177,9 +181,10 @@ const handleSubmit = async () => {
   loading.value = false;
 
   if (success) {
-    router.push('/tesde'); // Navigate to the dashboard after login
+    router.push('/home'); // Navigate to the dashboard after login
   } else {
     errors.general = authStore.error || 'Login failed';
+    toast.error(authStore.error, { position: "top-center" });
   }
 };
 

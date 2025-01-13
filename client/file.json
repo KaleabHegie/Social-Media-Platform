@@ -1,0 +1,30 @@
+{
+    "participants": [
+      {
+        "userId": "67762e2b350490143fa750c4",
+        "last_opened_at": "2025-01-13T10:15:30Z"
+      },
+      {
+        "userId": "6784c20e057f6e6742efdf36",
+        "last_opened_at": "2025-01-13T09:55:22Z"
+      }
+    ],
+    "messages": [
+      {
+        "sender": "67762e2b350490143fa750c4",
+        "content": "Hi, how are you?",
+        "media": null
+      },
+      {
+        "sender": "6784c20e057f6e6742efdf36",
+        "content": "I'm good, thanks! How about you?",
+        "media": null
+      },
+      {
+        "sender": "67762e2b350490143fa750c4",
+        "content": "I'm doing well, thank you!",
+        "media": null
+      }
+    ]
+  }
+  

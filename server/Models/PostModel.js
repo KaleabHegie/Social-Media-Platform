@@ -15,6 +15,7 @@ const PostSchema = new mongoose.Schema(
     ],
     type: { type: String, enum: ["post", "story"], required: true },
     comments_count: { type: Number, default: 0 },
+    comments: [{ type: mongoose.Schema.Types.ObjectId, ref: "Comment" }], // Add this field
   },
   {
     timestamps: true,

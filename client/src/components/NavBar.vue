@@ -96,6 +96,12 @@ import { computed } from 'vue';
 import DarkModeToggle from '@/components/DarkModeToggle.vue';
 import LanguageSelector from '@/components/LanguageSelector.vue';
 import { useLanguageStore } from '@/stores/languageStore';
+import { useRouter } from "vue-router";
+import { useAuthStore } from "@/stores/authStore";
+
+const authStore = useAuthStore();
+
+const router = useRouter();
 
 const { t } = useLanguageStore(); // Translation function
 
@@ -109,6 +115,9 @@ const isActive = (path) => {
 
 // Logout function
 const logout = () => {
-  console.log('Logging out...');
+  
+  authStore.logout();
+  router.push("/signin");
+  
 };
 </script>

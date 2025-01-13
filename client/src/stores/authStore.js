@@ -2,6 +2,8 @@ import { defineStore } from "pinia";
 import { jwtDecode } from "jwt-decode";
 import MyHttpService from "@/stores/MyHttpService"; // Ensure this points to your MyHttpService configuration
 
+
+
 export const useAuthStore = defineStore("auth", {
   state: () => ({
     user: null,
@@ -13,6 +15,7 @@ export const useAuthStore = defineStore("auth", {
   getters: {
     isAuthenticated: (state) => !!state.token,
     getUser: (state) => {
+      
       if (state.token) {
         return jwtDecode(state.token)?.user || null;
       }
@@ -48,26 +51,36 @@ export const useAuthStore = defineStore("auth", {
     async login(credentials) {
       this.isLoading = true;
       this.error = null;
-
+    
       try {
+        // Send login credentials to the backend
         const response = await MyHttpService.post("/login", { body: credentials });
-
+    
         if (response.error) {
           throw new Error(response.error);
         }
-
-        console.log("Login response:", response.accessToken);
-        this.setToken(response.accessToken);
-        this.user = jwtDecode(this.token);
+    
+        // Save the token and decode user information
+        const accessToken = response.accessToken;
+        this.setToken(accessToken);
+        this.user = jwtDecode(accessToken);
+    
+        // Store the accessToken and userId in localStorage
+        console.log("Access Token:", accessToken);
+       
+        localStorage.setItem("jwt", accessToken); 
+        
+    
         return true;
       } catch (error) {
-        console.error("Login error:", error);
         this.error = error.response?.message || "Login failed";
         return false;
       } finally {
         this.isLoading = false;
       }
     },
+    
+      
 
     async register(userData) {
       this.isLoading = true;

@@ -6,7 +6,7 @@ const translations = {
   currentLanguage: "en",
 
   Username: {
-    en: " Username or email",
+    en: " Username or Email",
     am: " የተጠቃሚ ስም ወይም ኢሜይል",
   },
   email: {
@@ -126,11 +126,11 @@ const translations = {
     am: "ጾታ",
   },
   male: {
-    en: "male",
+    en: "Male",
     am: "ወንድ",
   },
   female: {
-    en: "female",
+    en: "Female",
     am: "ሴት",
   },
   username_required: {
