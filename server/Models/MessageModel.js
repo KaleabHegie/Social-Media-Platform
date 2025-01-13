@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const MessageSubSchema = new mongoose.Schema({
         sender: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
         content: { type: String, required: true}, 
-        media: { type: String, required: False}, 
+        media: { type: String, required: false}, 
     },
     {
         timestamps: true, 
@@ -13,7 +13,7 @@ const MessageSubSchema = new mongoose.Schema({
 // Main Message Schema
 const MessageSchema = new mongoose.Schema(
   {
-        chat_id: { type: mongoose.Schema.Types.ObjectId, required: true },
+        id: { type: mongoose.Schema.Types.ObjectId, required: true },
         participants: [
           {
             userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },

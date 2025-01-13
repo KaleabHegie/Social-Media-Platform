@@ -10,6 +10,8 @@ export const usePostStoryStore = defineStore('postStory', {
     myProfile : [],
     myPosts : [],
     likedPosts : [],
+    allUsers : [],
+    messages : [],
     isLoading: false,
     error: null,
   }),
@@ -140,9 +142,42 @@ export const usePostStoryStore = defineStore('postStory', {
         const response = await MyHttpService.get('/getUserProfile', { query : {'user_id' : user_id} , useJWT: true });
         console.log(response);
         if (response.profile) {
+          console.log(response.profile)
           this.myProfile = response.profile;       // Store the profile data
           this.usersposts = response.usersposts || [];      // Store the user's posts
           this.likedPosts = response.likedPosts || []; // Store the liked posts
+        }
+      } catch (error) {
+        this.error = error.response?.message || 'Failed to fetch profile.';
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
+
+    async fetchAllUsers() {
+      this.isLoading = true;
+      this.error = null;
+      try {
+        const response = await MyHttpService.get('/getAllUsers', {useJWT: true });
+        if (response.allUsers) {
+          this.allUsers = response.allUsers;       
+        }
+      } catch (error) {
+        this.error = error.response?.message || 'Failed to fetch profile.';
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
+    async fetchMessages(selectedUserId) {
+      this.isLoading = true;
+      this.error = null;
+      try {
+        const response = await MyHttpService.get('/fetchMessages', { query : {'selectedUserId' : selectedUserId} , useJWT: true });
+        console.log(response)
+        if (response.messages) {
+          this.messages = response.messages;       
         }
       } catch (error) {
         this.error = error.response?.message || 'Failed to fetch profile.';

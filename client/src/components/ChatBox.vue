@@ -9,20 +9,21 @@
             class="mr-2 p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
             <v-icon name="bi-arrow-left" />
           </button>
-          <div v-if="selectedContact.avatar" class="w-10 h-10 rounded-full overflow-hidden">
-            <img :src="selectedContact.avatar" alt="avatar" class="w-full h-full object-cover" />
+          <div v-if="selectedContact.profile_photo_url" class="w-10 h-10 rounded-full overflow-hidden">
+            <img :src="selectedContact.profile_photo_url" alt="avatar" class="w-full h-full object-cover" />
           </div>
           <div v-else
             class="w-10 h-10 rounded-full bg-sky-400 flex items-center justify-center text-lg font-bold text-white">
-            {{ selectedContact.name.charAt(0) }}
+            {{ selectedContact.user_name[0] }}
           </div>
-          <h2 class="ml-3 font-semibold">{{ selectedContact.name }}</h2>
+          <h2 class="ml-3 font-semibold">{{ selectedContact.user_name }}</h2>
         </div>
         <button v-if="!isMobile" @click="$emit('leave-chat')"
           class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
           <v-icon name="bi-x" />
         </button>
       </div>
+      {{ messages }}
 
       <!-- Messages -->
       <div class="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 dark:bg-gray-900" @contextmenu.prevent="showContextMenu">
@@ -31,11 +32,10 @@
             :class="[
               message.isSent ? 'bg-sky-400 text-white' : 'bg-gray-200 text-gray-900 dark:text-gray-900',
               { 'bg-green-400': !message.isSent && message.sender === 'John Doe',
-                'bg-purple-400': !message.isSent && message.sender === 'Jane Smith',
-                'bg-yellow-400': !message.isSent && message.sender === 'Bob Johnson' }
+                'bg-purple-400': !message.isSent && message.sender === 'Jane Smith' }
             ]">
             <p class="text-xs mb-1" v-if="!message.isSent">{{ message.sender }}</p>
-            {{ message.text }}
+            {{ message.content }}
             <span class="text-xs opacity-50 ml-2">{{ formatTime(message.timestamp) }}</span>
           </div>
         </div>
@@ -67,7 +67,12 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { OhVueIcon } from "oh-vue-icons";
+import { usePostStoryStore } from '../stores/homePageStore';
 
+
+
+
+const postStoryStore = usePostStoryStore()
 const props = defineProps({
   selectedContact: Object,
   isMobile: Boolean,
@@ -94,6 +99,8 @@ const formatTime = (date) => {
 const showMenu = ref(false);
 const menuX = ref(0);
 const menuY = ref(0);
+const messages = ref([])
+const isLoading = true
 const selectedMessage = ref(null);
 
 const showContextMenu = (event) => {
@@ -121,7 +128,15 @@ const closePreview = () => {
   showPreview.value = false;
 };
 
-onMounted(() => {
+onMounted(async () => {
+  try {
+    await postStoryStore.fetchMessages(props.selectedContact._id);
+    messages.value = postStoryStore.messages
+  } catch (error) {
+    console.error("Error loading messages:", error);
+  } finally {
+    isLoading = false;
+  }
   document.addEventListener('click', closeContextMenu);
 });
 

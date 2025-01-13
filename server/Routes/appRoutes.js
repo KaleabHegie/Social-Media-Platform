@@ -1,7 +1,9 @@
 const express = require("express");
 const postController = require("../Controllers/postController");
 const commentController = require("../Controllers/commentController");
+const messageController  = require('../Controllers/messageController');
 
+// Example usage in a route:
 
 const router = express.Router();
 const multer = require("multer");
@@ -33,6 +35,9 @@ router.get("/getHomeFeed", validateToken, postController.getHomeFeed);
 router.get("/getStories", validateToken, postController.getStories);
 
 router.get("/getExploreFeed", validateToken, postController.getExploreFeed);
+
+
+router.get('/fetchMessages', validateToken , messageController.fetchMessages);
 
 
 

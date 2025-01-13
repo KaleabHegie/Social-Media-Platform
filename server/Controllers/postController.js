@@ -5,6 +5,7 @@ const Post = require("../Models/PostModel");
 const Hashtag = require("../Models/HashTagModel");
 
 const multer = require('multer');
+const Message = require("../Models/MessageModel");
 const upload = multer(); 
 
 // // Configure Cloudinary
@@ -286,6 +287,7 @@ console.log("Body:", req.body);
         });
       }
 
+      console.log(await Message.find())
       const userId = req.user.id;
 
       // Fetch posts with user details populated

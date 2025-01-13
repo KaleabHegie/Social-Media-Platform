@@ -21,8 +21,6 @@ const validateToken = (req, res, next) => {
         .status(constants.INVALID_TOKEN)
         .json({ message: "Invalid Auth token | Token Expired" });
     }
-
-    console.log("Decoded Token :", decoded); // Log the decoded token to check
     req.user = decoded.user;
     return next(); // Forward the request
   });

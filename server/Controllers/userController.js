@@ -124,6 +124,8 @@ const userController = {
     }
   },
 
+  
+
   checkEmail: async (req, res) => {
     try {
       const { email } = req.body;
@@ -135,6 +137,32 @@ const userController = {
       return res.status(500).json(false);
     }
   },
+
+  getAllUsers : async (req , res) => {
+    try {
+      if (!req.user) {
+        return res.status(constants.UNAUTHORIZED).json({
+          message: "Can't set profile image if user is not logged in",
+        });
+      }
+      const user = await User.find({});
+
+      if (!user) {
+        return res.status(constants.UNAUTHORIZED).json({
+          message: "User not found",
+        });
+      }
+       res.json({
+        message: "Users fetched successusfully",
+        allUsers: user,
+      });
+    } catch (error) {
+      console.error("Error Fetching users:", error.toString());
+      res.status(constants.SERVER_ERROR).json({
+        message: "An error occurred while setting the Bio",
+      });
+    }
+  }, 
 
   setProfileImage: async (req, res) => {
     try {
@@ -547,6 +575,7 @@ const userController = {
       }
 
       // Fetch user's posts
+      
       const userPosts = await Post.find({ user: userIdOfPersonToSeeProfile }).sort({
         createdAt: -1,
       });
@@ -557,7 +586,7 @@ const userController = {
       }).sort({
         createdAt: -1,
       });
-
+      console.log(userPosts)
       return res.json({
         profile: userToSeeProfile,
         usersposts: userPosts,
