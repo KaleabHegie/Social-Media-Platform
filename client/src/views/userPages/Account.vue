@@ -68,6 +68,11 @@
           <span class="slider round"></span>
         </label>
       </div>
+      <!-- Dark Mode Toggle and Change Language -->
+      <div class="flex items-center space-x-4 m-3">
+        <LanguageSelector />
+        <DarkModeToggle />
+      </div>
 
       <!-- Delete Account Button -->
       <div class="mt-6">
@@ -119,7 +124,8 @@ import { OhVueIcon, addIcons } from "oh-vue-icons";
 import { RiPencilLine } from "oh-vue-icons/icons";
 import ExplorePostCard from '@/components/ExplorePostCard.vue';
 import UserProfileSmall from '@/components/UserProfileSmall.vue';
-
+import DarkModeToggle from '@/components/DarkModeToggle.vue';
+import LanguageSelector from '@/components/LanguageSelector.vue';
 
 addIcons(RiPencilLine);
 
