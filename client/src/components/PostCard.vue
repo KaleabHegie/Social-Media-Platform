@@ -63,8 +63,8 @@
             {{ truncatedCaption }}
           </p>
           <!-- Show Read More only if caption is longer than 100 characters -->
-          <button v-if="props.post.caption && props.post.caption.length > 100" @click="toggleCaption"
-            class="text-sky-500 dark:text-sky-400 text-sm mt-2" @click.stop>
+          <button v-if="props.post.caption && props.post.caption.length > 100" @click.stop.prevent="toggleCaption"
+            class="text-sky-500 dark:text-sky-400 text-sm mt-2">
             {{ showFullCaption ? t('readLess') : t('readMore') }}
           </button>
         </div>
@@ -72,8 +72,8 @@
         <!-- Interaction Buttons -->
         <div class="flex items-center justify-between mb-4">
           <div class="flex items-center space-x-4">
-            <button @click="toggleLike" class="flex items-center space-x-2 group"
-              :aria-label="isLiked ? 'Unlike post' : 'Like post'" @click.stop>
+            <button @click.stop.prevent="toggleLike" class="flex items-center space-x-2 group"
+              :aria-label="isLiked ? 'Unlike post' : 'Like post'">
               <i :class="[
                 'ri-thumb-up-line',
                 isLiked ? 'text-sky-500' : 'text-gray-600 dark:text-gray-400',
@@ -84,7 +84,7 @@
             </button>
 
             <router-link :to="`/viewpost/${post._id}`" class="flex items-center space-x-2 group"
-              aria-label="View comments" @click.stop>
+              aria-label="View comments" @click.stop.prevent>
               <i
                 class="ri-chat-1-line text-xl text-gray-600 dark:text-gray-400 group-hover:scale-110 transition-transform"></i>
               <span class="text-sm text-gray-600 dark:text-gray-400">
@@ -97,7 +97,7 @@
         <!-- Hashtags -->
         <div class="flex flex-wrap gap-2">
           <router-link v-for="tag in props.post.hashtags || []" :key="tag" :to="`/home`"
-            class="text-sky-500 dark:text-sky-400 text-sm hover:underline" @click.stop>
+            class="text-sky-500 dark:text-sky-400 text-sm hover:underline" @click.stop.prevent>
             #{{ tag }}
           </router-link>
         </div>
