@@ -32,10 +32,16 @@
                 class="px-3 py-1.5 sm:px-4 sm:py-2 bg-blue-500 text-white text-sm sm:text-base rounded-md hover:bg-blue-600 transition duration-300">
                 {{ isFollowing ? 'Unfollow' : 'Follow' }}
               </button>
-              <button @click="sendMessage"
-                class="px-3 py-1.5 sm:px-4 sm:py-2 bg-gray-200 text-gray-800 text-sm sm:text-base rounded-md hover:bg-gray-300 transition duration-300">
-                Message
-              </button>
+             
+              <router-link          
+        :to="`/messages`" 
+        class="text-sm text-gray-600 dark:text-gray-400 hover:underline"
+      >
+      <button class="px-3 py-1.5 sm:px-4 sm:py-2 bg-gray-200 text-gray-800 text-sm sm:text-base rounded-md hover:bg-gray-300 transition duration-300">
+        
+      Message
+      </button>
+      </router-link>
             </div>
           </div>
         </div>

@@ -3,9 +3,13 @@ const Message = require('../Models/MessageModel'); // Import your Message model
 const messageController = {
   
   fetchMessages: async (req, res) => {
+
     // Hardcoded for testing; replace with req.body or req.params in a real app
-    const currentUserId = "67762e2b350490143fa750c4";
-    const selectedUserId = "6784c20e057f6e6742efdf36";
+    const currentUserId = req.user.id
+    const selectedUserId = req.query.selectedUserId
+
+    console.log(currentUserId)
+    console.log(selectedUserId)
     
 
 
@@ -14,17 +18,19 @@ const messageController = {
     }
 
     try {
-      // Query to find the document with both participants
+  
+
+      
       const query = {
-        $and: [
-          { participants: { $elemMatch: { userId: currentUserId } } },
-          { participants: { $elemMatch: { userId: selectedUserId } } }
-        ]
+        participants: { $elemMatch: { userId: { $in: [currentUserId, selectedUserId] } } }
       };
 
-      const chat = await Message.find()
-        .populate('messages.sender', 'username profilePhoto') // Adjust according to your schema
-        .select('messages participants');
+      console.log(query)
+
+      const chat = await Message.findOne({query})
+        .populate('messages.sender', 'username profilePhoto') // Populate sender details
+        .select('messages participants'); // Select required field
+
 
       if (!chat) {
         console.error("No chat found between these participants.");

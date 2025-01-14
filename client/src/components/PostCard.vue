@@ -1,8 +1,10 @@
 <template>
-  <!--  router-link -->
-  <router-link :to="`/viewpost/${props.post._id}`" class="block">
+  <!-- Wrap the entire card with a router-link -->
+  
     <article
       class="bg-white dark:bg-gray-800 rounded-xl shadow-lg mb-6 overflow-hidden hover:shadow-xl transition-shadow duration-300">
+      <!-- Carousel Section -->
+      
       <div class="relative fade-mask">
         <!-- User Info Overlay -->
         <div class="absolute top-0 left-0 right-0 z-10 p-4 bg-gradient-to-b from-black/60 to-transparent">
@@ -54,6 +56,7 @@
 
       <!-- Post Content -->
       <div class="p-4">
+        <router-link :to="`/viewpost/${props.post._id}`" class="block">
         <!-- Caption -->
         <div class="mb-4">
           <p v-if="showFullCaption" class="text-gray-800 dark:text-white">
@@ -68,6 +71,9 @@
             {{ showFullCaption ? t('readLess') : t('readMore') }}
           </button>
         </div>
+
+        
+  </router-link>
 
         <!-- Interaction Buttons -->
         <div class="flex items-center justify-between mb-4">
@@ -103,7 +109,6 @@
         </div>
       </div>
     </article>
-  </router-link>
 </template>
 
 

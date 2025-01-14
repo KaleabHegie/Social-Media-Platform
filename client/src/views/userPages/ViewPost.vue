@@ -32,6 +32,7 @@
                         <h2 class="text-xl font-bold mb-4 text-gray-900 dark:text-white">
                             Comments
                         </h2>
+                        
 
                         <template v-if="post">
                             <!-- PostCardSingle component -->
@@ -70,6 +71,9 @@ import { RiCloseLine } from "oh-vue-icons/icons";
 import CommentCard from '@/components/CommentCard.vue';
 import PostCardSingle from '@/components/PostCardSingle.vue';
 import { usePostStoryStore } from '@/stores/homePageStore';
+import { useAuthStore } from '@/stores/authStore';
+
+
 
 addIcons(RiCloseLine);
 
@@ -77,6 +81,7 @@ const router = useRouter();
 const route = useRoute();
 
 const store = usePostStoryStore();
+const authStore = useAuthStore()
 const postId = route.params.id;
 const post = ref(null);
 
@@ -97,7 +102,15 @@ const addComment = async () => {
         
         // Add the comment using the store method
         const message = await store.addComment(content);
+
+
+        
+        message.comment.sender = authStore.user
+
+        
         console.log(message)
+        
+        
 
       
 

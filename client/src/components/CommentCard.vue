@@ -9,7 +9,7 @@
       <div class="flex-grow">
         
         <div class="flex items-center justify-between">
-          <h3 class="font-bold text-gray-800 dark:text-gray-200">{{ comment.sender.user_name }}</h3>
+          <h3 class="font-bold text-gray-800 dark:text-gray-200">{{ comment.sender.username }} {{ comment.sender.user_name }}</h3>
           <!-- <button @click="deleteComment" class="text-red-500 hover:text-red-700">
             <oh-vue-icon name="ri-delete-bin-line" class="w-5 h-5" />
           </button> -->
@@ -40,8 +40,6 @@
   });
   
   // Log props to check
-  console.log(props.comment);
-  
   // Like functionality
   const likeComment = () => {
     // Implement like functionality here
