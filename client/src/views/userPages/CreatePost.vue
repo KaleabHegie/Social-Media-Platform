@@ -1,6 +1,6 @@
 <template>
   <div class="max-w-2xl mx-auto p-6 mt-20 mb-36   bg-white dark:bg-gray-800 rounded-xl shadow-sm">
-    <h1 class="text-2xl font-bold text-center mb-8 text-gray-800 dark:text-white">Create New Post</h1>
+    <h1 class="text-2xl font-bold text-center mb-8 text-gray-800 dark:text-white">  {{ t('create') }}</h1>
 
     <!-- Post Type Selection -->
     <div class="flex gap-4 mb-6 justify-center">
@@ -11,7 +11,7 @@
           : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
       ]">
         <oh-vue-icon name="ri-layout-grid-line" class="inline-block mr-2 h-4 w-4" />
-        Post
+        {{ t('post') }}
       </button>
       <button @click="postType = 'story'" :class="[
         'px-6 py-2 rounded-full transition-all',
@@ -20,24 +20,24 @@
           : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
       ]">
         <oh-vue-icon name="ri-user-line" class="inline-block mr-2 h-4 w-4" />
-        Story
+        {{ t('story') }}
       </button>
     </div>
 
     <!-- Media Upload -->
     <div class="mb-6">
-      <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">Upload Media (up to 4 media)</p>
+      <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">  {{ t('uploadMedia') }}</p>
       <div class="flex gap-6 mb-6">
         <label
           class="cursor-pointer flex flex-col items-center justify-center w-24 h-24 rounded-lg bg-[#87CEEB] dark:bg-[#4FA4D3] text-white hover:bg-[#7BBED9] dark:hover:bg-[#458DB8] shadow-md transition-all">
           <input type="file" @change="handleFileUpload" accept="image/*,video/*" multiple class="hidden" />
           <oh-vue-icon name="ri-image-add-line" class="h-8 w-8" />
-          <span class="mt-2 text-sm">Upload</span>
+          <span class="mt-2 text-sm">  {{ t('upload') }}</span>
         </label>
         <button @click="startCamera"
           class="flex flex-col items-center justify-center w-24 h-24 rounded-lg bg-[#87CEEB] dark:bg-[#4FA4D3] text-white hover:bg-[#7BBED9] dark:hover:bg-[#458DB8] shadow-md transition-all">
           <oh-vue-icon name="ri-camera-line" class="h-8 w-8" />
-          <span class="mt-2 text-sm">Camera</span>
+          <span class="mt-2 text-sm">  {{ t('camera') }}</span>
         </button>
       </div>
 
@@ -64,14 +64,14 @@
 
     <!-- Caption -->
     <div v-if="postType === 'post'" class="mb-6">
-      <label class="block text-sm text-gray-600 dark:text-gray-300 mb-2">Caption</label>
+      <label class="block text-sm text-gray-600 dark:text-gray-300 mb-2">  {{ t('caption') }}</label>
       <textarea v-model="caption" placeholder="Write a caption..."
         class="w-full p-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#87CEEB] dark:focus:ring-[#4FA4D3] min-h-[120px]"></textarea>
     </div>
 
     <!-- Hashtags -->
     <div class="mb-6">
-      <label class="block text-sm text-gray-600 dark:text-gray-300 mb-2">Hashtags</label>
+      <label class="block text-sm text-gray-600 dark:text-gray-300 mb-2">  {{ t('hashtag') }}</label>
       <div class="relative">
         <div class="flex items-center border border-gray-200 dark:border-gray-600 rounded-lg overflow-hidden">
           <input v-model="hashtagInput" @input="updateHashtagSuggestions" @keydown.enter.prevent="addCustomHashtag"
@@ -108,7 +108,7 @@
     <!-- Submit Button -->
     <button @click="submitPost" :disabled="isSubmitting"
       class="w-full py-3 bg-[#87CEEB] dark:bg-[#4FA4D3] text-white rounded-lg hover:bg-[#7BBED9] dark:hover:bg-[#458DB8] transition-colors focus:outline-none focus:ring-2 focus:ring-[#87CEEB] dark:focus:ring-[#4FA4D3] focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed">
-      Submit Post
+      {{ t('submitPost') }}
     </button>
 
   </div>
@@ -144,9 +144,9 @@ import {
   RiAddLine,
 } from "oh-vue-icons/icons";
 import { usePostStoryStore } from '@/stores/homePageStore';
-
+import { useLanguageStore } from '@/stores/languageStore';
 import ToastService from '@/utils/toast.js';
-
+const { t } = useLanguageStore();
 const toast = ToastService();
 
 addIcons(

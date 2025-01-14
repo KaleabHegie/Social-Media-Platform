@@ -181,6 +181,42 @@ const translations = {
     en:"Read Less",
     am:"ያነሰ አንብብ"
   },
+  create:{
+    en:"Create New Post",
+    am:"አዲስ ለጥፍ"
+  },
+  post:{
+    en:"Post",
+    am:"ለጥፍ"
+  },
+  story:{
+    en:"Story",
+    am:"ታሪክ"
+  },
+  uploadMedia:{
+    en:"Upload Media (up to 4 media)",
+    am:"ሚዲያ ስቀል (እስከ 4 ሚዲያ)"
+  },
+  upload:{
+    en:"Upload",
+    am: "ስቀል"
+  },
+  camera:{
+    en:"Camera",
+    am:"ካሜራ"
+  },
+  caption:{
+    en:"Caption",
+    am: "መግለጫ ጽሑፍ"
+  },
+  hashtag:{
+    en:"Hashtag",
+    am:"ሃሽታግ"
+  },
+  submitPost:{
+    en:"Submit Post",
+    am:"ልጥፍ አስገባ"
+  }
 };
 
 
