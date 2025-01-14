@@ -23,7 +23,7 @@ const commentController = {
           message: "User must be logged in to make a comment.",
         });
       }
-      console.log(req.body , req.user);
+      console.log(req.body, req.user);
       const { postId, content, parentId } = req.body;
 
       // Validate the required fields
@@ -33,7 +33,6 @@ const commentController = {
         });
       }
 
-      
       // Check if the post exists
       const post = await Post.findById(postId);
       if (!post) {
@@ -60,7 +59,6 @@ const commentController = {
       });
 
       // Add the new comment to the post's comments array
-      
 
       // Save the new comment
       await newComment.save();
@@ -172,7 +170,12 @@ const commentController = {
       }
 
       // Find all comments related to this post (either direct comments or replies)
-      const comments = await Comment.find({ postId: postId }).sort({ createdAt: -1 }); // Sorting by creation time (or change it to likes_count if needed)
+      const comments = await Comment.find({ postId: postId })
+        .sort({ createdAt: -1 })
+        .populate({
+          path: "sender",
+          select: "profile_photo_url id user_name", // Select only the required fields from the User model
+        });
 
       // Separate outer comments and replies
       const outerComments = [];

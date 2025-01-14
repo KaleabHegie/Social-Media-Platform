@@ -20,7 +20,7 @@
             <div class="flex space-x-4 overflow-x-auto pb-4 hide-scrollbar" style="scroll-snap-type: x mandatory;">
 
               <!-- Logo as the first story -->
-              <div class="flex-shrink-0 w-[25%] max-w-[100px] sm:max-w-[120px]" style="scroll-snap-align: start;">
+              <div class="flex-shrink-0 w-[24.5%] max-w-[100px] sm:max-w-[120px]" style="scroll-snap-align: start;">
                 <img src="@/assets/logo.png" alt="Logo" class="w-full h-auto object-contain rounded-lg" />
               </div>
 

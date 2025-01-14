@@ -14,9 +14,8 @@
             <div class="w-full md:w-1/2 mb-4 md:mb-0 md:pr-4">
 
                 <template v-if="post">
-
-                    <!-- PostCardSingle component -->
-                    <PostCardSingle :post="post" />
+                    <!-- PostCard component -->
+                    <PostCard :post="post" />
                 </template>
                 <p v-else class="text-gray-500 dark:text-gray-400">
                     Loading post or not found.
@@ -32,17 +31,13 @@
                         <h2 class="text-xl font-bold mb-4 text-gray-900 dark:text-white">
                             Comments
                         </h2>
-                        
-
                         <template v-if="post">
-                            <!-- PostCardSingle component -->
+                            <!-- PostCard component -->
                             <CommentCard v-for="(comment, index) in post.comments" :key="index" :comment="comment" />
                         </template>
                         <p v-else class="text-gray-500 dark:text-gray-400">
                             Loading post or not found.
                         </p>
-
-
                     </div>
                 </div>
 
@@ -69,7 +64,7 @@ import { useRouter, useRoute } from 'vue-router';
 import { OhVueIcon, addIcons } from "oh-vue-icons";
 import { RiCloseLine } from "oh-vue-icons/icons";
 import CommentCard from '@/components/CommentCard.vue';
-import PostCardSingle from '@/components/PostCardSingle.vue';
+import PostCard from '@/components/PostCard.vue';
 import { usePostStoryStore } from '@/stores/homePageStore';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -99,20 +94,20 @@ const addComment = async () => {
     if (newComment.value.trim()) {
         // Create a comment object to add
         content.content = newComment.value;
-        
+
         // Add the comment using the store method
         const message = await store.addComment(content);
 
 
-        
+
         message.comment.sender = authStore.user
 
-        
-        console.log(message)
-        
-        
 
-      
+        console.log(message)
+
+
+
+
 
         // Clear the input field
         newComment.value = '';
@@ -127,7 +122,7 @@ const addComment = async () => {
             content: content.content,
             // Add other necessary comment properties (e.g., user info, timestamps)
         };
-        
+
         post.value.comments.push(message.comment); // Push the new comment
     }
 };
