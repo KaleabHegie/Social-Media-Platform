@@ -41,8 +41,6 @@ const postController = {
   
   
 uploadPost: async (req, res) => {
- console.log("Files:", req.files); // Check if files are received
-console.log("Body:", req.body);  
   try {
     if (!req.user) {
       return res.status(constants.UNAUTHORIZED).json({
@@ -226,7 +224,6 @@ console.log("Body:", req.body);
         });
       }
 
-      console.log(req.body)
 
       const  postId = req.body.postId; // Assuming postId is passed as a query parameter
       const userId = req.user.id; // Get the logged-in user's ID

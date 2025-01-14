@@ -67,7 +67,6 @@ const userController = {
 
       res.json({ message: "User registered successfully", user: newUser });
     } catch (error) {
-      console.log(error.toString());
       res
         .status(constants.SERVER_ERROR)
         .json({ message: "Error registering user", error });
@@ -138,31 +137,36 @@ const userController = {
     }
   },
 
-  getAllUsers : async (req , res) => {
+  getAllUsers: async (req, res) => {
     try {
       if (!req.user) {
         return res.status(constants.UNAUTHORIZED).json({
-          message: "Can't set profile image if user is not logged in",
+          message: "Can't fetch users if the user is not logged in",
         });
       }
-      const user = await User.find({});
+  
+      const currentUserId = req.user.id; // Assuming the user's ID is available as `_id`
+      const user = await User.find({ _id: { $ne: currentUserId } }); // Exclude the current user
+  
+      if (!user || user.length === 0) {
+        return res.status(constants.NOT_FOUND).json({
+          message: "No users found",
+        });
+      }
 
-      if (!user) {
-        return res.status(constants.UNAUTHORIZED).json({
-          message: "User not found",
-        });
-      }
-       res.json({
-        message: "Users fetched successusfully",
+  
+      res.json({
+        message: "Users fetched successfully",
         allUsers: user,
       });
     } catch (error) {
-      console.error("Error Fetching users:", error.toString());
+      console.error("Error fetching users:", error.toString());
       res.status(constants.SERVER_ERROR).json({
-        message: "An error occurred while setting the Bio",
+        message: "An error occurred while fetching users",
       });
     }
-  }, 
+  },
+  
 
   setProfileImage: async (req, res) => {
     try {
@@ -391,7 +395,6 @@ const userController = {
   },
 
   followUser: async (req, res) => {
-    console.log('here')
     try {
       if (!req.user) {
         return res.status(constants.UNAUTHORIZED).json({
@@ -512,7 +515,9 @@ const userController = {
       // Fetch user details
       const user = await User.findById(userId).select(
         "-password -resetToken -tokenExpiry -notifications"
-      ); // Exclude sensitive fields
+      ).populate('followers.user', 'user_name first_name last_name profile_photo_url')
+      .populate('following.user', 'user_name first_name last_name profile_photo_url');
+
       if (!user) {
         return res.status(constants.NOT_FOUND).json({ message: "User not found" });
       }
@@ -558,7 +563,8 @@ const userController = {
       // Fetch the user's profile
       const userToSeeProfile = await User.findById(userIdOfPersonToSeeProfile).select(
         "-password -resetToken -tokenExpiry -notifications"
-      ); // Exclude sensitive fields
+      ).populate('followers.user', 'user_name first_name last_name profile_photo_url')
+      .populate('following.user', 'user_name first_name last_name profile_photo_url');
       if (!userToSeeProfile) {
         return res.status(constants.NOT_FOUND).json({ message: "User not found" });
       }
@@ -587,7 +593,6 @@ const userController = {
       }).sort({
         createdAt: -1,
       });
-      console.log(userPosts)
       return res.json({
         profile: userToSeeProfile,
         usersposts: userPosts,
@@ -660,8 +665,6 @@ const userController = {
     try {
       const { email } = await req.body;
 
-      console.log(req.body);
-
       // Validate required fields
       if (!email) {
         return res.status(400).json({
@@ -713,8 +716,6 @@ const userController = {
       const { token } = req.params;
       const { password } = req.body;
 
-      console.log(req.body);
-
       // Validate required fields
       if (!password) {
         return res.status(400).json({
@@ -742,7 +743,6 @@ const userController = {
 
       res.json({ message: "Password reset successfully." });
     } catch (error) {
-      console.log(error.toString());
       res.status(500).json({ message: "Error resetting password", error });
     }
   },
