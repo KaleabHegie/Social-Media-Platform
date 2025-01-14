@@ -7,7 +7,7 @@ import Toast from 'vue-toastification';
 import 'vue-toastification/dist/index.css';
 import { OhVueIcon, addIcons } from "oh-vue-icons";
 import 'remixicon/fonts/remixicon.css';
-
+import VueTouchEvents from 'vue-touch-events'
 import {
   RiHomeLine,
   RiCompassLine,
@@ -37,5 +37,6 @@ const pinia = createPinia();
 app.use(pinia);
 app.use(Toast);
 app.use(router);
+app.use(VueTouchEvents)
 app.mount("#app");
 app.component("v-icon", OhVueIcon);
