@@ -259,6 +259,24 @@ export const usePostStoryStore = defineStore('postStory', {
     },
 
 
+    async deleteAccount() {
+      this.isLoading = true;
+      this.error = null;
+      try {
+        const response = await MyHttpService.post('/deleteAccount', { useJWT: true });
+        if (response.messages) {
+          this.messages = response.messages[0].messages;    
+        }
+      } catch (error) {
+        this.error = error.response?.message || 'Failed to fetch profile.';
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
+    
+
+
     
 
     clearData() {

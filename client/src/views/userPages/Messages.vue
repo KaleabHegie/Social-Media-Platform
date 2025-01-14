@@ -127,8 +127,6 @@ const selectContact = (contact) => {
   selectedContact.value = contact
 }
 
-
-console.log(authStore)
 const currentUserId = authStore.user?.id
 
 const sendMessage = () => {

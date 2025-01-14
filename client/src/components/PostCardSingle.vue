@@ -80,14 +80,14 @@
             <button @click="toggleLike" class="flex items-center space-x-2 group" :aria-label="isLiked ? 'Unlike post' : 'Like post'" @click.stop>
               <i :class="['ri-thumb-up-line', isLiked ? 'text-sky-500' : 'text-gray-600 dark:text-gray-400']" class="text-xl group-hover:scale-110 transition-transform"></i>
               <span class="text-sm text-gray-600 dark:text-gray-400">
-                {{ post.likes_count || 0 }}
+                {{ likesCount || 0 }}
               </span>
             </button>
 
             <router-link :to="`/viewpost/${post._id}`" class="flex items-center space-x-2 group" aria-label="View comments" @click.stop>
               <i class="ri-chat-1-line text-xl text-gray-600 dark:text-gray-400 group-hover:scale-110 transition-transform"></i>
               <span class="text-sm text-gray-600 dark:text-gray-400">
-                {{ post.comments_count || 0 }}
+                {{ commentsCount || 0 }}
               </span>
             </router-link>
           </div>
@@ -120,8 +120,12 @@ import { format } from 'date-fns';
 import { useLanguageStore } from '@/stores/languageStore';
 
 import { usePostStoryStore } from '@/stores/homePageStore';
+import { useAuthStore } from '@/stores/authStore';
 
 const store = usePostStoryStore();
+const authStore = useAuthStore()
+
+
 
 const { t } = useLanguageStore(); // Translation function
 const props = defineProps({
@@ -131,7 +135,15 @@ const props = defineProps({
   },
 });
 
+console.log(authStore.user)
+console.log(props.post.likes)
+
+const isUserNotLiked = !props.post.likes.some(like => like.userId === authStore.user.id);
+
+
+
 let likesCount = ref(0)
+let commentsCount = ref(0)
 const post = ref(null); // A reactive variable for resolved data
 
 onMounted(async () => {
@@ -142,14 +154,14 @@ onMounted(async () => {
   }
   if (post.value) {
     likesCount.value = post.value.likes_count || 0;
-    isLiked.value = post.value.isLiked || false; // Assuming `isLiked` is part of the post object
+    commentsCount.value = post.value.comments_count || 0;
   }
 });
 
 
 
 const activeSlide = ref(0);
-const isLiked = ref(false);
+const isLiked = ref(!isUserNotLiked);
 const showFullCaption = ref(false);
 
 const formatDate = (date) => {
@@ -163,6 +175,12 @@ const formatDate = (date) => {
 const toggleLike = async () => {
   isLiked.value = !isLiked.value;
   await store.likeDislike(props.post._id);
+  if(isLiked.value){
+  likesCount.value+=1 
+  }
+  else {
+    likesCount.value-=1
+  }
 };
 
 const toggleCaption = () => {

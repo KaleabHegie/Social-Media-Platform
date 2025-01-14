@@ -77,8 +77,7 @@ const localNewMessage = computed({
   set: (value) => emit('update:new-message', value),
 });
 
-const sendMessage = () => {
-  console.log(localNewMessage.value); // Logs the current message content
+const sendMessage = () => {// Logs the current message content
   emit('send-message', { content: localNewMessage.value,  });
   props.messages.push({
     id: props.messages.length + 1,

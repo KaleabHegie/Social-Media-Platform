@@ -2,8 +2,8 @@
   <div class="max-w-4xl mx-auto p-4">
     <!-- Loading or Error State -->
     <div v-if="isLoading" class="flex justify-center items-center h-full">
-  <div class="loader"></div>
-</div>
+      <div class="loader"></div>
+    </div>
 
     <div v-else-if="!profile" class="text-center text-gray-500 dark:text-gray-400">
       No profile data available.
@@ -13,8 +13,9 @@
     <div v-else>
       <!-- Profile Card -->
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 sm:p-6 mb-8">
+        <!-- Profile Info Section -->
         <div class="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-6">
-          <!-- Profile Photo -->
+          <!-- Profile Photo and Info -->
           <div class="relative">
             <img :src="profile.profile_photo_url" alt="Profile Photo"
               class="w-24 h-24 sm:w-32 sm:h-32 rounded-full object-cover">
@@ -23,8 +24,8 @@
               <OhVueIcon name="RiPencilLine" class="w-3 h-3 sm:w-4 sm:h-4" />
             </button>
             <input type="file" ref="fileInput" accept="image/*" @change="handlePhotoUpload" class="hidden">
-
           </div>
+
           <!-- User Info -->
           <div class="flex-grow text-center sm:text-left">
             <h1 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
@@ -32,7 +33,6 @@
             </h1>
             <p class="text-gray-600 dark:text-gray-300">@{{ profile.user_name }}</p>
 
-            <!-- Follow/Unfollow and Message Buttons -->
             <div class="mt-3 space-x-2">
               <h1 class="text-gray-600 dark:text-gray-300"> {{ profile.bio }} </h1>
             </div>
@@ -77,33 +77,39 @@
 
         <!-- Delete Account Button -->
         <div class="mt-6">
-          <button @click="deleteAccount"
+          <button @click="openModal"
             class="px-3 py-1.5 sm:px-4 sm:py-2 bg-red-500 text-white text-sm sm:text-base rounded-md hover:bg-red-600 transition duration-300 w-full sm:w-auto">
             Delete Account
           </button>
         </div>
       </div>
 
-      <!-- Tabbed View -->
-      <div>
-        <div class="flex border-b border-gray-200 dark:border-gray-700 mb-4">
-          <button v-for="tab in tabs" :key="tab.id" @click="currentTab = tab.id"
-            :class="['px-4 py-2 font-medium', currentTab === tab.id ? 'text-blue-500 border-b-2 border-blue-500' : 'text-gray-500 dark:text-gray-400']">
-            {{ tab.name }}
-          </button>
-        </div>
+      <!-- Confirmation Modal -->
+      <ConfirmationModal 
+        :isVisible="isModalVisible" 
+        @confirm="confirmDeleteAccount" 
+        @cancel="closeModal" 
+      />
+    </div>
 
+    <!-- Tabbed View for Posts/Following/Followers -->
+    <div>
+      <div class="flex border-b border-gray-200 dark:border-gray-700 mb-4">
+        <button v-for="tab in tabs" :key="tab.id" @click="currentTab = tab.id"
+          :class="['px-4 py-2 font-medium', currentTab === tab.id ? 'text-blue-500 border-b-2 border-blue-500' : 'text-gray-500 dark:text-gray-400']">
+          {{ tab.name }}
+        </button>
+      </div>
 
-        <!-- Tab Content -->
-        <div v-if="currentTab === 'posts'">
-          <PostCard v-for="post in myposts" :key="post.id" :post="post" :showHashtags="false" />
-        </div>
-        <div v-else-if="currentTab === 'following'">
-          <UserProfileSmall v-for="follow in following" :key="follow.id" :follow="follow" />
-        </div>
-        <div v-else-if="currentTab === 'followers'">
-          <UserProfileSmall v-for="follow in followers" :key="follow.id" :follow="follow" />
-        </div>
+      <!-- Tab Content -->
+      <div v-if="currentTab === 'posts'">
+        <PostCard v-for="post in myposts" :key="post.id" :post="post" :showHashtags="false" />
+      </div>
+      <div v-else-if="currentTab === 'following'">
+        <UserProfileSmall v-for="follow in following" :key="follow.id" :follow="follow" />
+      </div>
+      <div v-else-if="currentTab === 'followers'">
+        <UserProfileSmall v-for="follow in followers" :key="follow.id" :follow="follow" />
       </div>
     </div>
   </div>
@@ -113,17 +119,26 @@
 import { ref, onMounted } from 'vue';
 import { OhVueIcon, addIcons } from "oh-vue-icons";
 import { RiPencilLine } from "oh-vue-icons/icons";
+import { useRouter } from 'vue-router'
 import PostCard from '@/components/PostCard.vue';
 import UserProfileSmall from '@/components/UserProfileSmall.vue';
 import { usePostStoryStore } from '../../stores/homePageStore';
+import { useAuthStore } from '../../stores/authStore';
 import ToastService from '@/utils/toast.js';
+import ConfirmationModal from '@/components/ConfirmationModal.vue'; // Import your modal component
+
 
 addIcons(RiPencilLine);
+
+const router = useRouter();
+const authStore = useAuthStore()
 
 const toast = ToastService();
 const postStoryStore = usePostStoryStore();
 const profile = ref(null);
 const myposts = ref([]);
+const following = ref([]);
+const followers = ref([]);
 const likedposts = ref([]);
 const isLoading = ref(true);
 const currentTab = ref('posts');
@@ -139,7 +154,8 @@ onMounted(async () => {
     profile.value = postStoryStore.myProfile;
     myposts.value = postStoryStore.myPosts;
     likedposts.value = postStoryStore.likedPosts;
-
+    following.value = postStoryStore.myProfile.following;
+    followers.value = postStoryStore.myProfile.followers;
   } catch (error) {
     console.error("Error loading profile:", error);
   } finally {
@@ -160,7 +176,6 @@ const handlePhotoUpload = async (event) => {
   try {
     await postStoryStore.updateProfilePhoto(file);
     toast.success('Profile photo updated successfully!', { position: 'top-center' });
-    // Optionally, refresh profile data
   } catch (error) {
     toast.error('Failed to update profile photo.', { position: 'top-center' });
     console.error('Error uploading photo:', error.message);
@@ -178,7 +193,29 @@ const togglePrivacy = async () => {
     console.error('Error creating post:', error.message);
   }
 }
-const deleteAccount = () => console.log('Delete account');
+
+const isModalVisible = ref(false); // State to control modal visibility
+
+// Opens the modal
+const openModal = () => {
+  isModalVisible.value = true;
+};
+
+// Closes the modal
+const closeModal = () => {
+  isModalVisible.value = false;
+};
+
+// Confirms the account deletion
+const confirmDeleteAccount = async () => {
+  console.log("Account deleted for:", profile.value.user_name);
+  await postStoryStore.deleteAccount();
+  await authStore.logout()
+  closeModal(); // Close the modal after confirming the delete
+  router.push('/signin');
+};
+
+// Handles bio update
 const updateBio = async () => {
   try {
     const response = await postStoryStore.updateBio(profile.value.bio);
@@ -189,6 +226,7 @@ const updateBio = async () => {
   }
 }
 </script>
+
 
 
 
