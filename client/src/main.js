@@ -18,6 +18,7 @@ import {
   RiThumbUpLine,
   RiChat1Line,
   RiSearchLine,
+  RiPencilLine,
 } from "oh-vue-icons/icons";
 
 addIcons(
@@ -29,7 +30,8 @@ addIcons(
   RiLogoutBoxLine,
   RiThumbUpLine,
   RiChat1Line,
-  RiSearchLine
+  RiSearchLine,
+  RiPencilLine,
 );
 
 const app = createApp(App);

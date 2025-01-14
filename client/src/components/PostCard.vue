@@ -9,7 +9,7 @@
       <!-- User Info Overlay -->
       <div class="absolute top-0 left-0 right-0 z-10 p-4 bg-gradient-to-b from-black/60 to-transparent">
         <div class="flex items-center">
-          <router-link :to="`/user/${props.post.user.user_name}`" class="flex items-center group" @click.stop>
+          <router-link :to="`/viewAccount/${props.post.user._id}`" class="flex items-center group" @click.stop>
             <div class="relative w-10 h-10 rounded-full overflow-hidden border-2 border-white">
               <img :src="props.post.user.profile_photo_url || '/default-avatar.png'" :alt="props.post.user.user_name"
                 class="w-full h-full object-cover" @error="handleAvatarError" />

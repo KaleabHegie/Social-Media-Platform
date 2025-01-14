@@ -20,8 +20,8 @@
             <img :src="profile.profile_photo_url" alt="Profile Photo"
               class="w-24 h-24 sm:w-32 sm:h-32 rounded-full object-cover">
             <button @click="triggerFileInput"
-              class="absolute bottom-0 right-0 bg-blue-500 rounded-full p-1.5 sm:p-2 text-white">
-              <OhVueIcon name="RiPencilLine" class="w-3 h-3 sm:w-4 sm:h-4" />
+              class="absolute bottom-0 right-0 bg-blue-500 rounded-full p-1 sm:p-1 text-white">
+              <i class="ri-add-line text-white text-xl"></i>
             </button>
             <input type="file" ref="fileInput" accept="image/*" @change="handlePhotoUpload" class="hidden">
           </div>
@@ -76,20 +76,22 @@
         </div>
 
         <!-- Delete Account Button -->
-        <div class="mt-6">
+        <div class="mt-6 flex gap-4">
           <button @click="openModal"
             class="px-3 py-1.5 sm:px-4 sm:py-2 bg-red-500 text-white text-sm sm:text-base rounded-md hover:bg-red-600 transition duration-300 w-full sm:w-auto">
+            <i class="ri-delete-bin-line text-white text-xl"></i>
             Delete Account
+          </button>
+          <button @click="logout"
+            class="flex items-center space-x-3 w-min px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">
+            <v-icon name="ri-logout-box-line" class="text-2xl font-bold text-gray-500 dark:text-gray-400" />
+            <span class="text-lg font-semibold">{{ t('Logout') }}</span>
           </button>
         </div>
       </div>
 
       <!-- Confirmation Modal -->
-      <ConfirmationModal 
-        :isVisible="isModalVisible" 
-        @confirm="confirmDeleteAccount" 
-        @cancel="closeModal" 
-      />
+      <ConfirmationModal :isVisible="isModalVisible" @confirm="confirmDeleteAccount" @cancel="closeModal" />
     </div>
 
     <!-- Tabbed View for Posts/Following/Followers -->
@@ -126,6 +128,7 @@ import { usePostStoryStore } from '../../stores/homePageStore';
 import { useAuthStore } from '../../stores/authStore';
 import ToastService from '@/utils/toast.js';
 import ConfirmationModal from '@/components/ConfirmationModal.vue'; // Import your modal component
+import { useLanguageStore } from '@/stores/languageStore'; const { t } = useLanguageStore();
 
 
 addIcons(RiPencilLine);
@@ -225,6 +228,14 @@ const updateBio = async () => {
     console.error('Error creating post:', error.message);
   }
 }
+
+
+
+// Logout function
+const logout = () => {
+  authStore.logout();
+  router.push("/signin");
+};
 </script>
 
 
@@ -232,8 +243,10 @@ const updateBio = async () => {
 
 <style scoped>
 .loader {
-  border: 4px solid #f3f3f3; /* Light grey */
-  border-top: 4px solid #3498db; /* Blue */
+  border: 4px solid #f3f3f3;
+  /* Light grey */
+  border-top: 4px solid #3498db;
+  /* Blue */
   border-radius: 50%;
   align-items: center;
   margin-top: 300px;
@@ -252,6 +265,7 @@ const updateBio = async () => {
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
   }

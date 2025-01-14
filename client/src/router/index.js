@@ -34,7 +34,7 @@ const routes = [
     children: [
       { path: "home", component: Home, meta: { requiresAuth: true } },
       { path: "explore/:hashtag?", component: Explore, meta: { requiresAuth: true } },
-      { path: "account", component: MyAccount, meta: { requiresAuth: true } },
+      { path: "MyAccount", component: MyAccount, meta: { requiresAuth: true } },
       { path: "viewAccount/:id", component: Account, meta: { requiresAuth: true } },
       { path: "createpost", component: CreatePost, meta: { requiresAuth: true } },
       { path: "messages", component: Messages, meta: { requiresAuth: true } },

@@ -17,7 +17,7 @@
           <div class="relative">
             <img :src="profile.profile_photo_url" alt="Profile Photo"
               class="w-24 h-24 sm:w-32 sm:h-32 rounded-full object-cover">
-           
+
           </div>
           <!-- User Info -->
           <div class="flex-grow text-center sm:text-left">
@@ -32,16 +32,14 @@
                 class="px-3 py-1.5 sm:px-4 sm:py-2 bg-blue-500 text-white text-sm sm:text-base rounded-md hover:bg-blue-600 transition duration-300">
                 {{ isFollowing ? 'Unfollow' : 'Follow' }}
               </button>
-             
-              <router-link          
-        :to="`/messages`" 
-        class="text-sm text-gray-600 dark:text-gray-400 hover:underline"
-      >
-      <button class="px-3 py-1.5 sm:px-4 sm:py-2 bg-gray-200 text-gray-800 text-sm sm:text-base rounded-md hover:bg-gray-300 transition duration-300">
-        
-      Message
-      </button>
-      </router-link>
+
+              <router-link :to="`/messages`" class="text-sm text-gray-600 dark:text-gray-400 hover:underline">
+                <button
+                  class="px-3 py-1.5 sm:px-4 sm:py-2 bg-gray-200 text-gray-800 text-sm sm:text-base rounded-md hover:bg-gray-300 transition duration-300">
+
+                  Message
+                </button>
+              </router-link>
             </div>
           </div>
         </div>
@@ -63,13 +61,16 @@
         </div>
 
         <!-- Bio -->
-        <div class="mt-4">
-          <h1 class="text-sm sm:text-base text-gray-600 dark:text-gray-300">Bio : {{ profile.bio }}</h1>
+        <div v-if="profile.bio" class="mt-4">
+          <p class="text-sm sm:text-base text-gray-700 dark:text-gray-300 break-words">
+            {{ profile.bio }}
+          </p>
         </div>
-        
+
+
 
         <!-- Privacy Toggle -->
-     
+
       </div>
 
       <!-- Tabbed View -->
@@ -146,7 +147,7 @@ const sendMessage = () => console.log('Message sent');
 const toggleFollow = async () => {
   await postStoryStore.followUser(profile.value._id);
   toast.success('Successfull!', { position: 'top-center' });
-  };
+};
 </script>
 
 

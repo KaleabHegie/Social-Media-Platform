@@ -19,7 +19,7 @@
               { name: t('explore'), path: '/explore', icon: 'ri-compass-line' },
               { name: t('createPost'), path: '/createpost', icon: 'ri-add-box-line' },
               { name: t('message'), path: '/messages', icon: 'ri-message-2-line' },
-              { name: t('account'), path: '/account', icon: 'ri-user-line' }
+              { name: t('account'), path: '/myaccount', icon: 'ri-user-line' }
             ]"
             :key="item.path"
           >
@@ -115,9 +115,7 @@ const isActive = (path) => {
 
 // Logout function
 const logout = () => {
-  
   authStore.logout();
   router.push("/signin");
-  
 };
 </script>
