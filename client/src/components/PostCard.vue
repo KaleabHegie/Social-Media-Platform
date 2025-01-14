@@ -1,7 +1,6 @@
 <template>
-  <!-- Wrap the entire card with a router-link -->
-  <!-- <router-link :to="`/viewpost/${props.post._id}`" class="block"> -->
-  <div class="block">
+  <!--  router-link -->
+  <router-link :to="`/viewpost/${props.post._id}`" class="block">
     <article
       class="bg-white dark:bg-gray-800 rounded-xl shadow-lg mb-6 overflow-hidden hover:shadow-xl transition-shadow duration-300">
       <div class="relative fade-mask">
@@ -32,7 +31,7 @@
             :style="{ transform: `translateX(-${activeSlide * 100}%)` }">
             <div v-for="(media, index) in post.medias" :key="index" class="w-full flex-shrink-0">
               <template v-if="media.endsWith('.mp4') || media.endsWith('.webm')">
-                <video :src="media" loop class="w-full h-auto object-contain"></video>
+                <video :src="media" autoplay controls loop class="w-full h-auto object-contain"></video>
               </template>
               <template v-else>
                 <img :src="media" alt="Media" class="w-full h-auto object-contain" />
@@ -44,7 +43,7 @@
           </div>
           <!-- Carousel Navigation -->
           <div v-if="post.medias && post.medias.length > 1"
-            class="absolute bottom-4 left-[45%] mx-auto flex justify-center gap-2 p-2 rounded-md bg-[#0000006e]">
+            class="absolute bottom-9 left-[45%] mx-auto flex justify-center gap-2 p-2 rounded-md bg-[#0000006e]">
             <button v-for="(_, index) in post.medias" :key="index" @click.stop.prevent="goToSlide(index)"
               class="w-3 h-3 rounded-full transition-colors duration-200"
               :class="index === activeSlide ? 'bg-white' : 'bg-white/50'"
@@ -104,7 +103,7 @@
         </div>
       </div>
     </article>
-  </div>
+  </router-link>
 </template>
 
 
