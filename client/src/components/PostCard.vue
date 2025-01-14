@@ -27,13 +27,30 @@
         </div>
 
         <!-- Carousel -->
-        <div>
-          <ul v-if="post.medias && post.medias.length">
-            <li v-for="(media, index) in post.medias" :key="index">
-              {{ media }}
-            </li>
-          </ul>
-          <p v-else>No media available.</p>
+        <div class="relative" v-touch:swipe.left="onSwipeLeft" v-touch:swipe.right="onSwipeRight">
+          <!-- Media Slider -->
+          <div v-if="post.medias && post.medias.length" class="flex transition-transform duration-300 ease-in-out"
+            :style="{ transform: `translateX(-${activeSlide * 100}%)` }">
+            <div v-for="(media, index) in post.medias" :key="index" class="w-full flex-shrink-0">
+              <template v-if="media.endsWith('.mp4') || media.endsWith('.webm')">
+                <video :src="media" autoplay controls loop class="w-full h-auto object-contain"></video>
+              </template>
+              <template v-else>
+                <img :src="media" alt="Media" class="w-full h-auto object-contain" />
+              </template>
+            </div>
+          </div>
+          <div v-else class="pt-20">
+            
+          </div>
+          <!-- Carousel Navigation -->
+          <div v-if="post.medias && post.medias.length > 1"
+            class="absolute bottom-9 left-[45%] mx-auto flex justify-center gap-2 p-2 rounded-md bg-[#0000006e]">
+            <button v-for="(_, index) in post.medias" :key="index" @click.stop.prevent="goToSlide(index)"
+              class="w-3 h-3 rounded-full transition-colors duration-200"
+              :class="index === activeSlide ? 'bg-white' : 'bg-white/50'"
+              :aria-label="`Go to slide ${index + 1}`"></button>
+          </div>
         </div>
       </div>
 
@@ -48,7 +65,9 @@
           <p v-else class="text-gray-800 dark:text-white">
             {{ truncatedCaption }}
           </p>
-          <button @click="toggleCaption" class="text-sky-500 dark:text-sky-400 text-sm mt-2" @click.stop>
+          <!-- Show Read More only if caption is longer than 100 characters -->
+          <button v-if="props.post.caption && props.post.caption.length > 100" @click.stop.prevent="toggleCaption"
+            class="text-sky-500 dark:text-sky-400 text-sm mt-2">
             {{ showFullCaption ? t('readLess') : t('readMore') }}
           </button>
         </div>
@@ -59,8 +78,8 @@
         <!-- Interaction Buttons -->
         <div class="flex items-center justify-between mb-4">
           <div class="flex items-center space-x-4">
-            <button @click="toggleLike" class="flex items-center space-x-2 group"
-              :aria-label="isLiked ? 'Unlike post' : 'Like post'" @click.stop>
+            <button @click.stop.prevent="toggleLike" class="flex items-center space-x-2 group"
+              :aria-label="isLiked ? 'Unlike post' : 'Like post'">
               <i :class="[
                 'ri-thumb-up-line',
                 isLiked ? 'text-sky-500' : 'text-gray-600 dark:text-gray-400',
@@ -71,7 +90,7 @@
             </button>
 
             <router-link :to="`/viewpost/${post._id}`" class="flex items-center space-x-2 group"
-              aria-label="View comments" @click.stop>
+              aria-label="View comments" @click.stop.prevent>
               <i
                 class="ri-chat-1-line text-xl text-gray-600 dark:text-gray-400 group-hover:scale-110 transition-transform"></i>
               <span class="text-sm text-gray-600 dark:text-gray-400">
@@ -84,7 +103,7 @@
         <!-- Hashtags -->
         <div class="flex flex-wrap gap-2">
           <router-link v-for="tag in props.post.hashtags || []" :key="tag" :to="`/home`"
-            class="text-sky-500 dark:text-sky-400 text-sm hover:underline" @click.stop>
+            class="text-sky-500 dark:text-sky-400 text-sm hover:underline" @click.stop.prevent>
             #{{ tag }}
           </router-link>
         </div>
@@ -106,11 +125,27 @@ const props = defineProps({
   },
 });
 
+const activeSlide = ref(0);
 
+const goToSlide = (index) => {
+  activeSlide.value = index
+}
+
+const onSwipeLeft = () => {
+  console.log("Swipeeeeee")
+  if (activeSlide.value < props.post.medias.length - 1) {
+    activeSlide.value++
+  }
+}
+
+const onSwipeRight = () => {
+  if (activeSlide.value > 0) {
+    activeSlide.value--
+  }
+}
 
 
 const isLiked = ref(false);
-const showFullCaption = ref(false);
 
 const formatDate = (date) => {
   const formattedDate = new Date(date);
@@ -124,9 +159,8 @@ const toggleLike = () => {
   isLiked.value = !isLiked.value;
 };
 
-const toggleCaption = () => {
-  showFullCaption.value = !showFullCaption.value;
-};
+const showFullCaption = ref(false);
+
 
 const truncatedCaption = computed(() => {
   return props.post.caption && props.post.caption.length > 100
@@ -134,6 +168,9 @@ const truncatedCaption = computed(() => {
     : props.post.caption || '';
 });
 
+const toggleCaption = () => {
+  showFullCaption.value = !showFullCaption.value;
+};
 const handleAvatarError = (e) => {
   e.target.src = '/default-avatar.png';
 };

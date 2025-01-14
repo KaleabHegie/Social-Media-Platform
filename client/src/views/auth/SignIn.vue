@@ -84,7 +84,7 @@
           <div>
             <button type="submit" :disabled="loading"
               class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-sky-400 hover:bg-sky-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500">
-              <span v-if="loading">{{ t(' signingin') }}</span>
+              <span v-if="loading">Signing in ...</span>
               <span v-else>{{ t('signin') }}</span>
             </button>
           </div>
