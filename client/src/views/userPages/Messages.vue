@@ -53,7 +53,12 @@
           <div v-if="activeTab === 'personal' || activeTab === 'all'">
             <div v-for="contact in filteredContacts" :key="contact.id" @click="selectContact(contact)"
               class="flex items-center p-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">
+              <router-link 
+        :to="`/viewAccount/${contact._id}`" 
+        class="text-sm text-gray-600 dark:text-gray-400 hover:underline"
+      >
               <img :src="contact.profile_photo_url" alt="avatar" class="w-12 h-12 rounded-full object-cover" />
+      </router-link>
               <div class="ml-3">
                 <p class="font-semibold">{{ contact.user_name }}</p>
                 <p class="text-sm text-gray-500 dark:text-gray-400 truncate">{{ contact.lastMessage }}</p>
@@ -65,7 +70,7 @@
 
       <!-- Chat area -->
       <ChatBox
-        v-if="!isMobile || selectedContact"
+        v-if="selectedContact"
         :selected-contact="selectedContact"
         :is-mobile="isMobile"
         :messages="messages"
@@ -85,6 +90,12 @@ import { BiSearch, BiSend, BiChatDots, BiPeople, BiPerson, BiSun, BiMoon, BiX, B
 import ChatBox from '@/components/ChatBox.vue';
 import { usePostStoryStore } from '../../stores/homePageStore';
 
+import { io } from 'socket.io-client'; // Import Socket.IO client
+import { useAuthStore } from '../../stores/authStore';
+
+const socket = io('http://localhost:5000'); // Connect to your backend server
+
+
 addIcons(BiSearch, BiSend, BiChatDots, BiPeople, BiPerson, BiSun, BiMoon, BiX, BiArrowLeft);
 
 const activeTab = ref('all')
@@ -96,6 +107,7 @@ const isLoading = ref(true);
 
 
 const postStoryStore = usePostStoryStore();
+const authStore = useAuthStore();
 
 const groups = ref([
   // { id: 'g1', name: 'Work Team', lastMessage: 'Meeting at 3 PM' },
@@ -115,18 +127,37 @@ const selectContact = (contact) => {
   selectedContact.value = contact
 }
 
+
+console.log(authStore)
+const currentUserId = authStore.user?.id
+
 const sendMessage = () => {
   if (newMessage.value.trim()) {
-    messages.value.push({
-      id: messages.value.length + 1,
-      text: newMessage.value,
-      isSent: true,
-      sender: 'You',
-      timestamp: new Date()
-    })
-    newMessage.value = ''
+    console.log(postStoryStore.currentUser)
+    // Emit message data to the backend
+    
+    socket.emit('sendMessage', {
+      senderId:currentUserId,  // Replace with the current user's ID
+      receiverId: selectedContact.value._id,  // The selected contact's ID
+      content: newMessage.value,  // The message content
+      media: null  // You can add media data if needed
+    }, (response) => {
+      if (response.success) {
+        // If the message is successfully sent, update the messages array
+        socket.emit('messageToReceiver', {
+          senderId:currentUserId,  // Sender's ID
+          receiverId: selectedContact.value._id,  // Receiver's ID
+          content: newMessage.value,  // Message content
+          media: null,  // Add media data if needed
+          timestamp: new Date()  // Timestamp
+        });
+      } else {
+        console.error(response.message);  // Handle failure
+      }
+    });
   }
-}
+};
+
 
 const leaveChat = () => {
   selectedContact.value = null

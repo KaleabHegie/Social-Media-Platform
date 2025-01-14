@@ -17,8 +17,8 @@
         </div>
       </div>
       <!-- Masonry Layout Container for Explore Post Cards -->
-      <div v-if="!postStoryStore.isLoading && filteredPosts.length > 0" class="explore-grid">
-        <ExplorePostCard v-for="post in filteredPosts" :key="post.id" :post="post" />
+      <div v-if="!postStoryStore.isLoading && postStoryStore.explore.length > 0" class="explore-grid">
+        <ExplorePostCard v-for="post in postStoryStore.explore" :key="post.id" :post="post" />
       </div>
       <div v-else-if="!postStoryStore.isLoading && !postStoryStore.error" class="text-center text-gray-600 dark:text-gray-400 mt-8">
         No posts to explore at the moment.
@@ -56,18 +56,23 @@ const { isLoading, error, posts } = postStoryStore;
 
 // Filtered posts based on search query
 const filteredPosts = computed(() => {
-  return postStoryStore.posts.filter(
+  console.log(postStoryStore.explore)
+  return postStoryStore.explore.filter(
     (post) =>
       post.hashtags.some((tag) => tag.toLowerCase().includes(searchQuery.value.toLowerCase()))
   );
 });
 
 // Fetch posts on component mount
-onMounted(() => {
-  postStoryStore.fetchExplore(); // Fetch explore feed
+onMounted(async () => {
+  try {
+    await postStoryStore.fetchExplore(); // Fetch explore feed
+  } catch (error) {
+    console.error('Error fetching posts:', error);
+  }
 });
 
-console.log(postStoryStore);
+
 </script>
 
 <style scoped>

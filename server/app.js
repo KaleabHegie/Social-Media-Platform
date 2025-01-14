@@ -3,7 +3,7 @@ const { errorHandler } = require('./Middleware/errorHandler');
 const connectDB = require('./Config/dbConn');
 const cors = require('cors');
 const http = require('http'); // Import HTTP module
-// const { Server } = require('socket.io'); // Import Socket.IO
+const { Server } = require('socket.io'); // Import Socket.IO
 
 const userAccountRoutes = require('./Routes/userAccountRoutes');
 const appRoutes = require('./Routes/appRoutes');
@@ -29,15 +29,15 @@ app.use("/api", appRoutes);
 
 // Create HTTP server and attach Socket.IO
 const server = http.createServer(app);
-// const io = new Server(server, {
-//   cors: {
-//     origin: ' http://localhost:5173/', // Replace with your frontend URL in production
-//     methods: ['GET', 'POST'],
-//   },
-// });
+const io = new Server(server, {
+  cors: {
+    origin: '*', // Replace with your frontend URL in production
+    methods: ['GET', 'POST'],
+  },
+});
 
-// // Initialize Socket.IO controller
-// socketController(io);
+// Initialize Socket.IO controller
+socketController(io);
 
 // Start the server
 server.listen(port, () => {

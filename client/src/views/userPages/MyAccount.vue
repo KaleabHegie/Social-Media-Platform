@@ -98,9 +98,6 @@
         <div v-if="currentTab === 'posts'">
           <PostCard v-for="post in myposts" :key="post.id" :post="post" :showHashtags="false" />
         </div>
-        <div v-else-if="currentTab === 'likedposts'">
-          <PostCard v-for="post in likedposts" :key="post.id" :post="post" :showHashtags="false" />
-        </div>
         <div v-else-if="currentTab === 'following'">
           <UserProfileSmall v-for="follow in following" :key="follow.id" :follow="follow" />
         </div>
@@ -132,7 +129,6 @@ const isLoading = ref(true);
 const currentTab = ref('posts');
 const tabs = [
   { id: 'posts', name: 'Posts' },
-  { id: 'likedposts', name: 'Liked' },
   { id: 'following', name: 'Following' },
   { id: 'followers', name: 'Followers' },
 ];

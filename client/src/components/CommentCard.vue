@@ -2,23 +2,24 @@
     <!-- Comment Card Template -->
     <div class="flex items-start space-x-4 mb-4 p-4 border rounded-xl border-gray-300 dark:border-gray-700">
       <img
-        :src="comment.sender.profile_photo_url || 'https://via.assets.so/game.png?id=1&q=95&w=360&h=360&fit=fill'"
+        :src="'https://via.assets.so/game.png?id=1&q=95&w=360&h=360&fit=fill'"
         alt="avatar"
         class="w-10 h-10 rounded-full"
       />
       <div class="flex-grow">
+        
         <div class="flex items-center justify-between">
           <h3 class="font-bold text-gray-800 dark:text-gray-200">{{ comment.sender.user_name }}</h3>
-          <button @click="deleteComment" class="text-red-500 hover:text-red-700">
+          <!-- <button @click="deleteComment" class="text-red-500 hover:text-red-700">
             <oh-vue-icon name="ri-delete-bin-line" class="w-5 h-5" />
-          </button>
+          </button> -->
         </div>
         <p class="text-gray-600 dark:text-gray-300 mt-1">{{ comment.content }}</p>
         <div class="flex items-center mt-2">
-          <button @click="likeComment" class="flex items-center text-gray-500 hover:text-blue-500">
+          <!-- <button @click="likeComment" class="flex items-center text-gray-500 hover:text-blue-500">
             <oh-vue-icon name="ri-heart-line" class="w-5 h-5 mr-1" />
             <span>{{ comment.likes.length }}</span>
-          </button>
+          </button> -->
         </div>
       </div>
     </div>

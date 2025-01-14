@@ -84,20 +84,41 @@ const goBack = () => {
     router.back();
 };
 
-
-
 const newComment = ref('');
 const content = {
     postId: postId,
     content: newComment.value
 }
-const addComment = () => {
+
+const addComment = async () => {
     if (newComment.value.trim()) {
-        content.content = newComment.value
-        const result = store.addComment(content);
+        // Create a comment object to add
+        content.content = newComment.value;
+        
+        // Add the comment using the store method
+        const message = await store.addComment(content);
+        console.log(message)
+
+      
+
+        // Clear the input field
         newComment.value = '';
+
+        // Ensure comments array exists
+        if (!post.value.comments) {
+            post.value.comments = []; // Initialize comments as an empty array if not defined
+        }
+
+        // Optionally, add the comment to the local post comments list
+        const addedComment = {
+            content: content.content,
+            // Add other necessary comment properties (e.g., user info, timestamps)
+        };
+        
+        post.value.comments.push(message.comment); // Push the new comment
     }
 };
+
 
 onMounted(async () => {
     if (!store.hasPosts) {

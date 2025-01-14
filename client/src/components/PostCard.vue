@@ -137,7 +137,7 @@
             </button>
 
             <router-link
-              :to="`/viewPost`"
+              :to="`/viewpost/${post._id}`"
               class="flex items-center space-x-2 group"
               aria-label="View comments"
               @click.stop

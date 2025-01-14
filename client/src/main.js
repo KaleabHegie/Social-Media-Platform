@@ -6,6 +6,7 @@ import App from "./App.vue";
 import Toast from 'vue-toastification';
 import 'vue-toastification/dist/index.css';
 import { OhVueIcon, addIcons } from "oh-vue-icons";
+import 'remixicon/fonts/remixicon.css';
 
 import {
   RiHomeLine,

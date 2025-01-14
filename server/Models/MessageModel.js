@@ -13,7 +13,6 @@ const MessageSubSchema = new mongoose.Schema({
 // Main Message Schema
 const MessageSchema = new mongoose.Schema(
   {
-        id: { type: mongoose.Schema.Types.ObjectId, required: true },
         participants: [
           {
             userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },

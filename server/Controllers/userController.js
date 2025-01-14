@@ -391,6 +391,7 @@ const userController = {
   },
 
   followUser: async (req, res) => {
+    console.log('here')
     try {
       if (!req.user) {
         return res.status(constants.UNAUTHORIZED).json({
@@ -398,7 +399,7 @@ const userController = {
         });
       }
 
-      const userIdToFollow = req.query.userId; // User ID to follow/unfollow
+      const userIdToFollow = req.body.userId; // User ID to follow/unfollow
       const currentUserId = req.user.id; // Logged-in user's ID
 
       // Check if the current user exists

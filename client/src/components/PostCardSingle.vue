@@ -84,7 +84,7 @@
               </span>
             </button>
 
-            <router-link :to="`/viewPost`" class="flex items-center space-x-2 group" aria-label="View comments" @click.stop>
+            <router-link :to="`/viewpost/${post._id}`" class="flex items-center space-x-2 group" aria-label="View comments" @click.stop>
               <i class="ri-chat-1-line text-xl text-gray-600 dark:text-gray-400 group-hover:scale-110 transition-transform"></i>
               <span class="text-sm text-gray-600 dark:text-gray-400">
                 {{ post.comments_count || 0 }}
@@ -119,6 +119,10 @@ import { ref, onMounted, computed } from 'vue';
 import { format } from 'date-fns';
 import { useLanguageStore } from '@/stores/languageStore';
 
+import { usePostStoryStore } from '@/stores/homePageStore';
+
+const store = usePostStoryStore();
+
 const { t } = useLanguageStore(); // Translation function
 const props = defineProps({
   post: {
@@ -127,6 +131,7 @@ const props = defineProps({
   },
 });
 
+let likesCount = ref(0)
 const post = ref(null); // A reactive variable for resolved data
 
 onMounted(async () => {
@@ -135,7 +140,13 @@ onMounted(async () => {
   } else {
     post.value = props.post; // Directly assign if it's not a promise
   }
+  if (post.value) {
+    likesCount.value = post.value.likes_count || 0;
+    isLiked.value = post.value.isLiked || false; // Assuming `isLiked` is part of the post object
+  }
 });
+
+
 
 const activeSlide = ref(0);
 const isLiked = ref(false);
@@ -149,8 +160,9 @@ const formatDate = (date) => {
   return format(formattedDate, 'MMM d, yyyy • HH:mm');
 };
 
-const toggleLike = () => {
+const toggleLike = async () => {
   isLiked.value = !isLiked.value;
+  await store.likeDislike(props.post._id);
 };
 
 const toggleCaption = () => {

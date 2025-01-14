@@ -226,7 +226,9 @@ console.log("Body:", req.body);
         });
       }
 
-      const { postId } = req.query; // Assuming postId is passed as a query parameter
+      console.log(req.body)
+
+      const  postId = req.body.postId; // Assuming postId is passed as a query parameter
       const userId = req.user.id; // Get the logged-in user's ID
 
       // Validate the required fields

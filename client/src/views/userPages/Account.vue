@@ -79,9 +79,6 @@
         <div v-if="currentTab === 'posts'">
           <PostCard v-for="post in myposts" :key="post.id" :post="post" :showHashtags="false" />
         </div>
-        <div v-else-if="currentTab === 'likedposts'">
-          <PostCard v-for="post in likedposts" :key="post.id" :post="post" :showHashtags="false" />
-        </div>
         <div v-else-if="currentTab === 'following'">
           <UserProfileSmall v-for="follow in following" :key="follow.id" :follow="follow" />
         </div>
@@ -101,6 +98,10 @@ import PostCard from '@/components/PostCard.vue';
 import UserProfileSmall from '@/components/UserProfileSmall.vue';
 import { usePostStoryStore } from '../../stores/homePageStore';
 import { useRoute } from 'vue-router';
+import ToastService from '@/utils/toast.js';
+
+const toast = ToastService();
+
 
 const route = useRoute();
 const userId = route.params.id;
@@ -115,7 +116,6 @@ const isLoading = ref(true);
 const currentTab = ref('posts')
 const tabs = [
   { id: 'posts', name: 'Posts' },
-  { id: 'likedposts', name: 'Liked' },
   { id: 'following', name: 'Following' },
   { id: 'followers', name: 'Followers' },
 ];
@@ -137,7 +137,10 @@ onMounted(async () => {
 
 
 const sendMessage = () => console.log('Message sent');
-const toggleFollow = () => console.log('Follow toggled');
+const toggleFollow = async () => {
+  await postStoryStore.followUser(profile.value._id);
+  toast.success('Successfull!', { position: 'top-center' });
+  };
 </script>
 
 

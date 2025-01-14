@@ -6,7 +6,7 @@ import MyHttpService from "@/stores/MyHttpService"; // Ensure this points to you
 
 export const useAuthStore = defineStore("auth", {
   state: () => ({
-    user: null,
+    user: localStorage.getItem("accessToken") ? jwtDecode(localStorage.getItem("accessToken"))?.user : null,
     token: localStorage.getItem("accessToken") || null,
     isLoading: false,
     error: null,
