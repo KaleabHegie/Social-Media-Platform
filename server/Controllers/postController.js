@@ -4,9 +4,9 @@ const User = require("../Models/UserModel");
 const Post = require("../Models/PostModel");
 const Hashtag = require("../Models/HashTagModel");
 
-const multer = require('multer');
+const multer = require("multer");
 const Message = require("../Models/MessageModel");
-const upload = multer(); 
+const upload = multer();
 
 // // Configure Cloudinary
 // cloudinary.config({
@@ -22,8 +22,6 @@ cloudinary.config({
   api_secret: "zfWlXCOgJU0q4p3yVHZEEo74PnY",
 });
 
-
-
 const postController = {
   /************************************************************************
    *
@@ -36,104 +34,99 @@ const postController = {
    *
    ************************************************************************/
 
-
-
-  
-  
-uploadPost: async (req, res) => {
-  try {
-    if (!req.user) {
-      return res.status(constants.UNAUTHORIZED).json({
-        message: "Can't upload posts if user is not logged in",
-      });
-    }
-    
-
-    const { caption, rawHashtags, type } = req.body;
-    if (!type) {
-      return res.status(constants.VALIDATION_ERRORS).json({
-        message: `Post type is required`,
-      });
-    }
-
-    if (!req.files || req.files.length === 0) {
-      return res.status(constants.VALIDATION_ERRORS).json({
-        message: "At least one media file is required",
-      });
-    }
-    if (rawHashtags && rawHashtags.length > 300) {
-      return res.status(constants.VALIDATION_ERRORS).json({
-        message: "Hashtags are too long (Max 300 characters)",
-      });
-    }
-    
-    const hashtags = rawHashtags
-      ? rawHashtags
-          .split("#")
-          .map((tag) => tag.trim().replace(/\s+/g, "_"))
-          .filter((tag) => tag.length > 0)
-      : [];
-
-    if (hashtags.length > 30) {
-      return res.status(constants.VALIDATION_ERRORS).json({
-        message: "Too many hashtags (Max 30 allowed)",
-      });
-    }
-
-    const allowedMimeTypes = ["image/jpeg", "image/png", "video/mp4"];
-    for (const file of req.files) {
-      if (!allowedMimeTypes.includes(file.mimetype)) {
-        return res.status(constants.VALIDATION_ERRORS).json({
-          message: "Invalid file type",
+  uploadPost: async (req, res) => {
+    try {
+      if (!req.user) {
+        return res.status(constants.UNAUTHORIZED).json({
+          message: "Can't upload posts if user is not logged in",
         });
       }
-      if (file.size > 5 * 1024 * 1024) {
+
+      const { caption, rawHashtags, type } = req.body;
+      if (!type) {
         return res.status(constants.VALIDATION_ERRORS).json({
-          message: "File size exceeds the limit of 5MB",
+          message: `Post type is required`,
         });
       }
+
+      if (!req.files || req.files.length === 0) {
+        return res.status(constants.VALIDATION_ERRORS).json({
+          message: "At least one media file is required",
+        });
+      }
+      if (rawHashtags && rawHashtags.length > 300) {
+        return res.status(constants.VALIDATION_ERRORS).json({
+          message: "Hashtags are too long (Max 300 characters)",
+        });
+      }
+
+      const hashtags = rawHashtags
+        ? rawHashtags
+            .split("#")
+            .map((tag) => tag.trim().replace(/\s+/g, "_"))
+            .filter((tag) => tag.length > 0)
+        : [];
+
+      if (hashtags.length > 30) {
+        return res.status(constants.VALIDATION_ERRORS).json({
+          message: "Too many hashtags (Max 30 allowed)",
+        });
+      }
+
+      const allowedMimeTypes = ["image/jpeg", "image/png", "video/mp4"];
+      for (const file of req.files) {
+        if (!allowedMimeTypes.includes(file.mimetype)) {
+          return res.status(constants.VALIDATION_ERRORS).json({
+            message: "Invalid file type",
+          });
+        }
+        if (file.size > 5 * 1024 * 1024) {
+          return res.status(constants.VALIDATION_ERRORS).json({
+            message: "File size exceeds the limit of 5MB",
+          });
+        }
+      }
+
+      const uploadedMediaUrls = await Promise.all(
+        req.files.map(
+          (file) =>
+            new Promise((resolve, reject) => {
+              const stream = cloudinary.uploader.upload_stream(
+                { resource_type: "auto", folder: type === "post" ? "posts" : "stories" },
+                (error, result) => {
+                  if (error) reject(error);
+                  else resolve(result.secure_url);
+                }
+              );
+              stream.end(file.buffer);
+            })
+        )
+      );
+
+      const user = await User.findById(req.user.id);
+      if (!user) {
+        return res.status(constants.UNAUTHORIZED).json({ error: "User not found" });
+      }
+
+      const newPost = new Post({
+        user: user._id,
+        medias: uploadedMediaUrls,
+        caption,
+        hashtags,
+        type,
+      });
+      await newPost.save();
+
+      await User.findByIdAndUpdate(user._id, { $inc: { post_count: 1 } });
+
+      res.status(200).json({ message: "Post created successfully", post: newPost });
+    } catch (error) {
+      console.error("Error creating post:", error.toString());
+      res.status(constants.SERVER_ERROR).json({
+        error: error.message || "An error occurred while creating the post",
+      });
     }
-
-    const uploadedMediaUrls = await Promise.all(
-      req.files.map((file) =>
-        new Promise((resolve, reject) => {
-          const stream = cloudinary.uploader.upload_stream(
-            { resource_type: "auto", folder: type === "post" ? "posts" : "stories" },
-            (error, result) => {
-              if (error) reject(error);
-              else resolve(result.secure_url);
-            }
-          );
-          stream.end(file.buffer);
-        })
-      )
-    );
-
-    const user = await User.findById(req.user.id);
-    if (!user) {
-      return res.status(constants.UNAUTHORIZED).json({ error: "User not found" });
-    }
-
-    const newPost = new Post({
-      user: user._id,
-      medias: uploadedMediaUrls,
-      caption,
-      hashtags,
-      type,
-    });
-    await newPost.save();
-
-    await User.findByIdAndUpdate(user._id, { $inc: { post_count: 1 } });
-
-    res.status(200).json({ message: "Post created successfully", post: newPost });
-  } catch (error) {
-    console.error("Error creating post:", error.toString());
-    res.status(constants.SERVER_ERROR).json({
-      error: error.message || "An error occurred while creating the post",
-    });
-  }
-},
-
+  },
 
   /************************************************************************
    *
@@ -224,8 +217,7 @@ uploadPost: async (req, res) => {
         });
       }
 
-
-      const  postId = req.body.postId; // Assuming postId is passed as a query parameter
+      const postId = req.body.postId; // Assuming postId is passed as a query parameter
       const userId = req.user.id; // Get the logged-in user's ID
 
       // Validate the required fields
@@ -286,26 +278,26 @@ uploadPost: async (req, res) => {
         });
       }
 
-      console.log(await Message.find())
+      console.log(await Message.find());
       const userId = req.user.id;
 
       // Fetch posts with user details populated
       const posts = await Post.find({ type: "post" })
-      .populate({
-        path: "user",
-        select: "user_name profile_photo_url _id", // Only fetch these fields from the user schema
-      })
-      .populate({
-        path: "comments", // Populate the comments for each post
-        select: "content sender createdAt likes", // Fields you want to retrieve from the Comment schema
-        populate: {
-          path: "sender", // Optionally populate the sender to get user details
-          select: "user_name profile_photo_url _id", // Fields from the User schema
-        },
-      })
-      .sort({ createdAt: -1 }) // Sort posts by creation date (newest first)
-      .limit(20); // Limit to 20 posts
-    
+        .populate({
+          path: "user",
+          select: "user_name profile_photo_url _id", // Only fetch these fields from the user schema
+        })
+        .populate({
+          path: "comments", // Populate the comments for each post
+          select: "content sender createdAt likes", // Fields you want to retrieve from the Comment schema
+          populate: {
+            path: "sender", // Optionally populate the sender to get user details
+            select: "user_name profile_photo_url _id", // Fields from the User schema
+          },
+        })
+        .sort({ createdAt: -1 }) // Sort posts by creation date (newest first)
+        .limit(20); // Limit to 20 posts
+
       return res.json({
         message: "Home feed fetched successfully",
         posts,
@@ -317,8 +309,6 @@ uploadPost: async (req, res) => {
       });
     }
   },
-
-
 
   //@TODO Implment u should only see stories of people you follow
   getStories: async (req, res) => {
@@ -352,7 +342,6 @@ uploadPost: async (req, res) => {
       });
     }
   },
-  
 
   //@todo Implement the explore feed algo and Search Functionality By Hastag Matching, Pagination
   getExploreFeed: async (req, res) => {
@@ -364,11 +353,22 @@ uploadPost: async (req, res) => {
         });
       }
 
-      // Fetch posts of type "post" with only the required fields
-      const explorePosts = await Post.find({ type: "post" })
-        .select("medias hashtags _id") // Select only the required fields
+      // Get the hashtag from query params if provided
+      const { hashtag } = req.query;
+
+      // Build the query
+      let query = { type: "post" };
+
+      if (hashtag) {
+        query.hashtags = { $regex: hashtag, $options: "i" }; // Case-insensitive search 
+      }
+      
+
+      // Fetch posts of type "post" with the required fields, and optionally filter by hashtag
+      const explorePosts = await Post.find(query)
+        .select("medias hashtags _id") // Select only
         .sort({ createdAt: -1 }) // Sort posts by creation date (newest first)
-        .limit(20); // Limit to 20 posts (can be made dynamic via query params)
+        .limit(20); // Limit to 20 posts 
 
       return res.json({
         message: "Explore feed fetched successfully",

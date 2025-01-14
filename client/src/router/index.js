@@ -21,14 +21,19 @@ const routes = [
   { path: "/signin", component: SignIn, meta: { requiresAuth: false } },
   { path: "/signup", component: SignUp, meta: { requiresAuth: false } },
   { path: "/forgot-password", component: ForgotPassword, meta: { requiresAuth: false } },
-  { path: "/reset-password/:token", component: ResetPassword, props: true, meta: { requiresAuth: false } },
+  {
+    path: "/reset-password/:token",
+    component: ResetPassword,
+    props: true,
+    meta: { requiresAuth: false },
+  },
 
   {
     path: "/",
     component: BaseLayout,
     children: [
       { path: "home", component: Home, meta: { requiresAuth: true } },
-      { path: "explore", component: Explore, meta: { requiresAuth: true } },
+      { path: "explore/:hashtag?", component: Explore, meta: { requiresAuth: true } },
       { path: "account", component: MyAccount, meta: { requiresAuth: true } },
       { path: "viewAccount/:id", component: Account, meta: { requiresAuth: true } },
       { path: "createpost", component: CreatePost, meta: { requiresAuth: true } },
