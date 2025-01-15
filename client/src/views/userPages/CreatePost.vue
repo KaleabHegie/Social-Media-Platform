@@ -1,6 +1,6 @@
 <template>
   <div class="max-w-2xl mx-auto p-6 mt-20 mb-36   bg-white dark:bg-gray-800 rounded-xl shadow-sm">
-    <h1 class="text-2xl font-bold text-center mb-8 text-gray-800 dark:text-white">  {{ t('create') }}</h1>
+    <h1 class="text-2xl font-bold text-center mb-8 text-gray-800 dark:text-white"> {{ t('create') }}</h1>
 
     <!-- Post Type Selection -->
     <div class="flex gap-4 mb-6 justify-center">
@@ -26,18 +26,18 @@
 
     <!-- Media Upload -->
     <div class="mb-6">
-      <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">  {{ t('uploadMedia') }}</p>
+      <p class="text-sm text-gray-600 dark:text-gray-300 mb-2"> {{ t('uploadMedia') }}</p>
       <div class="flex gap-6 mb-6">
         <label
           class="cursor-pointer flex flex-col items-center justify-center w-24 h-24 rounded-lg bg-[#87CEEB] dark:bg-[#4FA4D3] text-white hover:bg-[#7BBED9] dark:hover:bg-[#458DB8] shadow-md transition-all">
           <input type="file" @change="handleFileUpload" accept="image/*,video/*" multiple class="hidden" />
           <oh-vue-icon name="ri-image-add-line" class="h-8 w-8" />
-          <span class="mt-2 text-sm">  {{ t('upload') }}</span>
+          <span class="mt-2 text-sm"> {{ t('upload') }}</span>
         </label>
         <button @click="startCamera"
           class="flex flex-col items-center justify-center w-24 h-24 rounded-lg bg-[#87CEEB] dark:bg-[#4FA4D3] text-white hover:bg-[#7BBED9] dark:hover:bg-[#458DB8] shadow-md transition-all">
           <oh-vue-icon name="ri-camera-line" class="h-8 w-8" />
-          <span class="mt-2 text-sm">  {{ t('camera') }}</span>
+          <span class="mt-2 text-sm"> {{ t('camera') }}</span>
         </button>
       </div>
 
@@ -64,14 +64,14 @@
 
     <!-- Caption -->
     <div v-if="postType === 'post'" class="mb-6">
-      <label class="block text-sm text-gray-600 dark:text-gray-300 mb-2">  {{ t('caption') }}</label>
+      <label class="block text-sm text-gray-600 dark:text-gray-300 mb-2"> {{ t('caption') }}</label>
       <textarea v-model="caption" placeholder="Write a caption..."
         class="w-full p-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#87CEEB] dark:focus:ring-[#4FA4D3] min-h-[120px]"></textarea>
     </div>
 
     <!-- Hashtags -->
     <div class="mb-6">
-      <label class="block text-sm text-gray-600 dark:text-gray-300 mb-2">  {{ t('hashtag') }}</label>
+      <label class="block text-sm text-gray-600 dark:text-gray-300 mb-2"> {{ t('hashtag') }}</label>
       <div class="relative">
         <div class="flex items-center border border-gray-200 dark:border-gray-600 rounded-lg overflow-hidden">
           <input v-model="hashtagInput" @input="updateHashtagSuggestions" @keydown.enter.prevent="addCustomHashtag"
@@ -283,11 +283,11 @@ const submitPost = async () => {
 
     isSubmitting.value = true; // Disable the button during submission
     const response = await postStore.createPost(content);
-
+    const contentType = content.type.charAt(0).toUpperCase()+content.type.slice(1);
     if (response.error) {
       toast.error(`Error creating post: ${response.error}`, { position: 'top-center' });
     } else {
-      toast.success(`${content.type} Created successfully!`, { position: 'top-center' });
+      toast.success(`${contentType} Created Successfully!`, { position: 'top-center' });
     }
   } catch (error) {
     console.error('Error creating post:', error.message);
