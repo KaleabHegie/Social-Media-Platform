@@ -6,6 +6,7 @@ const cloudinary = require("cloudinary").v2;
 const { constants } = require("../Utils/constants");
 const crypto = require("crypto");
 const Post = require("../Models/PostModel");
+const Message = require("../Models/MessageModel");
 
 // Configure Cloudinary
 cloudinary.config({
@@ -167,6 +168,43 @@ const userController = {
     }
   },
   
+
+  getChats: async (req, res) => {
+    try {
+      if (!req.user) {
+        return res.status(constants.UNAUTHORIZED).json({
+          message: "Can't fetch users if the user is not logged in",
+        });
+      }
+  
+      const currentUserId = req.user.id; // Assuming the user's ID is available
+        const chats = await Message.find({
+          // Match if currentUserId exists in participants
+        })
+    
+      const finalChats = chats.filter((chat) =>
+          chat.participants.some(
+            (participant) => participant.userId.toString() === currentUserId.toString()
+          )
+        );
+      if (!finalChats || finalChats.length === 0) {
+        return res.status(constants.NOT_FOUND).json({
+          message: "No chats found",
+        });
+      }
+
+  
+      res.json({
+        message: "Users fetched successfully",
+        allUsers: finalChats,
+      });
+    } catch (error) {
+      console.error("Error fetching users:", error.toString());
+      res.status(constants.SERVER_ERROR).json({
+        message: "An error occurred while fetching users",
+      });
+    }
+  },
 
   setProfileImage: async (req, res) => {
     try {

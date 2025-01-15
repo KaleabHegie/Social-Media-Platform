@@ -167,8 +167,10 @@ onMounted(async () => {
     profile.value = postStoryStore.myProfile;
     myposts.value = postStoryStore.usersposts;
     likedposts.value = postStoryStore.likedPosts;
-    following.value = postStoryStore.following; //@todo kalab this object are not found
-    followers.value = postStoryStore.followers;//@todo kalab this object are not found
+    following.value = postStoryStore.myProfile.following;
+    followers.value = postStoryStore.myProfile.followers;
+    // following.value = postStoryStore.following; //@todo kalab this object are not found
+    // followers.value = postStoryStore.followers;//@todo kalab this object are not found
   } catch (error) {
     console.error("Error loading profile:", error);
   } finally {

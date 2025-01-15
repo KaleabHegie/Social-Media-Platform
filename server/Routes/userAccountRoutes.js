@@ -37,6 +37,8 @@ router.get("/searchUsers", validateToken, userController.searchUsers);
 
 router.get("/getAllUsers" , validateToken, userController.getAllUsers)
 
+router.get("/getChats" , validateToken, userController.getChats)
+
 
 
 

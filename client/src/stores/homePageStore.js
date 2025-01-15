@@ -13,6 +13,7 @@ export const usePostStoryStore = defineStore("postStory", {
     allUsers: [],
     messages: [],
     currentUser: [],
+    chats : [],
     isLoading: false,
     error: null,
   }),
@@ -177,6 +178,22 @@ export const usePostStoryStore = defineStore("postStory", {
       }
     },
 
+
+    async fetchChats() {
+      this.isLoading = true;
+      this.error = null;
+      try {
+        const response = await MyHttpService.get("/getChats", { useJWT: true });
+        if (response.allUsers) {
+          this.chats = response.allUsers;
+        }
+      } catch (error) {
+        this.error = error.response?.message || "Failed to fetch profile.";
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
     async fetchMessages(selectedUserId) {
       this.isLoading = true;
       this.error = null;
@@ -186,6 +203,7 @@ export const usePostStoryStore = defineStore("postStory", {
           useJWT: true,
         });
         if (response.messages) {
+          this.messages = []
           this.messages = response.messages[0].messages;
         }
       } catch (error) {

@@ -18,7 +18,7 @@
 
           <!-- maybe the issue -->
           <!-- Stories for mobile -->
-          <div class="lg:hidden mb-6">
+          <div v-if="postStoryStore.stories.length  > 0" class="lg:hidden mb-6">
             <div class="flex space-x-4 overflow-x-auto pb-4 hide-scrollbar" style="scroll-snap-type: x mandatory;">
 
               <div class="flex-shrink-0 w-[24.5%] max-w-[100px] sm:max-w-[120px]" style="scroll-snap-align: start;">
@@ -49,7 +49,8 @@
         </div>
 
         <!-- Stories for desktop -->
-        <div class="hidden lg:block w-80 order-1 lg:order-2">
+         
+        <div v-if="postStoryStore.stories.length > 0" class="hidden lg:block w-80 order-1 lg:order-2">
           <div class="sticky top-4">
             <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">{{ t('stories') }}</h2>
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4">
@@ -59,6 +60,7 @@
             </div>
           </div>
         </div>
+
       </div>
     </div>
   </main>

@@ -86,7 +86,7 @@ const postController = {
           });
         }
       }
-
+      
       const uploadedMediaUrls = await Promise.all(
         req.files.map(
           (file) =>
@@ -103,6 +103,8 @@ const postController = {
         )
       );
 
+      
+      console.log('--------------------------')
       const user = await User.findById(req.user.id);
       if (!user) {
         return res.status(constants.UNAUTHORIZED).json({ error: "User not found" });

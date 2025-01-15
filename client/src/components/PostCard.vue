@@ -83,7 +83,7 @@
               isLiked ? 'text-sky-500' : 'text-gray-600 dark:text-gray-400',
             ]" class="text-xl group-hover:scale-110 transition-transform"></i>
             <span class="text-sm text-gray-600 dark:text-gray-400">
-              {{ props.post.likes_count || 0 }}
+              {{ likesCount || 0 }}
             </span>
           </button>
 
@@ -117,6 +117,13 @@ import { ref, computed } from 'vue';
 import { format } from 'date-fns';
 import { useLanguageStore } from '@/stores/languageStore';
 
+import { usePostStoryStore } from '@/stores/homePageStore';
+import { useAuthStore } from '@/stores/authStore';
+
+const store = usePostStoryStore();
+const authStore = useAuthStore()
+
+
 const { t } = useLanguageStore(); // Translation function
 const props = defineProps({
   post: {
@@ -126,6 +133,10 @@ const props = defineProps({
 });
 
 const activeSlide = ref(0);
+let likesCount = ref(props.post.likes_count)
+
+const isUserNotLiked = !props.post.likes.some(like => like.userId === authStore.user.id);
+
 
 const goToSlide = (index) => {
   activeSlide.value = index
@@ -145,7 +156,7 @@ const onSwipeRight = () => {
 }
 
 
-const isLiked = ref(false);
+const isLiked = ref(!isUserNotLiked);
 
 const formatDate = (date) => {
   const formattedDate = new Date(date);
@@ -155,8 +166,15 @@ const formatDate = (date) => {
   return format(formattedDate, 'MMM d, yyyy • HH:mm');
 };
 
-const toggleLike = () => {
+const toggleLike = async () => {
   isLiked.value = !isLiked.value;
+  await store.likeDislike(props.post._id);
+  if(isLiked.value){
+  likesCount.value+=1 
+  }
+  else {
+    likesCount.value-=1
+  }
 };
 
 const showFullCaption = ref(false);

@@ -74,7 +74,7 @@
             <span class="slider round"></span>
           </label>
           <!-- Dark Mode Toggle and Change Language -->
-          <div class="flex items-center space-x-4 m-3 ml-[200px]">
+          <div class="flex items-center space-x-4 m-3 ml-[10px]">
             <LanguageSelector />
             <DarkModeToggle />
           </div>
@@ -83,7 +83,7 @@
 
 
         <!-- Delete Account Button -->
-        <div class="mt-6 flex gap-4">
+        <div class="mt-6 flex gap-4 justify-end">
           <button @click="openModal"
             class="px-3 py-1.5 sm:px-4 sm:py-2 bg-red-500 text-white text-sm sm:text-base rounded-md hover:bg-red-600 transition duration-300 w-full sm:w-auto">
             <i class="ri-delete-bin-line text-white text-xl"></i>
@@ -127,22 +127,23 @@
       </div>
       
       <div v-else-if="currentTab === 'following'">
-        <div v-if="following.length === 0">
-          <p class="text-xl text-gray-800 dark:text-gray-200">No following yet.</p> <!-- Message for no following -->
+          <div v-if="following.length === 0">
+            <p class="text-xl text-gray-800 dark:text-gray-200">No following yet.</p> <!-- Message for no following -->
+          </div>
+          <div v-else class="grid-layout">
+            <UserProfileSmall v-for="follow in following" :key="follow.id" :follow="follow" />
+          </div>
         </div>
-        <div v-else class="grid-layout">
-          <UserProfileSmall v-for="follow in following" :key="follow.id" :follow="follow" />
-        </div>
-      </div>
 
-      <div v-else-if="currentTab === 'followers'">
-        <div v-if="followers.length === 0">
-          <p class="text-xl text-gray-800 dark:text-gray-200">No followers yet.</p> <!-- Message for no followers -->
+
+        <div v-else-if="currentTab === 'followers'">
+          <div v-if="followers.length === 0">
+            <p class="text-xl text-gray-800 dark:text-gray-200">No followers yet.</p> <!-- Message for no followers -->
+          </div>
+          <div v-else class="grid-layout">
+            <UserProfileSmall v-for="follow in followers" :key="follow.id" :follow="follow" />
+          </div>
         </div>
-        <div v-else  class="grid-layout">
-          <UserProfileSmall v-for="follow in followers" :key="follow.id" :follow="follow" />
-        </div>
-      </div>
 
     </div>
   </div>

@@ -84,6 +84,7 @@ const goBack = () => {
     router.back();
 };
 
+
 const newComment = ref('');
 const content = {
     postId: postId,
@@ -91,6 +92,7 @@ const content = {
 }
 
 const addComment = async () => {
+    
     if (newComment.value.trim()) {
         // Create a comment object to add
         content.content = newComment.value;
@@ -101,13 +103,6 @@ const addComment = async () => {
 
 
         message.comment.sender = authStore.user
-
-
-        console.log(message)
-
-
-
-
 
         // Clear the input field
         newComment.value = '';
@@ -132,6 +127,7 @@ onMounted(async () => {
     if (!store.hasPosts) {
         await store.fetchPosts();
     }
+    console.log(  '--------------' , await store)
     const foundPost = await store.getPostById(postId);
     post.value = foundPost || null; // Handle case when post is not found
 });

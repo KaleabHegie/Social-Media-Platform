@@ -71,7 +71,7 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['leave-chat', 'send-message', 'update:new-message']);
-
+let messages = ref([]);
 const localNewMessage = computed({
   get: () => props.newMessage,
   set: (value) => emit('update:new-message', value),
@@ -79,8 +79,8 @@ const localNewMessage = computed({
 
 const sendMessage = () => {// Logs the current message content
   emit('send-message', { content: localNewMessage.value,  });
-  props.messages.push({
-    id: props.messages.length + 1,
+  messages.value.push({
+    id: messages.value.length + 1, // Use the current length of `messages.value`
     content: localNewMessage.value,
     isSent: true,
     sender: 'You',
@@ -100,7 +100,7 @@ const menuY = ref(0);
 const closeContextMenu = () => {
   showMenu.value = false;
 };
-const messages = ref([]);
+
 let isLoading = true;
 
 const showContextMenu = (event) => {
@@ -110,11 +110,37 @@ const showContextMenu = (event) => {
   menuY.value = event.clientY;
 };
 
+import { watch } from 'vue';
+
+watch(
+  () => props.selectedContact,
+  async (newContact, oldContact) => {
+    
+    console.log(messages.value)
+    messages.value = [];
+    console.log(messages.value)
+    if (newContact && newContact._id !== oldContact?._id) {
+      // Clear the messages immediately
+     
+
+      try {
+        isLoading = true; // Show the loading state
+        await postStoryStore.fetchMessages(newContact._id); // Fetch messages for the new contact
+        messages.value = postStoryStore.messages; // Update the messages array
+      } catch (error) {
+        console.error('Error loading messages:', error);
+      } finally {
+        isLoading = false; // Hide the loading state
+      }
+    }
+  },
+  { immediate: true } // Trigger immediately to handle the initial load
+);
+
 // Initialize socket
 let socket;
 onMounted(async () => {
   try {
-    console.log(props.selectedContact._id);
     await postStoryStore.fetchMessages(props.selectedContact._id);
     messages.value = postStoryStore.messages;  // Assuming fetchMessages updates the store's state
   } catch (error) {
