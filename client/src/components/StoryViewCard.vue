@@ -5,7 +5,7 @@
       <div @click.stop class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-lg w-full mx-auto overflow-hidden">
         <div class="relative">
           <!-- Story content -->
-          <div class="aspect-w-9 aspect-h-16">
+          <div class=" mx-auto aspect-w-9 aspect-h-16">
             <div v-if="story.medias && story.medias.length" class="flex transition-transform duration-300 ease-in-out"
               :style="{ transform: `translateX(-${activeSlide * 100}%)` }" v-touch:swipe.left="nextSlide"
               v-touch:swipe.right="prevSlide">
@@ -30,10 +30,11 @@
           </div>
 
           <!-- User info -->
-          <div class="absolute top-4 left-4 flex items-center space-x-2">
+          <div
+            class="absolute top-4 left-4 flex items-center space-x-2 bg-gradient-to-r from-sky-500 to-sky-300 p-2 rounded-xl">
             <img :src="story.user.profile_photo_url || '/default-avatar.png'" :alt="story.user.user_name"
-              class="w-8 h-8 rounded-full object-cover" />
-            <span class="text-white font-medium text-sm">{{ story.user.user_name }}</span>
+              class="w-12 h-12 rounded-full object-cover" />
+            <span class="text-white font-medium text-lg">{{ story.user.user_name }}</span>
           </div>
 
           <!-- Close button -->
@@ -44,6 +45,7 @@
             </svg>
           </button>
         </div>
+
       </div>
     </div>
   </Teleport>

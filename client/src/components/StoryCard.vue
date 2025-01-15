@@ -5,9 +5,9 @@
         <div class="w-full h-full bg-white dark:bg-gray-800 rounded-lg overflow-hidden">
           <div v-if="story.medias && story.medias.length" class="flex transition-transform duration-300 ease-in-out"
             :style="{ transform: `translateX(-${activeSlide * 100}%)` }">
-            <div v-for="(media, index) in story.medias" :key="index" class="w-full flex-shrink-0">
+            <div v-for="(media, index) in story.medias" :key="index" class="w-full h-full flex-shrink-0">
               <template v-if="media.endsWith('.mp4') || media.endsWith('.webm')">
-                <video :src="media" autoplay muted loop class="w-full h-full object-cover"></video>
+                <video :src="media" autoplay muted loop class="w-full h-full object-cover" />
               </template>
               <template v-else>
                 <img :src="media" alt="Media" class="w-full h-full object-cover" />
@@ -28,6 +28,7 @@
         </span>
       </div>
     </div>
+
 
     <StoryViewCard :story="story" :isOpen="isModalOpen" @close="closeModal" />
   </div>
@@ -55,4 +56,3 @@ const closeModal = () => {
   isModalOpen.value = false
 }
 </script>
-
