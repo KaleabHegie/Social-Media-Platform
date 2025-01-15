@@ -14,12 +14,13 @@
           <div v-if="postStoryStore.error" class="text-center text-red-500">
             <p>{{ postStoryStore.error }}</p>
           </div>
+          
 
+          <!-- maybe the issue -->
           <!-- Stories for mobile -->
           <div class="lg:hidden mb-6">
             <div class="flex space-x-4 overflow-x-auto pb-4 hide-scrollbar" style="scroll-snap-type: x mandatory;">
 
-              <!-- Logo as the first story -->
               <div class="flex-shrink-0 w-[24.5%] max-w-[100px] sm:max-w-[120px]" style="scroll-snap-align: start;">
                 <img src="@/assets/logo.png" alt="Logo" class="w-full h-auto object-contain rounded-lg" />
               </div>
@@ -29,11 +30,10 @@
             </div>
           </div>
 
+          <!-- not the issue -->
           <!-- Feed-->
           <div class="hidden lg:block w-80 order-1 lg:order-2">
-            <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">{{ t('feed') }}
-
-            </h2>
+            <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">{{ t('feed') }}</h2>
             <div class="space-y-6 w-full sm:w-80 md:w-[28rem] lg:w-[36rem] xl:w-[42rem] mx-auto">
               <PostCard v-for="post in postStoryStore.posts" :key="post.id" :post="post" class="w-full h-auto" />
             </div>

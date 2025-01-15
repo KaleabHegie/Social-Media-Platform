@@ -29,7 +29,6 @@
       </div>
     </div>
 
-
     <StoryViewCard :story="story" :isOpen="isModalOpen" @close="closeModal" />
   </div>
 </template>

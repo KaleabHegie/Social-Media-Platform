@@ -68,7 +68,7 @@
               { name: t('Explore'), path: '/explore', icon: 'ri-compass-line' },
               { name: t('Create Post'), path: '/createpost', icon: 'ri-add-box-line' },
               { name: t('Messages'), path: '/messages', icon: 'ri-message-2-line' },
-              { name: t('Account'), path: '/account', icon: 'ri-user-line' }
+              { name: t('Account'), path: '/myaccount', icon: 'ri-user-line' }
             ]"
             :key="item.path"
           >
