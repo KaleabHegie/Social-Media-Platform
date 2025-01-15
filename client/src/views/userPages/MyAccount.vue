@@ -73,7 +73,14 @@
             <input type="checkbox" v-model="profile.is_private" @change="togglePrivacy">
             <span class="slider round"></span>
           </label>
+          <!-- Dark Mode Toggle and Change Language -->
+          <div class="flex items-center space-x-4 m-3 ml-[200px]">
+            <LanguageSelector />
+            <DarkModeToggle />
+          </div>
         </div>
+
+
 
         <!-- Delete Account Button -->
         <div class="mt-6 flex gap-4">
@@ -105,14 +112,38 @@
 
       <!-- Tab Content -->
       <div v-if="currentTab === 'posts'">
-        <PostCard v-for="post in myposts" :key="post.id" :post="post" :showHashtags="false" />
+        <div v-if="myposts.length" class="grid-layout">
+          <ExplorePostCard v-for="post in myposts" :key="post.id" :post="post" :showHashtags="true" />
+        </div>
+        <p v-else class="text-center text-gray-500 dark:text-gray-400">No posts available.</p>
       </div>
+
+      <!-- Liked Posts Tab -->
+      <div v-if="currentTab === 'likedposts'">
+        <div v-if="likedposts.length" class="grid-layout">
+          <ExplorePostCard v-for="post in likedposts" :key="post.id" :post="post" :showHashtags="false" />
+        </div>
+        <p v-else class="text-center text-gray-500 dark:text-gray-400">No liked posts yet.</p>
+      </div>
+      
       <div v-else-if="currentTab === 'following'">
-        <UserProfileSmall v-for="follow in following" :key="follow.id" :follow="follow" />
+        <div v-if="following.length === 0">
+          <p class="text-xl text-gray-800 dark:text-gray-200">No following yet.</p> <!-- Message for no following -->
+        </div>
+        <div v-else class="grid-layout">
+          <UserProfileSmall v-for="follow in following" :key="follow.id" :follow="follow" />
+        </div>
       </div>
+
       <div v-else-if="currentTab === 'followers'">
-        <UserProfileSmall v-for="follow in followers" :key="follow.id" :follow="follow" />
+        <div v-if="followers.length === 0">
+          <p class="text-xl text-gray-800 dark:text-gray-200">No followers yet.</p> <!-- Message for no followers -->
+        </div>
+        <div v-else  class="grid-layout">
+          <UserProfileSmall v-for="follow in followers" :key="follow.id" :follow="follow" />
+        </div>
       </div>
+
     </div>
   </div>
 </template>
@@ -122,7 +153,10 @@ import { ref, onMounted } from 'vue';
 import { OhVueIcon, addIcons } from "oh-vue-icons";
 import { RiPencilLine } from "oh-vue-icons/icons";
 import { useRouter } from 'vue-router'
+import ExplorePostCard from '@/components/ExplorePostCard.vue';
 import PostCard from '@/components/PostCard.vue';
+import DarkModeToggle from '@/components/DarkModeToggle.vue';
+import LanguageSelector from '@/components/LanguageSelector.vue';
 import UserProfileSmall from '@/components/UserProfileSmall.vue';
 import { usePostStoryStore } from '../../stores/homePageStore';
 import { useAuthStore } from '../../stores/authStore';
@@ -147,6 +181,7 @@ const isLoading = ref(true);
 const currentTab = ref('posts');
 const tabs = [
   { id: 'posts', name: 'Posts' },
+  { id: 'likedposts', name: 'Liked' },
   { id: 'following', name: 'Following' },
   { id: 'followers', name: 'Followers' },
 ];

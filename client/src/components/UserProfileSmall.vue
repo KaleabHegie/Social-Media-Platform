@@ -15,16 +15,6 @@
         <h6 class="text-gray-600 dark:text-gray-400">{{ follow.user.first_name }} {{ follow.user.last_name }}</h6>
       </div>
     </router-link>
-
-    <!-- Delete Account Button -->
-    <button @click="openModal" class="ml-auto text-red-600">Delete Account</button>
-    
-    <!-- Confirmation Modal -->
-    <ConfirmationModal 
-      :isVisible="isModalVisible" 
-      @confirm="deleteAccount" 
-      @cancel="closeModal" 
-    />
   </div>
 </template>
 
@@ -39,24 +29,6 @@ defineProps({
   },
 });
 
-const isModalVisible = ref(false); // State to control modal visibility
-
-// Opens the modal
-const openModal = () => {
-  isModalVisible.value = true;
-};
-
-// Closes the modal
-const closeModal = () => {
-  isModalVisible.value = false;
-};
-
-// Handles account deletion
-const deleteAccount = () => {
-  console.log("Account deleted for:", follow.user.user_name);
-  // You can add your delete account logic here (e.g., call an API to delete the account)
-  closeModal(); // Close the modal after confirming the delete
-};
 </script>
 
 <style scoped>
