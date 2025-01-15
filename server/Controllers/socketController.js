@@ -27,7 +27,22 @@ module.exports = (io) => {
 
         // Check if a message thread already exists for the sender and receiver
         let messageThread = await Message.find();
-        messageThread = messageThread[0]
+
+
+        const ChatsWithCurrentUser = messageThread.filter((chat) =>
+          chat.participants.some(
+            (participant) => participant.userId.toString() === senderId.toString()
+          )
+        ); 
+        
+        const finalChats = ChatsWithCurrentUser.filter((chat) =>
+          chat.participants.some(
+            (participant) => participant.userId.toString() === receiverId.toString()
+          )
+        );    
+
+
+        messageThread = finalChats[0]
 
         if (!messageThread) {
           // If no existing thread, create a new one

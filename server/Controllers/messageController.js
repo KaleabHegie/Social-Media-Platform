@@ -36,7 +36,6 @@ const messageController = {
             (participant) => participant.userId.toString() === currentUserId.toString()
           )
         ); 
-      console.log(ChatsWithCurrentUser)
       const finalChats = ChatsWithCurrentUser.filter((chat) =>
           chat.participants.some(
             (participant) => participant.userId.toString() === selectedUserId.toString()

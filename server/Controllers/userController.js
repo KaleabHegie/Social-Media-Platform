@@ -231,6 +231,8 @@ const userController = {
         });
       }
 
+     
+
       // Upload profile image to Cloudinary
       const result = await new Promise((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream(
@@ -248,6 +250,7 @@ const userController = {
         stream.end(req.file.buffer);
       });
 
+      console.log('here')
       // Get the URL of the uploaded image
       const profileImageUrl = result.secure_url;
 

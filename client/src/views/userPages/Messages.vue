@@ -25,7 +25,8 @@
 
     <div class="flex flex-1 overflow-hidden">
       <!-- Message list (visible on mobile when no chat is selected) -->
-      <div v-if="(isMobile && !selectedContact) || !isMobile" class="w-full md:w-1/3 lg:w-1/4 bg-gray-50 dark:bg-gray-800 flex flex-col">
+      <div v-if="(isMobile && !selectedContact) || !isMobile"
+        class="w-full md:w-1/3 lg:w-1/4 bg-gray-50 dark:bg-gray-800 flex flex-col">
         <!-- Search bar -->
         <div class="p-4 border-b border-gray-200 dark:border-gray-700">
           <div class="relative">
@@ -53,12 +54,10 @@
           <div v-if="activeTab === 'personal' || activeTab === 'all'">
             <div v-for="contact in filteredContacts" :key="contact.id" @click="selectContact(contact)"
               class="flex items-center p-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">
-              <router-link 
-        :to="`/viewAccount/${contact._id}`" 
-        class="text-sm text-gray-600 dark:text-gray-400 hover:underline"
-      >
-              <img :src="contact.profile_photo_url" alt="avatar" class="w-12 h-12 rounded-full object-cover" />
-      </router-link>
+              <router-link :to="`/viewAccount/${contact._id}`"
+                class="text-sm text-gray-600 dark:text-gray-400 hover:underline">
+                <img :src="contact.profile_photo_url" :alt="contact.user_name[0]" class="w-12 h-12 rounded-full object-cover" />
+              </router-link>
               <div class="ml-3">
                 <p class="font-semibold">{{ contact.user_name }}</p>
                 <p class="text-sm text-gray-500 dark:text-gray-400 truncate">{{ contact.lastMessage }}</p>
@@ -69,22 +68,15 @@
       </div>
 
       <!-- Chat area -->
-      <ChatBox
-        v-if="selectedContact"
-        :selected-contact="selectedContact"
-        :is-mobile="isMobile"
-        :messages="messages"
-        :new-message="newMessage"
-        @leave-chat="leaveChat"
-        @send-message="sendMessage"
-        @update:new-message="newMessage = $event"
-      />
+      <ChatBox v-if="selectedContact" :selected-contact="selectedContact" :is-mobile="isMobile" :messages="messages"
+        :new-message="newMessage" @leave-chat="leaveChat" @send-message="sendMessage"
+        @update:new-message="newMessage = $event" />
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed , onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { OhVueIcon, addIcons } from "oh-vue-icons";
 import { BiSearch, BiSend, BiChatDots, BiPeople, BiPerson, BiSun, BiMoon, BiX, BiArrowLeft } from "oh-vue-icons/icons";
 import ChatBox from '@/components/ChatBox.vue';
@@ -133,9 +125,9 @@ const sendMessage = () => {
   if (newMessage.value.trim()) {
     console.log(postStoryStore.currentUser)
     // Emit message data to the backend
-    
+
     socket.emit('sendMessage', {
-      senderId:currentUserId,  // Replace with the current user's ID
+      senderId: currentUserId,  // Replace with the current user's ID
       receiverId: selectedContact.value._id,  // The selected contact's ID
       content: newMessage.value,  // The message content
       media: null  // You can add media data if needed
@@ -143,7 +135,7 @@ const sendMessage = () => {
       if (response.success) {
         // If the message is successfully sent, update the messages array
         socket.emit('messageToReceiver', {
-          senderId:currentUserId,  // Sender's ID
+          senderId: currentUserId,  // Sender's ID
           receiverId: selectedContact.value._id,  // Receiver's ID
           content: newMessage.value,  // Message content
           media: null,  // Add media data if needed
@@ -205,4 +197,3 @@ window.addEventListener('resize', () => {
   }
 }
 </style>
-
