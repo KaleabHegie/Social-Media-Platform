@@ -13,6 +13,52 @@
     <div v-else>
       <!-- Profile Card -->
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 sm:p-6 mb-8">
+        <!-- Settings Icon -->
+        <div class="flex justify-end">
+          <button @click.stop="toggleSettingsMenu"
+            class="bg-gray-200 dark:bg-gray-700 w-10 h-10 rounded-full flex items-center justify-center">
+            <i class="ri-settings-3-line text-xl text-gray-600 dark:text-gray-300"></i>
+          </button>
+        </div>
+        <!-- Dropdown Menu -->
+         <div class="flex justify-end">
+        <div v-if="showSettingsMenu" ref="dropdown"
+          class="absolute mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg shadow-lg z-50">
+          <ul class="py-2 relative">
+            <!-- Language Selector -->
+            <li class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
+              <button @click="toggleLanguage" class="w-full text-left text-gray-700 dark:text-gray-300">
+                {{ currentLanguage === 'en' ? 'Switch to Amharic' : 'Switch to English' }}
+              </button>
+            </li>
+            <!-- Dark Mode Toggle -->
+            <li class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
+              <button @click="toggleDarkMode" class="w-full text-left text-gray-700 dark:text-gray-300">
+                {{ isDarkMode ? 'Switch to Dark Mode' : 'Switch to Light Mode' }}
+              </button>
+            </li>
+            <!-- Privacy Toggle -->
+            <li class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
+              <button @click="togglePrivacy" class="w-full text-left text-gray-700 dark:text-gray-300">
+                {{ profile.is_private ? 'Switch to Public Account' : 'Switch to Private Account' }}
+              </button>
+            </li>
+            <!-- Delete Account -->
+            <li class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
+              <button @click="openModal" class="w-full text-left text-red-500">
+                <i class="ri-delete-bin-line text-red-500"></i> Delete Account
+              </button>
+            </li>
+            <!-- Logout -->
+            <li class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
+              <button @click="logout" class="flex items-center w-full space-x-3 text-gray-700 dark:text-gray-300">
+                <i class="ri-logout-box-line text-gray-500 dark:text-gray-400"></i>
+                <span>{{ t('Logout') }}</span>
+              </button>
+            </li>
+          </ul>
+        </div>
+      </div>
         <!-- Profile Info Section -->
         <div class="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-6">
           <!-- Profile Photo and Info -->
@@ -20,9 +66,10 @@
             <img :src="profile.profile_photo_url" alt="Profile Photo"
               class="w-24 h-24 sm:w-32 sm:h-32 rounded-full object-cover">
             <button @click="triggerFileInput"
-              class="absolute bottom-0 right-0 bg-blue-500 rounded-full p-1 sm:p-1 text-white">
-              <i class="ri-add-line text-white text-xl"></i>
+              class="absolute bottom-0 right-0 bg-sky-500 rounded-full w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center text-white">
+              <i class="ri-add-line text-white text-sm"></i>
             </button>
+
             <input type="file" ref="fileInput" accept="image/*" @change="handlePhotoUpload" class="hidden">
           </div>
 
@@ -58,45 +105,14 @@
         <!-- Bio -->
         <div class="mt-4">
           <input v-model="profile.bio"
-            class="w-full p-2 text-gray-900 dark:text-white bg-transparent border-b border-gray-300 dark:border-gray-600 focus:outline-none focus:border-blue-500 transition duration-300"
+            class=" sm:align-middle p-2 mr-2 rounded-md text-gray-900 dark:text-white bg-transparent border-b border-gray-300 dark:border-gray-600 focus:outline-none focus:border-sky-500 transition duration-300"
             placeholder="Enter your bio...">
           <button @click="updateBio"
-            class="mt-2 px-4 py-2 bg-blue-500 text-white text-sm rounded-lg hover:bg-blue-600 transition duration-300">
+            class="mt-2 px-4 py-2 bg-sky-500 text-white text-sm rounded-lg hover:bg-sky-600 transition duration-300">
             Update Bio
           </button>
         </div>
-
-        <!-- Privacy Toggle -->
-        <div class="mt-4 flex items-center justify-between sm:justify-start">
-          <span class="text-sm sm:text-base text-gray-700 dark:text-gray-200">Private Account</span>
-          <label class="switch ml-2">
-            <input type="checkbox" v-model="profile.is_private" @change="togglePrivacy">
-            <span class="slider round"></span>
-          </label>
-          <!-- Dark Mode Toggle and Change Language -->
-          <div class="flex items-center space-x-4 m-3 ml-[10px]">
-            <LanguageSelector />
-            <DarkModeToggle />
-          </div>
-        </div>
-
-
-
-        <!-- Delete Account Button -->
-        <div class="mt-6 flex gap-4 justify-end">
-          <button @click="openModal"
-            class="px-3 py-1.5 sm:px-4 sm:py-2 bg-red-500 text-white text-sm sm:text-base rounded-md hover:bg-red-600 transition duration-300 w-full sm:w-auto">
-            <i class="ri-delete-bin-line text-white text-xl"></i>
-            Delete Account
-          </button>
-          <button @click="logout"
-            class="flex items-center space-x-3 w-min px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">
-            <v-icon name="ri-logout-box-line" class="text-2xl font-bold text-gray-500 dark:text-gray-400" />
-            <span class="text-lg font-semibold">{{ t('Logout') }}</span>
-          </button>
-        </div>
       </div>
-
       <!-- Confirmation Modal -->
       <ConfirmationModal :isVisible="isModalVisible" @confirm="confirmDeleteAccount" @cancel="closeModal" />
     </div>
@@ -105,7 +121,7 @@
     <div>
       <div class="flex border-b border-gray-200 dark:border-gray-700 mb-4">
         <button v-for="tab in tabs" :key="tab.id" @click="currentTab = tab.id"
-          :class="['px-4 py-2 font-medium', currentTab === tab.id ? 'text-blue-500 border-b-2 border-blue-500' : 'text-gray-500 dark:text-gray-400']">
+          :class="['px-4 py-2 font-medium', currentTab === tab.id ? 'text-sky-500 border-b-2 border-sky-500' : 'text-gray-500 dark:text-gray-400']">
           {{ tab.name }}
         </button>
       </div>
@@ -125,25 +141,25 @@
         </div>
         <p v-else class="text-center text-gray-500 dark:text-gray-400">No liked posts yet.</p>
       </div>
-      
+
       <div v-else-if="currentTab === 'following'">
-          <div v-if="following.length === 0">
-            <p class="text-xl text-gray-800 dark:text-gray-200">No following yet.</p> <!-- Message for no following -->
-          </div>
-          <div v-else class="grid-layout">
-            <UserProfileSmall v-for="follow in following" :key="follow.id" :follow="follow" />
-          </div>
+        <div v-if="following.length === 0">
+          <p class="text-xl text-gray-800 dark:text-gray-200">No following yet.</p> <!-- Message for no following -->
         </div>
+        <div v-else class="grid-layout">
+          <UserProfileSmall v-for="follow in following" :key="follow.id" :follow="follow" />
+        </div>
+      </div>
 
 
-        <div v-else-if="currentTab === 'followers'">
-          <div v-if="followers.length === 0">
-            <p class="text-xl text-gray-800 dark:text-gray-200">No followers yet.</p> <!-- Message for no followers -->
-          </div>
-          <div v-else class="grid-layout">
-            <UserProfileSmall v-for="follow in followers" :key="follow.id" :follow="follow" />
-          </div>
+      <div v-else-if="currentTab === 'followers'">
+        <div v-if="followers.length === 0">
+          <p class="text-xl text-gray-800 dark:text-gray-200">No followers yet.</p> <!-- Message for no followers -->
         </div>
+        <div v-else class="grid-layout">
+          <UserProfileSmall v-for="follow in followers" :key="follow.id" :follow="follow" />
+        </div>
+      </div>
 
     </div>
   </div>
@@ -163,8 +179,32 @@ import { usePostStoryStore } from '../../stores/homePageStore';
 import { useAuthStore } from '../../stores/authStore';
 import ToastService from '@/utils/toast.js';
 import ConfirmationModal from '@/components/ConfirmationModal.vue'; // Import your modal component
-import { useLanguageStore } from '@/stores/languageStore'; const { t } = useLanguageStore();
+import { useLanguageStore } from '@/stores/languageStore';
 
+const { t, setLanguage } = useLanguageStore();
+const currentLanguage = ref('en');
+const isDarkMode = ref(false);
+const toggleLanguage = () => {
+  currentLanguage.value = currentLanguage.value === 'en' ? 'am' : 'en';
+  setLanguage(currentLanguage.value);
+};
+
+const toggleDarkMode = () => {
+  isDarkMode.value = !isDarkMode.value;
+  // Implement your dark mode logic here
+  document.documentElement.classList.toggle('dark');
+};
+
+const togglePrivacy = async () => {
+  try {
+    profile.value.is_private = !profile.value.is_private;
+    const response = await postStoryStore.updateAccountType(profile.value.is_private);
+    toast.success('Account type changed successfully!', { position: "top-center" });
+  } catch (error) {
+    console.error('Error changing account type:', error.message);
+    toast.error('Failed to change account type.', { position: "top-center" });
+  }
+};
 
 addIcons(RiPencilLine);
 
@@ -223,16 +263,6 @@ const handlePhotoUpload = async (event) => {
   }
 };
 
-const togglePrivacy = async () => {
-  try {
-    const response = await postStoryStore.updateAccountType(profile.value.is_private);
-    toast.success('Account type changed successful!', { position: "top-center" });
-  }
-  catch (error) {
-    console.error('Error creating post:', error.message);
-  }
-}
-
 const isModalVisible = ref(false); // State to control modal visibility
 
 // Opens the modal
@@ -265,6 +295,19 @@ const updateBio = async () => {
   }
 }
 
+const showSettingsMenu = ref(false);
+
+const toggleSettingsMenu = () => {
+  showSettingsMenu.value = !showSettingsMenu.value;
+};
+
+document.addEventListener('click', (event) => {
+  // Close the dropdown when clicking outside
+  const dropdown = document.querySelector('.relative');
+  if (dropdown && !dropdown.contains(event.target)) {
+    showSettingsMenu.value = false;
+  }
+});
 
 
 // Logout function
@@ -278,11 +321,21 @@ const logout = () => {
 
 
 <style scoped>
+.relative ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.relative li {
+  cursor: pointer;
+}
+
 .loader {
   border: 4px solid #f3f3f3;
   /* Light grey */
   border-top: 4px solid #3498db;
-  /* Blue */
+  /* sky */
   border-radius: 50%;
   align-items: center;
   margin-top: 300px;
