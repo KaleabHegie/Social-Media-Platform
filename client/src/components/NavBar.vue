@@ -2,7 +2,7 @@
   <div>
     <!-- Sidebar for desktop -->
     <div
-      class="hidden lg:flex lg:w-64 lg:h-screen lg:flex-col bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 fixed top-0 left-0 transition-colors duration-300">
+      class="hidden lg:flex lg:w-64 lg:h-screen lg:flex-col bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 fixed top-0 left-0 transition-colors duration-100">
       <!-- Logo section -->
       <div class="p-6 border-b border-gray-200 dark:border-gray-700">
         <div class="flex flex-col items-center justify-between h-full p-1">

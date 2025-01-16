@@ -29,10 +29,13 @@
               </button>
 
               <button @click="showNotification = true" class="bg-blue-500 text-white px-4 py-2 rounded">
-                Show Notification
+                Show Nofiications Icon here
               </button>
 
-              <NotificationCard v-if="showNotification" :showCloseButton="true" />
+              <!-- Modal Component -->
+              <Modal v-if="showNotification" @close="showNotification = false">
+                <NotificationCard :showCloseButton="true" />
+              </Modal>
             </div>
             <div class="flex space-x-4 mt-16 overflow-x-auto pb-4 hide-scrollbar"
               style="scroll-snap-type: x mandatory;">
@@ -97,7 +100,7 @@ import { onMounted } from 'vue';
 import { useLanguageStore } from '@/stores/languageStore';
 import { usePostStoryStore } from '@/stores/homePageStore'; // Import the store
 import NotificationCard from '../../components/NotificationCard.vue';
-
+import Modal from 'vue3-modal';
 const showNotification = ref(false);
 
 
