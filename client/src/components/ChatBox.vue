@@ -12,9 +12,8 @@
           <div v-if="selectedContact.profile_photo_url" class="w-10 h-10 rounded-full overflow-hidden">
             <img :src="selectedContact.profile_photo_url" alt="avatar" class="w-full h-full object-cover" />
           </div>
-          <div v-else
-            class="w-10 h-10 rounded-full bg-sky-400 flex items-center justify-center text-lg font-bold text-white">
-            {{ selectedContact.user_name[0] }}
+          <div v-else  class="w-10 h-10 rounded-full overflow-hidden">
+            <img src="../assets/avatar.jpg" alt="avatar" class="w-full h-full object-cover" />
           </div>
           <h2 class="ml-3 font-semibold">{{ selectedContact.user_name }}</h2>
         </div>
@@ -28,13 +27,13 @@
       <div class="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 dark:bg-gray-900"
         @contextmenu.prevent="showContextMenu">
         <div v-for="message in messages" :key="message.id" class="flex"
-          :class="[message.sender._id === selectedContact._id ? 'justify-end' : 'justify-start']">
+          :class="[message.sender._id === selectedContact._id ?  'justify-start': 'justify-end' ]">
           <div class="max-w-xs px-4 py-2 rounded-lg relative group" :class="[ 
-            message.sender._id === selectedContact._id ? 'bg-green-400 text-gray-900 dark:text-gray-900' : 'bg-sky-400 text-white',
+            message.sender._id === selectedContact._id ? 'bg-green-400 text-white' : 'bg-sky-400 text-white',
             message.sender === currentUserId ? 'ml-auto' : ''
           ]">
             {{ message.content }}
-            <span class="text-xs opacity-50 ml-2">{{ formatTime(message.timestamp) }}</span>
+            <span class="text-xs opacity-50 ml-2">{{ formatTime(message.updatedAt) }}</span>
           </div>
         </div>
       </div>
@@ -84,7 +83,7 @@ const sendMessage = () => {// Logs the current message content
     content: localNewMessage.value,
     isSent: true,
     sender: 'You',
-    timestamp: new Date(),
+    updatedAt: new Date(),
   });
   localNewMessage.value = ''; // Clear input after sending
 };

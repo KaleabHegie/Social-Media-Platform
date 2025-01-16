@@ -63,8 +63,9 @@
         <div class="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-6">
           <!-- Profile Photo and Info -->
           <div class="relative">
-            <img :src="profile.profile_photo_url" alt="Profile Photo"
+            <img v-if="profile.profile_photo_url" :src="profile.profile_photo_url" alt="Profile Photo"
               class="w-24 h-24 sm:w-32 sm:h-32 rounded-full object-cover">
+            <img v-else src="../../assets/avatar.jpg" alt="avatar" class="w-24 h-24 sm:w-32 sm:h-32 rounded-full object-cover">
             <button @click="triggerFileInput"
               class="absolute bottom-0 right-0 bg-sky-500 rounded-full w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center text-white">
               <i class="ri-add-line text-white text-sm"></i>
@@ -144,7 +145,7 @@
 
       <div v-else-if="currentTab === 'following'">
         <div v-if="following.length === 0">
-          <p class="text-xl text-gray-800 dark:text-gray-200">No following yet.</p> <!-- Message for no following -->
+          <p  class="text-center text-gray-500 dark:text-gray-400">No following yet.</p> <!-- Message for no following -->
         </div>
         <div v-else class="grid-layout">
           <UserProfileSmall v-for="follow in following" :key="follow.id" :follow="follow" />
@@ -154,7 +155,7 @@
 
       <div v-else-if="currentTab === 'followers'">
         <div v-if="followers.length === 0">
-          <p class="text-xl text-gray-800 dark:text-gray-200">No followers yet.</p> <!-- Message for no followers -->
+          <p  class="text-center text-gray-500 dark:text-gray-400">No followers yet.</p> <!-- Message for no followers -->
         </div>
         <div v-else class="grid-layout">
           <UserProfileSmall v-for="follow in followers" :key="follow.id" :follow="follow" />
@@ -181,12 +182,12 @@ import ToastService from '@/utils/toast.js';
 import ConfirmationModal from '@/components/ConfirmationModal.vue'; // Import your modal component
 import { useLanguageStore } from '@/stores/languageStore';
 
-const { t, setLanguage } = useLanguageStore();
+const { t, switchLanguage } = useLanguageStore();
 const currentLanguage = ref('en');
 const isDarkMode = ref(false);
 const toggleLanguage = () => {
   currentLanguage.value = currentLanguage.value === 'en' ? 'am' : 'en';
-  setLanguage(currentLanguage.value);
+  switchLanguage(currentLanguage.value);
 };
 
 const toggleDarkMode = () => {

@@ -713,7 +713,12 @@ const userController = {
         });
       }
 
+      
+
       const user = await User.findOne({ email });
+
+      
+    console.log(user,'-------------------')
 
       if (!user) {
         return res.status(404).json({
@@ -722,6 +727,7 @@ const userController = {
       }
 
       // Generate a reset token
+      console.log('here---------')
       const resetToken = crypto.randomBytes(32).toString("hex");
       const tokenExpiry = Date.now() + 3600000; // Token valid for 1 hour
 

@@ -99,7 +99,6 @@ export const useAuthStore = defineStore("auth", {
     async forgotPassword(email) {
       this.isLoading = true;
       this.error = null;
-
       try {
         // Call the API to send a reset password email
         const response = await MyHttpService.post("/forgot-password", { body : {"email" : email} });
@@ -107,11 +106,8 @@ export const useAuthStore = defineStore("auth", {
         if (response.error) {
           throw new Error(response.error);
         }
-
-        console.log("Password reset email sent:", response);
         return true; // Return true if reset email was sent successfully
       } catch (error) {
-        console.error("Reset password error:", error);
         this.error = error.response?.data?.message || "Failed to send reset password email";
         return false;
       } finally {
