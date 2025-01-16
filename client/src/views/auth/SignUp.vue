@@ -1,22 +1,33 @@
 <template>
-    <div
-        class="min-h-screen bg-white rounded-lg shadow-xl overflow-hidden flex items-center justify-center py-12 sm:px-6 lg:px-8">
+    <div class="min-h-screen bg-white  text-gray-900 dark:text-gray-300 dark:bg-gray-900  shadow-xl overflow-hidden flex items-center justify-center py-12 sm:px-6 lg:px-8"
+        :class="{ 'dark': isDarkMode }">
         <div class="absolute inset-0 z-0">
             <img src="@/assets/whitebg.png" alt=""
                 class="fixed w-full h-full object-cover opacity-40 dark:opacity-10" />
         </div>
         <div class="w-full max-w-md z-10">
-            <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+            <div
+                class="bg-white   text-gray-900 dark:text-gray-300 dark:bg-gray-800 py-8 px-4 shadow sm:rounded-lg sm:px-10">
                 <!-- Logo Section -->
                 <div class="text-center -mt-24 h-64">
                     <img src="@/assets/logo.svg" alt="Tsede Logo" />
                 </div>
 
-                <!-- Language Dropdown -->
-                <div class="text-right mb-10">
+                <!-- Language Dropdown and Dark Mode Toggle -->
+                <div class="flex justify-between items-center mb-10">
+                    <button @click="toggleDarkMode" @keydown.space.prevent="toggleDarkMode"
+                        class="relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 dark:focus:ring-gray-400"
+                        :class="isDarkMode ? 'bg-gray-700' : 'bg-sky-100'" role="switch" :aria-checked="isDarkMode"
+                        aria-label="Toggle dark mode">
+                        <span
+                            class="inline-block w-4 h-4 transform rounded-full bg-white shadow-lg transition-transform duration-200 ease-in-out"
+                            :class="isDarkMode ? 'translate-x-6' : 'translate-x-1'">
+                            <SunIcon v-if="!isDarkMode" class="h-4 w-4 text-yellow-500" />
+                            <MoonIcon v-else class="h-4 w-4 text-sky-500" />
+                        </span>
+                    </button>
                     <LanguageSelector />
                 </div>
-
                 <!-- Progress Bar -->
                 <div class="mb-6">
                     <div class="flex justify-between mb-2">
@@ -38,31 +49,31 @@
                     <div v-if="currentStep === 1">
                         <div class="mb-4">
                             <label for="user_name"
-                                class="block text-sm font-medium text-gray-700 bg-white px-1 ml-2 -mb-3 z-10 relative w-fit">
+                                class="block text-sm font-medium   bg-white dark:bg-gray-800  text-gray-900 dark:text-gray-300 px-1 ml-2 -mb-3 z-10 relative w-fit">
                                 {{ t('usernameonly') }}
                             </label>
                             <input id="user_name" v-model="formData.user_name" type="text" required
-                                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-400 focus:border-sky-400" />
+                                class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-800  text-gray-900 dark:text-gray-300 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-400 focus:border-sky-400" />
                             <!-- Error message -->
                             <p v-if="errors.user_name" class="text-sm text-red-600 mt-1">{{ errors.user_name }}</p>
                         </div>
                         <div class="mb-4">
                             <label for="first_name"
-                                class="block text-sm font-medium text-gray-700 bg-white px-1 ml-2 -mb-3 z-10 relative w-fit">
+                                class="block text-sm font-medium  bg-white dark:bg-gray-800  text-gray-900 dark:text-gray-300 px-1 ml-2 -mb-3 z-10 relative w-fit">
                                 {{ t('first_name') }}
                             </label>
                             <input id="first_name" v-model="formData.first_name" type="text" required
-                                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-400 focus:border-sky-400" />
+                                class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-800  text-gray-900 dark:text-gray-300 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-400 focus:border-sky-400" />
                             <!-- Error message -->
                             <p v-if="errors.first_name" class="text-sm text-red-600 mt-1">{{ errors.first_name }}</p>
                         </div>
                         <div class="mb-4">
                             <label for="last_name"
-                                class="block text-sm font-medium text-gray-700 bg-white px-1 ml-2 -mb-3 z-10 relative w-fit">
+                                class="block text-sm font-medium  bg-white dark:bg-gray-800  text-gray-900 dark:text-gray-300 px-1 ml-2 -mb-3 z-10 relative w-fit">
                                 {{ t('last_name') }}
                             </label>
                             <input id="last_name" v-model="formData.last_name" type="text" required
-                                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-400 focus:border-sky-400" />
+                                class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-800  text-gray-900 dark:text-gray-300 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-400 focus:border-sky-400" />
                             <!-- Error message -->
                             <p v-if="errors.last_name" class="text-sm text-red-600 mt-1">{{ errors.last_name }}</p>
                         </div>
@@ -72,27 +83,28 @@
                     <div v-if="currentStep === 2">
                         <div class="mb-4">
                             <label for="date_of_birth"
-                                class="block text-sm font-medium text-gray-700 bg-white px-1 ml-2 -mb-3 z-10 relative w-fit">
+                                class="block text-sm font-medium bg-white dark:bg-gray-800  text-gray-900 dark:text-gray-300 px-1 ml-2 -mb-3 z-10 relative w-fit">
                                 {{ t('dateOfBirth') }}
                             </label>
                             <input id="date_of_birth" v-model="formData.date_of_birth" type="date"
-                                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-400 focus:border-sky-400" />
+                                class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-800  text-gray-900 dark:text-gray-300 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-400 focus:border-sky-400" />
                             <!-- Error message -->
                             <p v-if="errors.date_of_birth" class="text-sm text-red-600 mt-1">{{ errors.date_of_birth }}
                             </p>
                         </div>
                         <div class="mb-6">
-                            <label class="block text-sm font-semibold text-gray-700 mb-3"> {{ t('gender') }}</label>
+                            <label class="block text-sm font-semibold  text-gray-900 dark:text-gray-300 mb-3"> {{
+                                t('gender') }}</label>
                             <div class="flex items-center space-x-6">
                                 <label class="inline-flex items-center cursor-pointer">
                                     <input type="radio" v-model="formData.gender" value="male"
                                         class="form-radio text-sky-400 border-gray-300 rounded-full focus:ring-2 focus:ring-sky-400" />
-                                    <span class="ml-2 text-gray-800">{{ t('male') }}</span>
+                                    <span class="ml-2  text-gray-900 dark:text-gray-300">{{ t('male') }}</span>
                                 </label>
                                 <label class="inline-flex items-center cursor-pointer">
                                     <input type="radio" v-model="formData.gender" value="female"
                                         class="form-radio text-sky-400 border-gray-300 rounded-full focus:ring-2 focus:ring-sky-400" />
-                                    <span class="ml-2 text-gray-800">{{ t('female') }}</span>
+                                    <span class="ml-2  text-gray-900 dark:text-gray-300">{{ t('female') }}</span>
                                 </label>
                             </div>
                             <!-- Error message -->
@@ -104,24 +116,24 @@
                     <div v-if="currentStep === 3">
                         <div class="mb-4">
                             <label for="email"
-                                class="block text-sm font-medium text-gray-700 bg-white px-1 ml-2 -mb-3 z-10 relative w-fit">
+                                class="block text-sm font-medium bg-white dark:bg-gray-800  text-gray-900 dark:text-gray-300 px-1 ml-2 -mb-3 z-10 relative w-fit">
                                 {{ t('email') }}
                             </label>
                             <input id="email" v-model="formData.email" type="email" required
-                                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-400 focus:border-sky-400" />
+                                class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-800  text-gray-900 dark:text-gray-300 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-400 focus:border-sky-400" />
                             <!-- Error message -->
                             <p v-if="errors.email" class="text-sm text-red-600 mt-1">{{ errors.email }}</p>
                         </div>
                         <!-- Password Field -->
                         <div class="relative mb-4">
                             <label for="password"
-                                class="absolute -top-2 left-2 bg-white text-sm font-medium text-gray-700 px-1">
+                                class="absolute -top-2 left-2 bg-white dark:bg-gray-800 text-sm font-medium  text-gray-900 dark:text-gray-300 px-1">
                                 {{ t('password') }}
                             </label>
                             <div class="mt-2">
                                 <input id="password" v-model="formData.password"
                                     :type="showPassword ? 'text' : 'password'" required
-                                    class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-sky-500 focus:border-sky-500 sm:text-sm"
+                                    class="appearance-none block w-full px-3 py-2 border bg-white dark:bg-gray-800 border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-sky-500 focus:border-sky-500 sm:text-sm"
                                     :class="{ 'border-red-500': errors.password }" />
                                 <!-- Toggle Password Visibility -->
                                 <button type="button" @click="togglePasswordVisibility"
@@ -149,13 +161,13 @@
                         <!-- Confirm Password Field -->
                         <div class="relative mb-4">
                             <label for="confirm-password"
-                                class="absolute -top-2 left-2 bg-white text-sm font-medium text-gray-700 px-1">
+                                class="absolute -top-2 left-2 bg-white dark:bg-gray-800  text-sm font-medium  text-gray-900 dark:text-gray-300 px-1">
                                 {{ t('confirmpass') }}
                             </label>
                             <div class="mt-2">
                                 <input id="confirm-password" v-model="formData.confirm_password"
                                     :type="showPassword ? 'text' : 'password'" required
-                                    class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-sky-500 focus:border-sky-500 sm:text-sm"
+                                    class="appearance-none block w-full px-3 py-2 border bg-white dark:bg-gray-800 border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-sky-500 focus:border-sky-500 sm:text-sm"
                                     :class="{ 'border-red-500': errors.confirm_password }" />
                                 <!-- Toggle Password Visibility -->
                                 <button type="button" @click="togglePasswordVisibility"
@@ -199,7 +211,7 @@
 
                 <!-- Redirect -->
                 <div class="mt-4 text-center">
-                    <p class="text-sm text-center text-gray-900">
+                    <p class="text-sm text-center text-gray-900 dark:text-gray-300">
                         {{ t('haveaccount') }}
                         <router-link to="/signin" class="font-medium text-sky-400 hover:text-sky-500">
                             {{ t('signin') }}
@@ -218,13 +230,14 @@ import { useLanguageStore } from '@/stores/languageStore';
 import { useAuthStore } from '@/stores/authStore';
 import ToastService from '@/utils/toast.js';
 import LanguageSelector from '@/components/LanguageSelector.vue';
-
+import { SunIcon, MoonIcon } from 'lucide-vue-next';
 const authStore = useAuthStore();
 
 const toast = ToastService();
-
+// Dark mode state
+const isDarkMode = ref(false);
 // Store access
-const {  t } = useLanguageStore();
+const { t } = useLanguageStore();
 
 // Reactive Data
 const currentStep = ref(1);
@@ -257,7 +270,18 @@ const showPassword = ref(false);
 const togglePasswordVisibility = () => {
     showPassword.value = !showPassword.value;
 };
+const toggleDarkMode = () => {
+    isDarkMode.value = !isDarkMode.value;
+    updateTheme();
+};
 
+const updateTheme = () => {
+    if (isDarkMode.value) {
+        document.documentElement.classList.add('dark');
+    } else {
+        document.documentElement.classList.remove('dark');
+    }
+};
 // Validation Functions with Error Messages
 const isValidStep1 = async () => {
     errors.user_name = !formData.user_name ? 'Username is required.' : '';

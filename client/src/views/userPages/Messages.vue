@@ -54,10 +54,20 @@
           <div v-if="activeTab === 'personal' || activeTab === 'all'">
             <div v-for="contact in filteredContacts" :key="contact.id" @click="selectContact(contact)"
               class="flex items-center p-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">
-              <router-link :to="`/viewAccount/${contact._id}`"
+              
+                <div v-if="contact.profile_photo_url" class="w-10 h-10 rounded-full overflow-hidden">
+                  <router-link :to="`/viewAccount/${contact._id}`"
                 class="text-sm text-gray-600 dark:text-gray-400 hover:underline">
-                <img :src="contact.profile_photo_url" :alt="contact.user_name[0]" class="w-12 h-12 rounded-full object-cover" />
-              </router-link>
+                  <img :src="contact.profile_photo_url"  class="w-full h-full object-cover" />
+                </router-link>
+                </div>
+                <div v-else class="w-10 h-10 rounded-full overflow-hidden">
+                  <router-link :to="`/viewAccount/${contact._id}`"
+                  class="text-sm text-gray-600 dark:text-gray-400 hover:underline">
+                  <img src="../../assets/avatar.jpg" alt="avatar" class="w-full h-full object-cover" />
+                </router-link>
+                </div>
+              
               <div class="ml-3">
                 <p class="font-semibold">{{ contact.user_name }}</p>
                 <p class="text-sm text-gray-500 dark:text-gray-400 truncate">{{ contact.lastMessage }}</p>

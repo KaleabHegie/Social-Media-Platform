@@ -1,21 +1,33 @@
 <template>
     <div
-        class=" min-h-screen bg-white rounded-lg shadow-xl overflow-hidden flex items-center justify-center py-12 sm:px-6 lg:px-8">
+        class=" min-h-screen bg-white dark:bg-gray-800  text-gray-900 dark:text-gray-300  shadow-xl overflow-hidden flex items-center justify-center py-12 sm:px-6 lg:px-8">
         <div class="absolute inset-0 z-0">
             <img src="@/assets/whitebg.png" alt=""
                 class="fixed w-full h-full object-cover opacity-40 dark:opacity-10" />
         </div>
         <div class="w-full max-w-md z-10">
-            <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+            <div
+                class="bg-white dark:bg-gray-800  text-gray-900 dark:text-gray-300 py-8 px-4 shadow sm:rounded-lg sm:px-10">
                 <!-- Logo Section -->
                 <div class="text-center -mt-24 h-64">
                     <img src="@/assets/logo.svg" alt="Tsede Logo" />
                 </div>
-                <!-- Language Dropdown -->
-                <div class="text-right mb-10">
+                <!-- Language Dropdown and Dark Mode Toggle -->
+                <div class="flex justify-between items-center mb-10">
+                    <button @click="toggleDarkMode" @keydown.space.prevent="toggleDarkMode"
+                        class="relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 dark:focus:ring-gray-400"
+                        :class="isDarkMode ? 'bg-gray-700' : 'bg-sky-100'" role="switch" :aria-checked="isDarkMode"
+                        aria-label="Toggle dark mode">
+                        <span
+                            class="inline-block w-4 h-4 transform rounded-full bg-white shadow-lg transition-transform duration-200 ease-in-out"
+                            :class="isDarkMode ? 'translate-x-6' : 'translate-x-1'">
+                            <SunIcon v-if="!isDarkMode" class="h-4 w-4 text-yellow-500" />
+                            <MoonIcon v-else class="h-4 w-4 text-sky-500" />
+                        </span>
+                    </button>
                     <LanguageSelector />
                 </div>
-                <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">{{ t('reset') }}</h2>
+                <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-gray-300">{{ t('reset') }}</h2>
                 <p class="mt-2 text-center text-sm text-gray-600">
                     {{ t('or') }}
                     <router-link to="/signin" class="font-medium text-sky-400 hover:text-sky-500">
@@ -51,12 +63,12 @@
                     <form v-else class="space-y-6" @submit.prevent="handleSubmit">
                         <div>
                             <label for="email"
-                                class="block text-sm font-medium text-gray-700 bg-white px-1 ml-2 -mb-3 z-10 relative w-fit">
+                                class="block text-sm font-medium bg-white dark:bg-gray-800  text-gray-900 dark:text-gray-300 px-1 ml-2 -mb-3 z-10 relative w-fit">
                                 {{ t('email') }}
                             </label>
                             <div class="mt-1">
                                 <input id="email" v-model="form.email" type="email" required
-                                    class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-sky-500 focus:border-sky-500 sm:text-sm"
+                                    class="appearance-none block w-full px-3 py-2 border bg-white dark:bg-gray-800 border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-sky-500 focus:border-sky-500 sm:text-sm"
                                     :class="{ 'border-red-500': errors.email }" />
                                 <p v-if="errors.email" class="mt-2 text-sm text-red-600">
                                     {{ errors.email }}
@@ -93,10 +105,10 @@ import { ref, reactive } from 'vue';
 import { useAuthStore } from '@/stores/authStore';  // Assuming this store exists
 import { useLanguageStore } from '@/stores/languageStore';
 import LanguageSelector from '@/components/LanguageSelector.vue';
-
+import { SunIcon, MoonIcon } from 'lucide-vue-next';
 const { currentLanguage, t } = useLanguageStore();
 const { forgotPassword, error } = useAuthStore();  // Assuming forgotPassword is a method in your authStore
-
+const isDarkMode = ref(false);
 // Form data and state
 const form = reactive({
     email: '',
@@ -105,7 +117,18 @@ const form = reactive({
 const errors = reactive({});
 const loading = ref(false);
 const emailSent = ref(false);
+const toggleDarkMode = () => {
+    isDarkMode.value = !isDarkMode.value;
+    updateTheme();
+};
 
+const updateTheme = () => {
+    if (isDarkMode.value) {
+        document.documentElement.classList.add('dark');
+    } else {
+        document.documentElement.classList.remove('dark');
+    }
+};
 // Validation method
 const validateForm = () => {
     errors.email = '';
