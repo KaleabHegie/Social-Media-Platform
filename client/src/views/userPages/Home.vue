@@ -7,7 +7,7 @@
 
           <!-- Loading State for Stories -->
           <div v-if="postStoryStore.isLoading" class="text-gray-800 dark:text-gray-200 text-center">
-            <p>Loading stories and posts...</p>
+            <p> {{ t('loadingPosts') }}</p>
           </div>
 
           <!-- Error State -->
@@ -50,8 +50,7 @@
                 </Transition>
               </Teleport>
             </div>
-            <div class="flex space-x-4 mt-6 overflow-x-auto pb-4 hide-scrollbar"
-              style="scroll-snap-type: x mandatory;">
+            <div class="flex space-x-4 mt-6 overflow-x-auto pb-4 hide-scrollbar" style="scroll-snap-type: x mandatory;">
               <StoryCard v-for="story in postStoryStore.stories" :key="story.id" :story="story"
                 class="flex-shrink-0 w-[25%] max-w-[100px] sm:max-w-[120px]" style="scroll-snap-align: start;" />
             </div>
@@ -63,10 +62,6 @@
               <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">
                 {{ t('feed') }}
               </h2>
-              <button @click="refreshFeed"
-                class=" w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition">
-                <i class="ri-refresh-line text-gray-800 dark:text-gray-200 text-xl"></i>
-              </button>
             </div>
 
             <div class="space-y-6 w-full sm:w-80 md:w-[28rem] lg:w-[36rem] xl:w-[42rem] mx-auto">

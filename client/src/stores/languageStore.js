@@ -302,6 +302,14 @@ const translations = {
     en:"Followers",
     am:"ተከታዮች"
   },
+  loadingPosts:{
+    en:"Loading stories and posts...",
+    am:"ለጥፍ በመጫን ላይ..."
+  },
+  loadProfile:{
+    en:"Loading profile...",
+    am:"መለያ በመጫን ላይ..."
+  }
 };
 
 
