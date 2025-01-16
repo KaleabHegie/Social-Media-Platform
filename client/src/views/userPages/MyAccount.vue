@@ -6,7 +6,7 @@
     </div>
 
     <div v-else-if="!profile" class="text-center text-gray-500 dark:text-gray-400">
-      No profile data available.
+      {{ t('Noprofile') }}
     </div>
 
     <!-- Profile Content -->
@@ -27,25 +27,24 @@
             <ul class="py-2 relative">
               <!-- Language Selector -->
               <li class="flex justify-between px-4 py-2   text-gray-700 dark:text-gray-300">
-                Language
+                {{ t('language') }}
                 <LanguageSelector />
               </li>
               <!-- Dark Mode Toggle -->
-              <li
-                class="flex justify-between px-4 py-2  text-gray-700 dark:text-gray-300">
-                Theme
+              <li class="flex justify-between px-4 py-2  text-gray-700 dark:text-gray-300">
+                {{ t('theme') }}
                 <DarkModeToggle />
               </li>
               <!-- Privacy Toggle -->
               <li class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
                 <button @click="togglePrivacy" class="w-full text-left text-gray-700 dark:text-gray-300">
-                  {{ profile.is_private ? 'Switch to Public Account' : 'Switch to Private Account' }}
+                  {{ profile.is_private ? t('switchPublic') : t('switchPrivate') }}
                 </button>
               </li>
               <!-- Delete Account -->
               <li class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
                 <button @click="openModal" class="w-full text-left text-red-500">
-                  <i class="ri-delete-bin-line text-red-500"></i> Delete Account
+                  <i class="ri-delete-bin-line text-red-500"></i> {{ t('delete') }}
                 </button>
               </li>
               <!-- Logout -->
@@ -93,24 +92,24 @@
             <p class="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">
               {{ profile.followers_count }}
             </p>
-            <p class="text-sm sm:text-base text-gray-600 dark:text-gray-300">Followers</p>
+            <p class="text-sm sm:text-base text-gray-600 dark:text-gray-300"> {{ t('followers') }}</p>
           </div>
           <div class="text-center">
             <p class="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">
               {{ profile.following_count }}
             </p>
-            <p class="text-sm sm:text-base text-gray-600 dark:text-gray-300">Following</p>
+            <p class="text-sm sm:text-base text-gray-600 dark:text-gray-300"> {{ t('following') }}</p>
           </div>
         </div>
 
         <!-- Bio -->
         <div class="mt-4">
           <input v-model="profile.bio"
-            class=" sm:align-middle p-2 mr-2 rounded-md text-gray-900 dark:text-white bg-transparent border-b border-gray-300 dark:border-gray-600 focus:outline-none focus:border-sky-500 transition duration-300"
+            class=" sm:align-middle px-6  py-2 mr-2 rounded-md text-gray-900 dark:text-white bg-transparent border-b border-gray-300 dark:border-gray-600 focus:outline-none focus:border-sky-500 transition duration-300"
             placeholder="Enter your bio...">
           <button @click="updateBio"
             class="mt-2 px-4 py-2 bg-sky-500 text-white text-sm rounded-lg hover:bg-sky-600 transition duration-300">
-            Update Bio
+            {{ t('updateBio') }}
           </button>
         </div>
       </div>
@@ -132,7 +131,7 @@
         <div v-if="myposts.length" class="grid-layout">
           <ExplorePostCard v-for="post in myposts" :key="post.id" :post="post" :showHashtags="true" />
         </div>
-        <p v-else class="text-center text-gray-500 dark:text-gray-400">No posts available.</p>
+        <p v-else class="text-center text-gray-500 dark:text-gray-400"> {{ t('noPosts') }}</p>
       </div>
 
       <!-- Liked Posts Tab -->
@@ -140,12 +139,12 @@
         <div v-if="likedposts.length" class="grid-layout">
           <ExplorePostCard v-for="post in likedposts" :key="post.id" :post="post" :showHashtags="false" />
         </div>
-        <p v-else class="text-center text-gray-500 dark:text-gray-400">No liked posts yet.</p>
+        <p v-else class="text-center text-gray-500 dark:text-gray-400"> {{ t('noLiked') }}</p>
       </div>
 
       <div v-else-if="currentTab === 'following'">
         <div v-if="following.length === 0">
-          <p class="text-center text-gray-500 dark:text-gray-400">No following yet.</p>
+          <p class="text-center text-gray-500 dark:text-gray-400"> {{ t('nofollowing') }}</p>
           <!-- Message for no following -->
         </div>
         <div v-else class="grid-layout">
@@ -156,7 +155,7 @@
 
       <div v-else-if="currentTab === 'followers'">
         <div v-if="followers.length === 0">
-          <p class="text-center text-gray-500 dark:text-gray-400">No followers yet.</p>
+          <p class="text-center text-gray-500 dark:text-gray-400"> {{ t('nofollowers') }}</p>
           <!-- Message for no followers -->
         </div>
         <div v-else class="grid-layout">
@@ -219,11 +218,12 @@ const likedposts = ref([]);
 const isLoading = ref(true);
 const currentTab = ref('posts');
 const tabs = [
-  { id: 'posts', name: 'Posts' },
-  { id: 'likedposts', name: 'Liked' },
-  { id: 'following', name: 'Following' },
-  { id: 'followers', name: 'Followers' },
+  { id: 'posts', name: t('tabsposts') },
+  { id: 'likedposts', name: t('tabsliked') },
+  { id: 'following', name: t('tabsfollowing') },
+  { id: 'followers', name: t('tabsfollowers') },
 ];
+
 
 onMounted(async () => {
   try {
