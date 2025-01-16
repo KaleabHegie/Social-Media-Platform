@@ -36,7 +36,7 @@
                             {{ t('step') }} {{ currentStep }} {{ t('of') }} 3
                         </span>
                     </div>
-                    <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-blue-200">
+                    <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-sky-200">
                         <div :style="{ width: `${(currentStep / 3) * 100}%` }"
                             class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-sky-400">
                         </div>
@@ -198,7 +198,7 @@
                     <!-- Navigation Buttons -->
                     <div class="flex justify-between mt-6">
                         <button v-if="currentStep > 1" @click.prevent="prevStep"
-                            class="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-sky-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-400">
+                            class="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-sky-700 bg-sky-100 hover:bg-sky-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-400">
                             {{ t('previous') }}
                         </button>
                         <button type="submit"

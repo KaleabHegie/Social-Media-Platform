@@ -6,7 +6,7 @@
         <div class="flex-grow order-2 lg:order-1">
 
           <!-- Loading State for Stories -->
-          <div v-if="postStoryStore.isLoading" class="text-center">
+          <div v-if="postStoryStore.isLoading" class="text-gray-800 dark:text-gray-200 text-center">
             <p>Loading stories and posts...</p>
           </div>
 
@@ -15,27 +15,40 @@
             <p>{{ postStoryStore.error }}</p>
           </div>
 
-
-          <!-- maybe the issue -->
           <!-- Stories for mobile -->
-          <div v-if="postStoryStore.stories.length > 0" class="lg:hidden mb-6 w-[90vw]">
-            <div class="fixed top-2 z-50 h-16 bg-red-400 w-full flex items-center justify-start mb-4">
-              <div class="flex-shrink-0 max-w-16" style="scroll-snap-align: start;">
+          <div v-if="postStoryStore.stories.length > 0" class="lg:hidden mb-6 w-[94vw]">
+            <div class="fixed top-2 z-50 p-0 w-[94vw] flex items-center justify-between mb-2">
+              <!-- Logo Button -->
+              <button @click="refreshFeed" class="flex-shrink-0 max-w-10" style="scroll-snap-align: start;">
                 <img src="@/assets/logo.png" alt="Logo" class="w-full object-contain rounded-lg" />
+              </button>
+
+              <!-- Notification Icon Button -->
+              <div class="relative">
+                <button @click="toggleMobileNotifications"
+                  class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors focus:outline-none"
+                  aria-label="Notifications">
+                  <i class="ri-notification-line text-gray-800 dark:text-gray-200 text-2xl"></i>
+
+                  <!-- Notification Badge -->
+                  <span v-if="unreadNotifications > 0"
+                    class="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 rounded-full">
+                    {{ unreadNotifications }}
+                  </span>
+                </button>
               </div>
-              <button @click="refreshFeed"
-                class="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition">
-                <i class="ri-refresh-line text-gray-800 dark:text-gray-200 text-xl"></i>
-              </button>
 
-              <button @click="showNotification = true" class="bg-blue-500 text-white px-4 py-2 rounded">
-                Show Nofiications Icon here
-              </button>
-
-              <!-- Modal Component -->
-              <Modal v-if="showNotification" @close="showNotification = false">
-                <NotificationCard :showCloseButton="true" />
-              </Modal>
+              <!-- Mobile Notification Modal -->
+              <Teleport to="body">
+                <Transition name="modal">
+                  <div v-if="showMobileNotification"
+                    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+                    <div class="w-full max-w-md transform transition-all">
+                      <NotificationCard :showCloseButton="true" @close="closeMobileNotifications" />
+                    </div>
+                  </div>
+                </Transition>
+              </Teleport>
             </div>
             <div class="flex space-x-4 mt-16 overflow-x-auto pb-4 hide-scrollbar"
               style="scroll-snap-type: x mandatory;">
@@ -80,11 +93,10 @@
                 <StoryCard v-for="story in postStoryStore.stories" :key="story.id" :story="story" />
               </div>
             </div>
-            <div>
+            <div class="mt-6">
               <NotificationCard :showCloseButton="true" />
             </div>
           </div>
-
         </div>
 
       </div>
@@ -93,22 +105,27 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import PostCard from '@/components/PostCard.vue';
 import StoryCard from '@/components/StoryCard.vue';
 import { onMounted } from 'vue';
 import { useLanguageStore } from '@/stores/languageStore';
 import { usePostStoryStore } from '@/stores/homePageStore'; // Import the store
-import NotificationCard from '../../components/NotificationCard.vue';
-import Modal from 'vue3-modal';
-const showNotification = ref(false);
+import NotificationCard from '@/components/NotificationCard.vue';
 
-
+const showMobileNotification = ref(false);
+const unreadNotifications = computed(() => 2); // Replace with actual unread count from your store
 
 const { t } = useLanguageStore();
-
 const postStoryStore = usePostStoryStore();
 
+const toggleMobileNotifications = () => {
+  showMobileNotification.value = !showMobileNotification.value;
+};
+
+const closeMobileNotifications = () => {
+  showMobileNotification.value = false;
+};
 
 onMounted(() => {
   postStoryStore.fetchPosts();

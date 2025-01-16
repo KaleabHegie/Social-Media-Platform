@@ -29,7 +29,7 @@
             <!-- Follow/Unfollow and Message Buttons -->
             <div class="mt-3 space-x-2">
               <button @click="toggleFollow"
-                class="px-3 py-1.5 sm:px-4 sm:py-2 bg-blue-500 text-white text-sm sm:text-base rounded-md hover:bg-blue-600 transition duration-300">
+                class="px-3 py-1.5 sm:px-4 sm:py-2 bg-sky-500 text-white text-sm sm:text-base rounded-md hover:bg-sky-600 transition duration-300">
                 {{ isFollowing ? 'Unfollow' : 'Follow' }}
               </button>
 
@@ -77,7 +77,7 @@
       <div>
         <div class="flex border-b border-gray-200 dark:border-gray-700 mb-4">
           <button v-for="tab in tabs" :key="tab.id" @click="currentTab = tab.id"
-            :class="['px-4 py-2 font-medium', currentTab === tab.id ? 'text-blue-500 border-b-2 border-blue-500' : 'text-gray-500 dark:text-gray-400']">
+            :class="['px-4 py-2 font-medium', currentTab === tab.id ? 'text-sky-500 border-b-2 border-sky-500' : 'text-gray-500 dark:text-gray-400']">
             {{ tab.name }}
           </button>
         </div>

@@ -47,7 +47,7 @@
                         <input v-model="newComment" type="text" placeholder="Add a comment..."
                             class="flex-grow mr-2 p-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
                         <button @click="addComment"
-                            class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
+                            class="bg-sky-500 text-white px-4 py-2 rounded-lg hover:bg-sky-600">
                             Comment
                         </button>
                     </div>

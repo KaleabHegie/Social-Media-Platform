@@ -29,7 +29,7 @@
         <div v-for="message in messages" :key="message.id" class="flex"
           :class="[message.sender._id === selectedContact._id ?  'justify-start': 'justify-end' ]">
           <div class="max-w-xs px-4 py-2 rounded-lg relative group" :class="[ 
-            message.sender._id === selectedContact._id ? 'bg-green-400 text-white' : 'bg-sky-400 text-white',
+            message.sender._id === selectedContact._id ? 'bg-sky-400 text-white' : 'bg-green-400 text-white',
             message.sender === currentUserId ? 'ml-auto' : ''
           ]">
             {{ message.content }}

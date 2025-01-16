@@ -13,7 +13,7 @@
       :class="isDarkMode ? 'translate-x-6' : 'translate-x-1'"
     >
       <SunIcon v-if="!isDarkMode" class="h-4 w-4 text-yellow-500" />
-      <MoonIcon v-else class="h-4 w-4 text-blue-500" />
+      <MoonIcon v-else class="h-4 w-4 text-sky-500" />
     </span>
   </button>
 </template>

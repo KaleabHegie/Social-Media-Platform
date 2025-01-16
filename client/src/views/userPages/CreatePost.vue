@@ -95,7 +95,7 @@
       <!-- Selected Hashtags -->
       <div class="flex flex-wrap gap-2 mt-3">
         <span v-for="tag in selectedHashtags" :key="tag"
-          class="inline-flex items-center px-3 py-1 rounded-full bg-blue-100 dark:bg-sky-400 text-blue-800 dark:text-white">
+          class="inline-flex items-center px-3 py-1 rounded-full bg-sky-100 dark:bg-sky-400 text-sky-800 dark:text-white">
           #{{ tag }}
           <button @click="removeHashtag(tag)" class="ml-2">
             <oh-vue-icon name="ri-close-line" class="h-3 w-3" />
