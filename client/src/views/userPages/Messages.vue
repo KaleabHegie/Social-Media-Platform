@@ -120,12 +120,8 @@ import { OhVueIcon, addIcons } from "oh-vue-icons";
 import { BiSearch, BiSend, BiChatDots, BiPeople, BiPerson, BiSun, BiMoon, BiX, BiArrowLeft } from "oh-vue-icons/icons";
 import ChatBox from '@/components/ChatBox.vue';
 import { usePostStoryStore } from '../../stores/homePageStore';
-<<<<<<< HEAD
-import { reactive } from 'vue';
+import { useLanguageStore } from '@/stores/languageStore';import { reactive } from 'vue';
 
-=======
-import { useLanguageStore } from '@/stores/languageStore';
->>>>>>> 63445e16965ea65ab5b41607a854a6041587ab95
 import { io } from 'socket.io-client'; // Import Socket.IO client
 import { useAuthStore } from '../../stores/authStore';
 
