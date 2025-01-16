@@ -7,13 +7,14 @@ export const usePostStoryStore = defineStore("postStory", {
     posts: [],
     stories: [],
     explore: [],
+    searchedUsers:[],
     myProfile: [],
     myPosts: [],
     likedPosts: [],
     allUsers: [],
     messages: [],
     currentUser: [],
-    chats : [],
+    chats: [],
     isLoading: false,
     error: null,
   }),
@@ -72,6 +73,25 @@ export const usePostStoryStore = defineStore("postStory", {
         console.log(this.explore);
       } catch (error) {
         this.error = error.response?.message || "Story Fetch failed";
+        return false;
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
+    async searchUsers(query = "") {
+      this.isLoading = true;
+      this.error = null;
+
+      try {
+        const response = await MyHttpService.get("/searchUsers", {
+          query: { query: query },
+          useJWT: true,
+        });
+        this.searchedUsers = Array.isArray(response.users) ? response.users : [];
+        console.log(this.users);
+      } catch (error) {
+        this.error = error.response?.message || "Users Fetch failed";
         return false;
       } finally {
         this.isLoading = false;
@@ -167,7 +187,9 @@ export const usePostStoryStore = defineStore("postStory", {
       this.isLoading = true;
       this.error = null;
       try {
-        const response = await MyHttpService.get("/getAllUsersChattedWith", { useJWT: true });
+        const response = await MyHttpService.get("/getAllUsersChattedWith", {
+          useJWT: true,
+        });
         if (response.allUsers) {
           this.allUsers = response.allUsers;
         }
@@ -177,7 +199,6 @@ export const usePostStoryStore = defineStore("postStory", {
         this.isLoading = false;
       }
     },
-
 
     async fetchChats() {
       this.isLoading = true;
@@ -203,7 +224,7 @@ export const usePostStoryStore = defineStore("postStory", {
           useJWT: true,
         });
         if (response.messages) {
-          this.messages = []
+          this.messages = [];
           this.messages = response.messages[0].messages;
         }
       } catch (error) {

@@ -173,14 +173,14 @@ const userController = {
           message: "Can't fetch users if the user is not logged in",
         });
       }
-  
+
       const currentUserId = req.user.id;
-  
+
       // Find all messages where the current user is a participant
       const messages = await Message.find({
         "participants.userId": currentUserId,
       });
-  
+
       // Extract unique participant IDs and details
       const userDetailsMap = new Map();
       messages.forEach((message) => {
@@ -188,18 +188,27 @@ const userController = {
           if (participant.userId.toString() !== currentUserId) {
             const otherUserId = participant.userId.toString();
             const lastOpenedAt = participant.last_opened_at;
-  
+
             // Compute last message, recent messages, and unread count
-            const sortedMessages = message.messages.slice().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            const sortedMessages = message.messages
+              .slice()
+              .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
             const lastMessage = sortedMessages[0] || null;
             const recentMessages = sortedMessages.slice(0, 5);
-  
+
             const unreadCount = sortedMessages.filter(
-              (msg) => msg.sender.toString() !== currentUserId && new Date(msg.createdAt) > new Date(lastOpenedAt)
+              (msg) =>
+                msg.sender.toString() !== currentUserId &&
+                new Date(msg.createdAt) > new Date(lastOpenedAt)
             ).length;
-  
+
             // Update the map with details
-            if (!userDetailsMap.has(otherUserId) || (lastMessage && lastMessage.createdAt > userDetailsMap.get(otherUserId).lastMessage?.createdAt)) {
+            if (
+              !userDetailsMap.has(otherUserId) ||
+              (lastMessage &&
+                lastMessage.createdAt >
+                  userDetailsMap.get(otherUserId).lastMessage?.createdAt)
+            ) {
               userDetailsMap.set(otherUserId, {
                 lastMessage,
                 recentMessages,
@@ -209,19 +218,19 @@ const userController = {
           }
         });
       });
-  
+
       if (userDetailsMap.size === 0) {
         return res.status(constants.NOT_FOUND).json({
           message: "No users found",
         });
       }
-  
+
       // Fetch user details with only the required fields
       const users = await User.find(
         { _id: { $in: Array.from(userDetailsMap.keys()) } },
         "_id user_name first_name last_name profile_photo_url"
       );
-  
+
       // Attach last messages, recent messages, and unread count to users
       const usersWithExtras = users.map((user) => {
         const details = userDetailsMap.get(user._id.toString());
@@ -244,7 +253,7 @@ const userController = {
           unreadCount: details.unreadCount,
         };
       });
-  
+
       res.json({
         message: "Users fetched successfully",
         allUsers: usersWithExtras,
@@ -256,7 +265,6 @@ const userController = {
       });
     }
   },
-  
 
   getChats: async (req, res) => {
     try {
@@ -757,11 +765,12 @@ const userController = {
             }
           : {};
 
+      // Fetch users and exclude sensitive fields (like password, resetToken, etc.)
       const users = await User.find(searchCriteria)
-        .select("user_name first_name last_name profile_photo_url followers") // Only return relevant fields
+        .select("-password -resetToken -tokenExpiry -notifications") // Exclude sensitive fields
         .lean();
 
-      // Add the `isFollowing` status, along with user ID and avatar URL
+      // Add the `isFollowing` status, along with user ID, avatar URL, follower and following counts
       const updatedUsers = users.map((user) => {
         const isFollowing = user.followers.some(
           (follower) => follower.user.toString() === loggedInUserId
@@ -773,6 +782,10 @@ const userController = {
           last_name: user.last_name,
           avatar_url: user.profile_photo_url, // Use avatar_url for profile photo
           isFollowing,
+          followers_count: user.followers_count, // Include followers count
+          following_count: user.following_count, // Include following count
+          bio: user.bio, // Include Bio
+
         };
       });
 
