@@ -25,12 +25,12 @@
       <!-- No Posts Message -->
       <div v-else-if="!postStoryStore.isLoading && !postStoryStore.error"
         class="text-center text-gray-600 dark:text-gray-400 mt-8">
-        No posts to explore at the moment.
+        {{ t('noPosts') }}
       </div>
 
       <!-- Loading Indicator -->
       <div v-if="postStoryStore.isLoading" class="text-center text-gray-600 dark:text-gray-400 mt-8">
-        Loading posts...
+        {{ t('loadingPosts') }}
       </div>
 
       <!-- Error Message -->

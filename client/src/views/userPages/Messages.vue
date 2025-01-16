@@ -7,17 +7,17 @@
         <button @click="activeTab = 'all'" :class="{ 'text-sky-400 dark:text-sky-400': activeTab === 'all' }"
           class="font-semibold flex items-center">
           <v-icon name="bi-chat-dots" class="mr-1" />
-          All
+          {{ t('all') }}
         </button>
         <button @click="activeTab = 'personal'" :class="{ 'text-sky-400 dark:text-sky-400': activeTab === 'personal' }"
           class="font-semibold flex items-center">
           <v-icon name="bi-person" class="mr-1" />
-          Personal
+          {{ t('personal') }}
         </button>
         <button @click="activeTab = 'groups'" :class="{ 'text-sky-400 dark:text-sky-400': activeTab === 'groups' }"
           class="font-semibold flex items-center">
           <v-icon name="bi-people" class="mr-1" />
-          Groups
+          {{ t('group') }}
         </button>
       </div>
     </div>
@@ -120,13 +120,17 @@ import { OhVueIcon, addIcons } from "oh-vue-icons";
 import { BiSearch, BiSend, BiChatDots, BiPeople, BiPerson, BiSun, BiMoon, BiX, BiArrowLeft } from "oh-vue-icons/icons";
 import ChatBox from '@/components/ChatBox.vue';
 import { usePostStoryStore } from '../../stores/homePageStore';
+<<<<<<< HEAD
 import { reactive } from 'vue';
 
+=======
+import { useLanguageStore } from '@/stores/languageStore';
+>>>>>>> 63445e16965ea65ab5b41607a854a6041587ab95
 import { io } from 'socket.io-client'; // Import Socket.IO client
 import { useAuthStore } from '../../stores/authStore';
 
 const socket = io('http://localhost:5000'); // Connect to your backend server
-
+const { t } = useLanguageStore();
 
 addIcons(BiSearch, BiSend, BiChatDots, BiPeople, BiPerson, BiSun, BiMoon, BiX, BiArrowLeft);
 

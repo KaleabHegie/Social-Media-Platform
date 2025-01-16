@@ -216,6 +216,99 @@ const translations = {
   submitPost:{
     en:"Submit Post",
     am:"ልጥፍ አስገባ"
+  },
+  all:{
+    en:"All",
+    am:"ሁሉም"
+  },
+  personal:{
+    en:"Personal",
+    am:"ግልጽ"
+  },
+  group:{
+    en:"Group",
+    am:"ቡድን"
+  },
+  Noprofile:{
+    en:"No Profile",
+    am:"ምንም መረጃ የለም"
+  },
+  language:{
+    en:"Language",
+    am:"ቋንቋ"
+  },
+  theme:{
+    en:"Theme",
+    am:"ትም"
+  },
+  delete:{
+    en:"Delete Account",
+    am:"ሰርዝ መለያ"
+  },
+  Logout:
+  {
+    en:"Logout",
+    am:"ውጣ"
+  },
+  switchPublic:{
+    en:"Switch to Public",
+    am:"ወደ ሰርተው ቀላል"
+  },
+  switchPrivate:{
+    en:"Switch to Private",
+    am:"ወደ ግልጽ ቀላል"
+  },
+  followers:{
+    en:"Followers",
+    am:"ተከታዮች"
+  },
+  following:{
+    en:"Following",
+    am:"መከታተያ"
+  },
+  updateBio:{
+    en:"Update Bio",
+    am:"ባዮ አስተካክል"
+  },
+  noPosts:{
+    en:"No posts available",
+    am:"ምንም ለጥፍ የለም"
+  },
+  noLiked:{
+    en:"No liked posts available",
+    am:"ምንም ተወዳጆች የለም"
+  },
+  nofollowing:{
+    en:"No following yet",
+    am:"ምንም መከታተያ የለም"
+  },
+  nofollowers:{
+    en:"No followers yet",
+    am:"ምንም ተከታዮች የለም"
+  },
+  tabsposts:{
+    en:"Posts",
+    am:"ልጥፍዎች"
+  },
+  tabsliked:{
+    en:"Liked",
+    am:"ተወዳጆች"
+  },
+  tabsfollowing:{
+    en:"Following",
+    am:"መከታተያ"
+  },
+  tabsfollowers:{
+    en:"Followers",
+    am:"ተከታዮች"
+  },
+  loadingPosts:{
+    en:"Loading stories and posts...",
+    am:"ለጥፍ በመጫን ላይ..."
+  },
+  loadProfile:{
+    en:"Loading profile...",
+    am:"መለያ በመጫን ላይ..."
   }
 };
 
