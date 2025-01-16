@@ -12,7 +12,7 @@
           <div v-if="selectedContact.profile_photo_url" class="w-10 h-10 rounded-full overflow-hidden">
             <img :src="selectedContact.profile_photo_url" alt="avatar" class="w-full h-full object-cover" />
           </div>
-          <div v-else  class="w-10 h-10 rounded-full overflow-hidden">
+          <div v-else class="w-10 h-10 rounded-full overflow-hidden">
             <img src="../assets/avatar.jpg" alt="avatar" class="w-full h-full object-cover" />
           </div>
           <h2 class="ml-3 font-semibold">{{ selectedContact.user_name }}</h2>
@@ -27,19 +27,20 @@
       <div class="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 dark:bg-gray-900"
         @contextmenu.prevent="showContextMenu">
         <div v-for="message in messages" :key="message.id" class="flex"
-          :class="[message.sender._id === selectedContact._id ?  'justify-start': 'justify-end' ]">
-          <div class="max-w-xs px-4 py-2 rounded-lg relative group" :class="[ 
-            message.sender._id === selectedContact._id ? 'bg-sky-400 text-white' : 'bg-green-400 text-white',
+          :class="[message.sender._id === selectedContact._id ? 'justify-start' : 'justify-end']">
+          <div class="max-w-xs text-md px-4 py-2 rounded-lg relative group" :class="[
+            message.sender._id === selectedContact._id ? 'bg-gray-500 text-white' : 'bg-blue-400 text-white',
             message.sender === currentUserId ? 'ml-auto' : ''
           ]">
             {{ message.content }}
-            <span class="text-xs opacity-50 ml-2">{{ formatTime(message.updatedAt) }}</span>
+            <div class="text-sm opacity-70 ml-2  flex justify-end">{{ formatTime(message.updatedAt) }}</div>
           </div>
         </div>
       </div>
 
       <!-- Message input -->
-      <div class="p-4 mb-20 sm:mb-0 bg-gray-100 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 flex items-center">
+      <div
+        class="p-4 mb-20 sm:mb-0 bg-gray-100 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 flex items-center">
         <input v-model="localNewMessage" type="text" placeholder="Type a message..."
           class="flex-1 bg-white dark:bg-gray-700 rounded-full px-4 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-sky-400 dark:focus:ring-sky-400"
           @keyup.enter="sendMessage" />
@@ -57,7 +58,7 @@
   </div>
 </template>
 <script setup>
-import { ref,computed, onMounted, onUnmounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { usePostStoryStore } from '../stores/homePageStore';
 import { io } from 'socket.io-client'; // Import socket.io-client
 
@@ -77,7 +78,7 @@ const localNewMessage = computed({
 });
 
 const sendMessage = () => {// Logs the current message content
-  emit('send-message', { content: localNewMessage.value,  });
+  emit('send-message', { content: localNewMessage.value, });
   messages.value.push({
     id: messages.value.length + 1, // Use the current length of `messages.value`
     content: localNewMessage.value,
@@ -114,13 +115,13 @@ import { watch } from 'vue';
 watch(
   () => props.selectedContact,
   async (newContact, oldContact) => {
-    
+
     console.log(messages.value)
     messages.value = [];
     console.log(messages.value)
     if (newContact && newContact._id !== oldContact?._id) {
       // Clear the messages immediately
-     
+
 
       try {
         isLoading = true; // Show the loading state

@@ -7,6 +7,7 @@ import Toast from 'vue-toastification';
 import 'vue-toastification/dist/index.css';
 import { OhVueIcon, addIcons } from "oh-vue-icons";
 import 'remixicon/fonts/remixicon.css';
+import longPress from 'vue-directive-long-press';
 
 import VueTouchEvents from 'vue-touch-events'
 import {
@@ -37,6 +38,7 @@ addIcons(
 
 const app = createApp(App);
 const pinia = createPinia();
+app.directive('long-press', longPress);
 app.use(pinia);
 app.use(Toast);
 app.use(router);

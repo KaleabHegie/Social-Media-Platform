@@ -163,11 +163,11 @@ export const usePostStoryStore = defineStore("postStory", {
       }
     },
 
-    async fetchAllUsers() {
+    async getAllUsersChattedWith() {
       this.isLoading = true;
       this.error = null;
       try {
-        const response = await MyHttpService.get("/getAllUsers", { useJWT: true });
+        const response = await MyHttpService.get("/getAllUsersChattedWith", { useJWT: true });
         if (response.allUsers) {
           this.allUsers = response.allUsers;
         }

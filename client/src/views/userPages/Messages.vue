@@ -53,24 +53,53 @@
           </div>
           <div v-if="activeTab === 'personal' || activeTab === 'all'">
             <div v-for="contact in filteredContacts" :key="contact.id" @click="selectContact(contact)"
-              class="flex items-center p-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">
-              
-                <div v-if="contact.profile_photo_url" class="w-10 h-10 rounded-full overflow-hidden">
+              class="flex items-center p-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 bg-[#e4e4e44f] dark:bg-[#00000010] rounded-lg m-1 overflow-hidden">
+              <div @click.stop.prevent="viewRecentMsg(contact)"
+                class="w-10 h-10 rounded-full overflow-hidden transform transition-transform duration-200 hover:scale-110">
+                <img :src="contact.profile_photo_url || '/default-avatar.png'" alt="avatar"
+                  class="w-full h-full object-cover" />
+              </div>
+
+              <div class="w-full">
+                <div class="flex justify-between  font-semibold ml-3">
                   <router-link :to="`/viewAccount/${contact._id}`"
-                class="text-sm text-gray-600 dark:text-gray-400 hover:underline">
-                  <img :src="contact.profile_photo_url"  class="w-full h-full object-cover" />
-                </router-link>
+                    class="text-gray-800 hover:text-sky-500 dark:text-gray-200 dark:hover:text-sky-400">
+                    {{ contact.user_name }}
+                  </router-link>
+                  <div v-if="contact.unreadCount > 0" class="w-6 h-6 bg-blue-600 text-white text-md font-semibold flex items-center justify-center rounded-full 
+            dark:bg-blue-400">
+                    {{ contact.unreadCount }}
+                  </div>
                 </div>
-                <div v-else class="w-10 h-10 rounded-full overflow-hidden">
-                  <router-link :to="`/viewAccount/${contact._id}`"
-                  class="text-sm text-gray-600 dark:text-gray-400 hover:underline">
-                  <img src="../../assets/avatar.jpg" alt="avatar" class="w-full h-full object-cover" />
-                </router-link>
+
+                <div class="ml-3 flex justify-between relative">
+                  <!-- Last Message Content -->
+                  <div class="text-sm text-gray-500 dark:text-gray-400 truncate max-w-64 sm:max-w-76">
+                    {{ contact.lastMessage.content }}
+                  </div>
+
+                  <!-- Created At -->
+                  <div>{{ formatDate(contact.lastMessage.createdAt) }}</div>
+
+                  <!-- Modal for Recent Messages -->
+                  <Teleport to="body">
+                    <Transition name="fade">
+                      <div v-if="activeContact && activeContact._id === contact._id"
+                        class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+                        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg max-w-sm w-full">
+                          <h2 class="text-lg font-semibold mb-2 dark:text-white">Message Details</h2>
+                          <p class="text-sm text-gray-600 dark:text-gray-400">
+                            {{ contact.recentMessages }}
+                          </p>
+                          <button @click="closeModal"
+                            class="mt-4 px-4 py-2 bg-sky-500 text-white rounded hover:bg-sky-600 dark:bg-sky-600">
+                            Close
+                          </button>
+                        </div>
+                      </div>
+                    </Transition>
+                  </Teleport>
                 </div>
-              
-              <div class="ml-3">
-                <p class="font-semibold">{{ contact.user_name }}</p>
-                <p class="text-sm text-gray-500 dark:text-gray-400 truncate">{{ contact.lastMessage }}</p>
               </div>
             </div>
           </div>
@@ -91,6 +120,7 @@ import { OhVueIcon, addIcons } from "oh-vue-icons";
 import { BiSearch, BiSend, BiChatDots, BiPeople, BiPerson, BiSun, BiMoon, BiX, BiArrowLeft } from "oh-vue-icons/icons";
 import ChatBox from '@/components/ChatBox.vue';
 import { usePostStoryStore } from '../../stores/homePageStore';
+import { reactive } from 'vue';
 
 import { io } from 'socket.io-client'; // Import Socket.IO client
 import { useAuthStore } from '../../stores/authStore';
@@ -116,9 +146,30 @@ const groups = ref([
   // { id: 'g2', name: 'Family', lastMessage: 'Mom: Don\'t forget dinner!' },
 ])
 
+const activeContact = ref(null);
+
+const viewRecentMsg = (contact) => {
+  activeContact.value = contact;
+};
+
+const closeModal = () => {
+  activeContact.value = null;
+};
+
+
+
 const contacts = ref([])
 
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffInSeconds = Math.floor((now - date) / 1000);
 
+  if (diffInSeconds < 60) return 'just now';
+  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
+  return `${Math.floor(diffInSeconds / 86400)}d ago`;
+};
 
 const messages = ref([])
 
@@ -180,9 +231,9 @@ const filteredContacts = computed(() => {
 
 onMounted(async () => {
   try {
-    await postStoryStore.fetchAllUsers();
+    await postStoryStore.getAllUsersChattedWith();
     contacts.value = postStoryStore.allUsers;
-
+    console.log(contacts.value);
   } catch (error) {
     console.error("Error loading profile:", error);
   } finally {

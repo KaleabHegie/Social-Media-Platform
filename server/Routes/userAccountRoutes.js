@@ -35,6 +35,8 @@ router.get("/getNotifications", validateToken, userController.getNotifications);
 
 router.get("/searchUsers", validateToken, userController.searchUsers);
 
+router.get("/getAllUsersChattedWith" , validateToken, userController.getAllUsersChattedWith)
+
 router.get("/getAllUsers" , validateToken, userController.getAllUsers)
 
 router.get("/getChats" , validateToken, userController.getChats)

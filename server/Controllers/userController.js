@@ -77,16 +77,18 @@ const userController = {
   login: async (req, res) => {
     try {
       const { username, password } = req.body;
-  
+
       if (!username || !password) {
-        return res.status(400).json({ message: "Please provide a username/email and password" });
+        return res
+          .status(400)
+          .json({ message: "Please provide a username/email and password" });
       }
-  
+
       // Find user by either username or email
       const user = await User.findOne({
         $or: [{ user_name: username }, { email: username }],
       });
-  
+
       if (user && (await bcrypt.compare(password, user.password))) {
         const accessToken = jwt.sign(
           {
@@ -109,7 +111,6 @@ const userController = {
       return res.status(500).json({ message: "An internal server error occurred" });
     }
   },
-  
 
   checkUsername: async (req, res) => {
     try {
@@ -123,8 +124,6 @@ const userController = {
       return res.status(500).json({ isUnique: false }); // Assume not unique if there's an error
     }
   },
-
-  
 
   checkEmail: async (req, res) => {
     try {
@@ -145,20 +144,110 @@ const userController = {
           message: "Can't fetch users if the user is not logged in",
         });
       }
-  
+
       const currentUserId = req.user.id; // Assuming the user's ID is available as `_id`
       const user = await User.find({ _id: { $ne: currentUserId } }); // Exclude the current user
-  
+
       if (!user || user.length === 0) {
         return res.status(constants.NOT_FOUND).json({
           message: "No users found",
         });
       }
 
-  
       res.json({
         message: "Users fetched successfully",
         allUsers: user,
+      });
+    } catch (error) {
+      console.error("Error fetching users:", error.toString());
+      res.status(constants.SERVER_ERROR).json({
+        message: "An error occurred while fetching users",
+      });
+    }
+  },
+
+  getAllUsersChattedWith: async (req, res) => {
+    try {
+      if (!req.user) {
+        return res.status(constants.UNAUTHORIZED).json({
+          message: "Can't fetch users if the user is not logged in",
+        });
+      }
+  
+      const currentUserId = req.user.id;
+  
+      // Find all messages where the current user is a participant
+      const messages = await Message.find({
+        "participants.userId": currentUserId,
+      });
+  
+      // Extract unique participant IDs and details
+      const userDetailsMap = new Map();
+      messages.forEach((message) => {
+        message.participants.forEach((participant) => {
+          if (participant.userId.toString() !== currentUserId) {
+            const otherUserId = participant.userId.toString();
+            const lastOpenedAt = participant.last_opened_at;
+  
+            // Compute last message, recent messages, and unread count
+            const sortedMessages = message.messages.slice().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            const lastMessage = sortedMessages[0] || null;
+            const recentMessages = sortedMessages.slice(0, 5);
+  
+            const unreadCount = sortedMessages.filter(
+              (msg) => msg.sender.toString() !== currentUserId && new Date(msg.createdAt) > new Date(lastOpenedAt)
+            ).length;
+  
+            // Update the map with details
+            if (!userDetailsMap.has(otherUserId) || (lastMessage && lastMessage.createdAt > userDetailsMap.get(otherUserId).lastMessage?.createdAt)) {
+              userDetailsMap.set(otherUserId, {
+                lastMessage,
+                recentMessages,
+                unreadCount,
+              });
+            }
+          }
+        });
+      });
+  
+      if (userDetailsMap.size === 0) {
+        return res.status(constants.NOT_FOUND).json({
+          message: "No users found",
+        });
+      }
+  
+      // Fetch user details with only the required fields
+      const users = await User.find(
+        { _id: { $in: Array.from(userDetailsMap.keys()) } },
+        "_id user_name first_name last_name profile_photo_url"
+      );
+  
+      // Attach last messages, recent messages, and unread count to users
+      const usersWithExtras = users.map((user) => {
+        const details = userDetailsMap.get(user._id.toString());
+        return {
+          ...user.toObject(),
+          lastMessage: details.lastMessage
+            ? {
+                content: details.lastMessage.content,
+                sender: details.lastMessage.sender,
+                media: details.lastMessage.media || null,
+                createdAt: details.lastMessage.createdAt,
+              }
+            : null,
+          recentMessages: details.recentMessages.map((msg) => ({
+            content: msg.content,
+            sender: msg.sender,
+            media: msg.media || null,
+            createdAt: msg.createdAt,
+          })),
+          unreadCount: details.unreadCount,
+        };
+      });
+  
+      res.json({
+        message: "Users fetched successfully",
+        allUsers: usersWithExtras,
       });
     } catch (error) {
       console.error("Error fetching users:", error.toString());
@@ -176,24 +265,23 @@ const userController = {
           message: "Can't fetch users if the user is not logged in",
         });
       }
-  
+
       const currentUserId = req.user.id; // Assuming the user's ID is available
-        const chats = await Message.find({
-          // Match if currentUserId exists in participants
-        })
-    
+      const chats = await Message.find({
+        // Match if currentUserId exists in participants
+      });
+
       const finalChats = chats.filter((chat) =>
-          chat.participants.some(
-            (participant) => participant.userId.toString() === currentUserId.toString()
-          )
-        );
+        chat.participants.some(
+          (participant) => participant.userId.toString() === currentUserId.toString()
+        )
+      );
       if (!finalChats || finalChats.length === 0) {
         return res.status(constants.NOT_FOUND).json({
           message: "No chats found",
         });
       }
 
-  
       res.json({
         message: "Users fetched successfully",
         allUsers: finalChats,
@@ -231,8 +319,6 @@ const userController = {
         });
       }
 
-     
-
       // Upload profile image to Cloudinary
       const result = await new Promise((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream(
@@ -250,7 +336,7 @@ const userController = {
         stream.end(req.file.buffer);
       });
 
-      console.log('here')
+      console.log("here");
       // Get the URL of the uploaded image
       const profileImageUrl = result.secure_url;
 
@@ -279,7 +365,7 @@ const userController = {
           message: "Can't set Bio if user is not logged in",
         });
       }
-      let newBio  = req.body.bio;
+      let newBio = req.body.bio;
       if (!newBio) {
         return res.status(constants.VALIDATION_ERRORS).json({
           message: "Bio is required",
@@ -554,10 +640,10 @@ const userController = {
       const userId = req.user.id; // Get the logged-in user's ID
 
       // Fetch user details
-      const user = await User.findById(userId).select(
-        "-password -resetToken -tokenExpiry -notifications"
-      ).populate('followers.user', 'user_name first_name last_name profile_photo_url')
-      .populate('following.user', 'user_name first_name last_name profile_photo_url');
+      const user = await User.findById(userId)
+        .select("-password -resetToken -tokenExpiry -notifications")
+        .populate("followers.user", "user_name first_name last_name profile_photo_url")
+        .populate("following.user", "user_name first_name last_name profile_photo_url");
 
       if (!user) {
         return res.status(constants.NOT_FOUND).json({ message: "User not found" });
@@ -591,8 +677,8 @@ const userController = {
           message: "Need to Login to See Users Profile",
         });
       }
-      const userIdOfPersonToSeeProfile = req.query.user_id
-       // User ID to fetch profile
+      const userIdOfPersonToSeeProfile = req.query.user_id;
+      // User ID to fetch profile
       const requestingUserId = req.user.id; // ID of the user making the request
 
       // Validate the required fields
@@ -602,10 +688,10 @@ const userController = {
           .json({ message: "User ID is required" });
       }
       // Fetch the user's profile
-      const userToSeeProfile = await User.findById(userIdOfPersonToSeeProfile).select(
-        "-password -resetToken -tokenExpiry -notifications"
-      ).populate('followers.user', 'user_name first_name last_name profile_photo_url')
-      .populate('following.user', 'user_name first_name last_name profile_photo_url');
+      const userToSeeProfile = await User.findById(userIdOfPersonToSeeProfile)
+        .select("-password -resetToken -tokenExpiry -notifications")
+        .populate("followers.user", "user_name first_name last_name profile_photo_url")
+        .populate("following.user", "user_name first_name last_name profile_photo_url");
       if (!userToSeeProfile) {
         return res.status(constants.NOT_FOUND).json({ message: "User not found" });
       }
@@ -623,7 +709,7 @@ const userController = {
       }
 
       // Fetch user's posts
-      
+
       const userPosts = await Post.find({ user: userIdOfPersonToSeeProfile }).sort({
         createdAt: -1,
       });
@@ -713,12 +799,9 @@ const userController = {
         });
       }
 
-      
-
       const user = await User.findOne({ email });
 
-      
-    console.log(user,'-------------------')
+      console.log(user, "-------------------");
 
       if (!user) {
         return res.status(404).json({
@@ -727,7 +810,7 @@ const userController = {
       }
 
       // Generate a reset token
-      console.log('here---------')
+      console.log("here---------");
       const resetToken = crypto.randomBytes(32).toString("hex");
       const tokenExpiry = Date.now() + 3600000; // Token valid for 1 hour
 
