@@ -1,18 +1,38 @@
 <template>
   <div
-    class=" min-h-screen bg-white rounded-lg shadow-xl overflow-hidden flex items-center justify-center py-12 sm:px-6 lg:px-8">
+    class="min-h-screen bg-white dark:bg-gray-900  shadow-xl overflow-hidden flex items-center justify-center py-12 sm:px-6 lg:px-8"
+    :class="{ 'dark': isDarkMode }"
+  >
     <div class="absolute inset-0 z-0">
-      <img src="@/assets/whitebg.png" alt="" class="fixed w-full h-full object-cover opacity-40 dark:opacity-10" />
+      <img src="@/assets/whitebg.png" alt=""
+        class="fixed w-full h-full object-cover opacity-40 dark:opacity-10" />
     </div>
     <div class="w-full max-w-md z-10">
-      <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+      <div class="bg-white dark:bg-gray-800 py-8 px-4 shadow sm:rounded-lg sm:px-10">
         <!-- Logo Section -->
         <div class="text-center -mt-24 h-64">
           <img src="@/assets/logo.svg" alt="Tsede Logo" />
         </div>
 
-        <!-- Language Dropdown -->
-        <div class="text-right mb-10">
+        <!-- Language Dropdown and Dark Mode Toggle -->
+        <div class="flex justify-between items-center mb-10">
+          <button
+            @click="toggleDarkMode"
+            @keydown.space.prevent="toggleDarkMode"
+            class="relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 dark:focus:ring-gray-400"
+            :class="isDarkMode ? 'bg-gray-700' : 'bg-sky-100'"
+            role="switch"
+            :aria-checked="isDarkMode"
+            aria-label="Toggle dark mode"
+          >
+            <span
+              class="inline-block w-4 h-4 transform rounded-full bg-white shadow-lg transition-transform duration-200 ease-in-out"
+              :class="isDarkMode ? 'translate-x-6' : 'translate-x-1'"
+            >
+              <SunIcon v-if="!isDarkMode" class="h-4 w-4 text-yellow-500" />
+              <MoonIcon v-else class="h-4 w-4 text-sky-500" />
+            </span>
+          </button>
           <LanguageSelector />
         </div>
 
@@ -20,12 +40,12 @@
         <form class="space-y-6" @submit.prevent="handleSubmit">
           <!-- Username or Email -->
           <div class="relative">
-            <label for="username" class="absolute -top-2 left-2 bg-white text-sm font-medium text-gray-700 px-1">
+            <label for="username" class="absolute -top-2 left-2 bg-white dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300 px-1">
               {{ t('Username') }}
             </label>
             <div class="mt-2">
               <input id="username" v-model="form.username" type="text" required
-                class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-sky-500 focus:border-sky-500 sm:text-sm"
+                class="appearance-none block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-sky-500 focus:border-sky-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                 :class="{ 'border-red-500': errors.username }" />
             </div>
             <!-- Display error -->
@@ -34,12 +54,12 @@
 
           <!-- Password -->
           <div class="relative">
-            <label for="password" class="absolute -top-2 left-2 bg-white text-sm font-medium text-gray-700 px-1">
+            <label for="password" class="absolute -top-2 left-2 bg-white dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300 px-1">
               {{ t('password') }}
             </label>
             <div class="mt-2">
               <input id="password" v-model="form.password" :type="showPassword ? 'text' : 'password'" required
-                class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-sky-500 focus:border-sky-500 sm:text-sm"
+                class="appearance-none block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-sky-500 focus:border-sky-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                 :class="{ 'border-red-500': errors.password }" />
               <!-- Toggle Password Visibility Button -->
               <button type="button" @click="togglePasswordVisibility"
@@ -67,8 +87,8 @@
           <div class="flex items-center justify-between">
             <div class="flex items-center">
               <input id="remember-me" v-model="form.rememberMe" type="checkbox"
-                class="h-4 w-4 text-sky-600 focus:ring-sky-500 border-gray-300 rounded" />
-              <label for="remember-me" class="ml-2 block text-sm text-gray-900">
+                class="h-4 w-4 text-sky-600 focus:ring-sky-500 border-gray-300 rounded dark:border-gray-600 dark:bg-gray-700" />
+              <label for="remember-me" class="ml-2 block text-sm text-gray-900 dark:text-gray-300">
                 {{ t('remember') }}
               </label>
             </div>
@@ -77,19 +97,18 @@
                 {{ t('forgot') }}
               </router-link>
             </div>
-
           </div>
 
           <!-- Submit Button -->
           <div>
             <button type="submit" :disabled="loading"
-              class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-sky-400 hover:bg-sky-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500">
+              class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-sky-400 hover:bg-sky-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 dark:bg-sky-600 dark:hover:bg-sky-700">
               <span v-if="loading">Signing in ...</span>
               <span v-else>{{ t('signin') }}</span>
             </button>
           </div>
           <!-- Sign Up Section -->
-          <p class="text-sm text-center text-gray-900">
+          <p class="text-sm text-center text-gray-900 dark:text-gray-300">
             {{ t('noaccount') }}
             <router-link to="/signup" class="font-medium text-sky-400 hover:text-sky-500">
               {{ t('signup') }}
@@ -107,7 +126,7 @@ import { useRouter } from 'vue-router';
 import { useLanguageStore } from '@/stores/languageStore';
 import { useAuthStore } from '@/stores/authStore';
 import LanguageSelector from '@/components/LanguageSelector.vue';
-
+import { SunIcon, MoonIcon } from 'lucide-vue-next';
 import ToastService from '@/utils/toast.js';
 
 const toast = ToastService();
@@ -128,9 +147,25 @@ const showPassword = ref(false);
 // Router instance
 const router = useRouter();
 
+// Dark mode state
+const isDarkMode = ref(false);
+
 // Methods
 const togglePasswordVisibility = () => {
   showPassword.value = !showPassword.value;
+};
+
+const toggleDarkMode = () => {
+  isDarkMode.value = !isDarkMode.value;
+  updateTheme();
+};
+
+const updateTheme = () => {
+  if (isDarkMode.value) {
+    document.documentElement.classList.add('dark');
+  } else {
+    document.documentElement.classList.remove('dark');
+  }
 };
 
 const validateForm = () => {
@@ -161,7 +196,6 @@ const validateForm = () => {
   return Object.keys(errors).length === 0;
 };
 
-
 const authStore = useAuthStore();
 
 const handleSubmit = async () => {
@@ -174,9 +208,6 @@ const handleSubmit = async () => {
     password: form.password,
   };
 
-
-
-
   const success = await authStore.login(credentials);
   loading.value = false;
 
@@ -188,4 +219,13 @@ const handleSubmit = async () => {
   }
 };
 
+// Initialize theme based on system preference
+isDarkMode.value = window.matchMedia('(prefers-color-scheme: dark)').matches;
+updateTheme();
+
+// Watch for system preference changes
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+  isDarkMode.value = e.matches;
+  updateTheme();
+});
 </script>
