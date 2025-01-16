@@ -21,51 +21,51 @@
           </button>
         </div>
         <!-- Dropdown Menu -->
-         <div class="flex justify-end">
-        <div v-if="showSettingsMenu" ref="dropdown"
-          class="absolute mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg shadow-lg z-50">
-          <ul class="py-2 relative">
-            <!-- Language Selector -->
-            <li class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
-              <button @click="toggleLanguage" class="w-full text-left text-gray-700 dark:text-gray-300">
-                {{ currentLanguage === 'en' ? 'Switch to Amharic' : 'Switch to English' }}
-              </button>
-            </li>
-            <!-- Dark Mode Toggle -->
-            <li class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
-              <button @click="toggleDarkMode" class="w-full text-left text-gray-700 dark:text-gray-300">
-                {{ isDarkMode ? 'Switch to Dark Mode' : 'Switch to Light Mode' }}
-              </button>
-            </li>
-            <!-- Privacy Toggle -->
-            <li class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
-              <button @click="togglePrivacy" class="w-full text-left text-gray-700 dark:text-gray-300">
-                {{ profile.is_private ? 'Switch to Public Account' : 'Switch to Private Account' }}
-              </button>
-            </li>
-            <!-- Delete Account -->
-            <li class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
-              <button @click="openModal" class="w-full text-left text-red-500">
-                <i class="ri-delete-bin-line text-red-500"></i> Delete Account
-              </button>
-            </li>
-            <!-- Logout -->
-            <li class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
-              <button @click="logout" class="flex items-center w-full space-x-3 text-gray-700 dark:text-gray-300">
-                <i class="ri-logout-box-line text-gray-500 dark:text-gray-400"></i>
-                <span>{{ t('Logout') }}</span>
-              </button>
-            </li>
-          </ul>
+        <div class="flex justify-end">
+          <div v-if="showSettingsMenu" ref="dropdown"
+            class="absolute mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg shadow-lg z-50">
+            <ul class="py-2 relative">
+              <!-- Language Selector -->
+              <li class="flex justify-between px-4 py-2   text-gray-700 dark:text-gray-300">
+                Language
+                <LanguageSelector />
+              </li>
+              <!-- Dark Mode Toggle -->
+              <li
+                class="flex justify-between px-4 py-2  text-gray-700 dark:text-gray-300">
+                Theme
+                <DarkModeToggle />
+              </li>
+              <!-- Privacy Toggle -->
+              <li class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
+                <button @click="togglePrivacy" class="w-full text-left text-gray-700 dark:text-gray-300">
+                  {{ profile.is_private ? 'Switch to Public Account' : 'Switch to Private Account' }}
+                </button>
+              </li>
+              <!-- Delete Account -->
+              <li class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
+                <button @click="openModal" class="w-full text-left text-red-500">
+                  <i class="ri-delete-bin-line text-red-500"></i> Delete Account
+                </button>
+              </li>
+              <!-- Logout -->
+              <li class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
+                <button @click="logout" class="flex items-center w-full space-x-3 text-gray-700 dark:text-gray-300">
+                  <i class="ri-logout-box-line text-gray-500 dark:text-gray-400"></i>
+                  <span>{{ t('Logout') }}</span>
+                </button>
+              </li>
+            </ul>
+          </div>
         </div>
-      </div>
         <!-- Profile Info Section -->
         <div class="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-6">
           <!-- Profile Photo and Info -->
           <div class="relative">
             <img v-if="profile.profile_photo_url" :src="profile.profile_photo_url" alt="Profile Photo"
               class="w-24 h-24 sm:w-32 sm:h-32 rounded-full object-cover">
-            <img v-else src="../../assets/avatar.jpg" alt="avatar" class="w-24 h-24 sm:w-32 sm:h-32 rounded-full object-cover">
+            <img v-else src="../../assets/avatar.jpg" alt="avatar"
+              class="w-24 h-24 sm:w-32 sm:h-32 rounded-full object-cover">
             <button @click="triggerFileInput"
               class="absolute bottom-0 right-0 bg-sky-500 rounded-full w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center text-white">
               <i class="ri-add-line text-white text-sm"></i>
@@ -145,7 +145,8 @@
 
       <div v-else-if="currentTab === 'following'">
         <div v-if="following.length === 0">
-          <p  class="text-center text-gray-500 dark:text-gray-400">No following yet.</p> <!-- Message for no following -->
+          <p class="text-center text-gray-500 dark:text-gray-400">No following yet.</p>
+          <!-- Message for no following -->
         </div>
         <div v-else class="grid-layout">
           <UserProfileSmall v-for="follow in following" :key="follow.id" :follow="follow" />
@@ -155,7 +156,8 @@
 
       <div v-else-if="currentTab === 'followers'">
         <div v-if="followers.length === 0">
-          <p  class="text-center text-gray-500 dark:text-gray-400">No followers yet.</p> <!-- Message for no followers -->
+          <p class="text-center text-gray-500 dark:text-gray-400">No followers yet.</p>
+          <!-- Message for no followers -->
         </div>
         <div v-else class="grid-layout">
           <UserProfileSmall v-for="follow in followers" :key="follow.id" :follow="follow" />
@@ -184,17 +186,12 @@ import { useLanguageStore } from '@/stores/languageStore';
 
 const { t, switchLanguage } = useLanguageStore();
 const currentLanguage = ref('en');
-const isDarkMode = ref(false);
 const toggleLanguage = () => {
   currentLanguage.value = currentLanguage.value === 'en' ? 'am' : 'en';
   switchLanguage(currentLanguage.value);
 };
 
-const toggleDarkMode = () => {
-  isDarkMode.value = !isDarkMode.value;
-  // Implement your dark mode logic here
-  document.documentElement.classList.toggle('dark');
-};
+
 
 const togglePrivacy = async () => {
   try {

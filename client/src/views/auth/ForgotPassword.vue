@@ -1,9 +1,11 @@
 <template>
     <div
-        class=" min-h-screen bg-white dark:bg-gray-800  text-gray-900 dark:text-gray-300  shadow-xl overflow-hidden flex items-center justify-center py-12 sm:px-6 lg:px-8">
+        class="min-h-screen bg-white dark:bg-gray-800  text-gray-900 dark:text-gray-300  shadow-xl overflow-hidden flex items-center justify-center py-12 sm:px-6 lg:px-8">
         <div class="absolute inset-0 z-0">
-            <img src="@/assets/whitebg.png" alt=""
-                class="fixed w-full h-full object-cover opacity-40 dark:opacity-10" />
+            <img src="@/assets/whitebg.png" alt="Background"
+                class="fixed w-full h-full object-cover opacity-40 dark:hidden" />
+            <img src="@/assets/darkbg.jpg" alt="Background"
+                class="fixed w-full h-full object-cover opacity-15 hidden dark:block" />
         </div>
         <div class="w-full max-w-md z-10">
             <div
@@ -17,7 +19,8 @@
                     <DarkModeToggle />
                     <LanguageSelector />
                 </div>
-                <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-gray-300">{{ t('reset') }}</h2>
+                <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-gray-300">{{ t('reset') }}
+                </h2>
                 <p class="mt-2 text-center text-sm text-gray-600">
                     {{ t('or') }}
                     <router-link to="/signin" class="font-medium text-sky-400 hover:text-sky-500">

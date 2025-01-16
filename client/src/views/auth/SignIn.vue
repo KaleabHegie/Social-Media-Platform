@@ -3,7 +3,10 @@
     class="min-h-screen bg-white dark:bg-gray-900  shadow-xl overflow-hidden flex items-center justify-center py-12 sm:px-6 lg:px-8"
     :class="{ 'dark': isDarkMode }">
     <div class="absolute inset-0 z-0">
-      <img src="@/assets/whitebg.png" alt="" class="fixed w-full h-full object-cover opacity-40 dark:opacity-10" />
+      <img src="@/assets/whitebg.png" alt="Background"
+        class="fixed w-full h-full object-cover opacity-40 dark:hidden" />
+      <img src="@/assets/darkbg.jpg" alt="Background"
+        class="fixed w-full h-full object-cover opacity-20 hidden dark:block" />
     </div>
     <div class="w-full max-w-md z-10">
       <div class="bg-white dark:bg-gray-800 py-8 px-4 shadow sm:rounded-lg sm:px-10">

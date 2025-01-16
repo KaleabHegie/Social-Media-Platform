@@ -11,7 +11,7 @@
           @click="markAllAsRead"
           class="text-sm text-sky-500 hover:text-sky-600 dark:hover:text-sky-400"
         >
-          Mark all as read
+          Dismiss All
         </button>
         <button
           v-if="showCloseButton"
