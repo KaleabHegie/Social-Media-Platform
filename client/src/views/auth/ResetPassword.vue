@@ -15,21 +15,12 @@
 
                 <!-- Language Dropdown and Dark Mode Toggle -->
                 <div class="flex justify-between items-center mb-10">
-                    <button @click="toggleDarkMode" @keydown.space.prevent="toggleDarkMode"
-                        class="relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 dark:focus:ring-gray-400"
-                        :class="isDarkMode ? 'bg-gray-700' : 'bg-sky-100'" role="switch" :aria-checked="isDarkMode"
-                        aria-label="Toggle dark mode">
-                        <span
-                            class="inline-block w-4 h-4 transform rounded-full bg-white shadow-lg transition-transform duration-200 ease-in-out"
-                            :class="isDarkMode ? 'translate-x-6' : 'translate-x-1'">
-                            <SunIcon v-if="!isDarkMode" class="h-4 w-4 text-yellow-500" />
-                            <MoonIcon v-else class="h-4 w-4 text-sky-500" />
-                        </span>
-                    </button>
+                    <DarkModeToggle />
                     <LanguageSelector />
                 </div>
 
-                <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-gray-300">{{ t('reset') }}</h2>
+                <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-gray-300">{{ t('reset') }}
+                </h2>
                 <p class="mt-2 text-center text-sm text-gray-600">
                     {{ t('or') }}
                     <router-link to="/signin" class="font-medium text-sky-400 hover:text-sky-500">
@@ -131,31 +122,14 @@ import { useRouter } from 'vue-router';
 import { useLanguageStore } from '@/stores/languageStore';
 import { useAuthStore } from '@/stores/authStore';
 import LanguageSelector from '@/components/LanguageSelector.vue';
-import { SunIcon, MoonIcon } from 'lucide-vue-next';
+import DarkModeToggle from '../../components/DarkModeToggle.vue';
 import { useRoute } from 'vue-router';
 
 import ToastService from '@/utils/toast.js';
 // Password visibility toggles
 const showPassword = ref(false);
-const isDarkMode = ref(false);
-// Toggle visibility for both password fields
-const togglePasswordVisibility = () => {
-    showPassword.value = !showPassword.value;
-};
-const toast = ToastService();
 
-const toggleDarkMode = () => {
-    isDarkMode.value = !isDarkMode.value;
-    updateTheme();
-};
 
-const updateTheme = () => {
-    if (isDarkMode.value) {
-        document.documentElement.classList.add('dark');
-    } else {
-        document.documentElement.classList.remove('dark');
-    }
-};
 const route = useRoute();
 const token = route.params.token;
 // Store access

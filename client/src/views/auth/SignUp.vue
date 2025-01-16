@@ -15,17 +15,7 @@
 
                 <!-- Language Dropdown and Dark Mode Toggle -->
                 <div class="flex justify-between items-center mb-10">
-                    <button @click="toggleDarkMode" @keydown.space.prevent="toggleDarkMode"
-                        class="relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 dark:focus:ring-gray-400"
-                        :class="isDarkMode ? 'bg-gray-700' : 'bg-sky-100'" role="switch" :aria-checked="isDarkMode"
-                        aria-label="Toggle dark mode">
-                        <span
-                            class="inline-block w-4 h-4 transform rounded-full bg-white shadow-lg transition-transform duration-200 ease-in-out"
-                            :class="isDarkMode ? 'translate-x-6' : 'translate-x-1'">
-                            <SunIcon v-if="!isDarkMode" class="h-4 w-4 text-yellow-500" />
-                            <MoonIcon v-else class="h-4 w-4 text-sky-500" />
-                        </span>
-                    </button>
+                    <DarkModeToggle />
                     <LanguageSelector />
                 </div>
                 <!-- Progress Bar -->
@@ -87,7 +77,7 @@
                                 {{ t('dateOfBirth') }}
                             </label>
                             <input id="date_of_birth" v-model="formData.date_of_birth" type="date"
-                                class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-800  text-gray-900 dark:text-gray-300 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-400 focus:border-sky-400" />
+                                class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-300 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-400 focus:border-sky-400 custom-calendar-icon" />
                             <!-- Error message -->
                             <p v-if="errors.date_of_birth" class="text-sm text-red-600 mt-1">{{ errors.date_of_birth }}
                             </p>
@@ -230,12 +220,10 @@ import { useLanguageStore } from '@/stores/languageStore';
 import { useAuthStore } from '@/stores/authStore';
 import ToastService from '@/utils/toast.js';
 import LanguageSelector from '@/components/LanguageSelector.vue';
-import { SunIcon, MoonIcon } from 'lucide-vue-next';
+import DarkModeToggle from '../../components/DarkModeToggle.vue';
 const authStore = useAuthStore();
 
 const toast = ToastService();
-// Dark mode state
-const isDarkMode = ref(false);
 // Store access
 const { t } = useLanguageStore();
 
@@ -266,22 +254,13 @@ const errors = reactive({
 // Password visibility toggles
 const showPassword = ref(false);
 
+
 // Toggle visibility for both password fields
 const togglePasswordVisibility = () => {
     showPassword.value = !showPassword.value;
 };
-const toggleDarkMode = () => {
-    isDarkMode.value = !isDarkMode.value;
-    updateTheme();
-};
 
-const updateTheme = () => {
-    if (isDarkMode.value) {
-        document.documentElement.classList.add('dark');
-    } else {
-        document.documentElement.classList.remove('dark');
-    }
-};
+
 // Validation Functions with Error Messages
 const isValidStep1 = async () => {
     errors.user_name = !formData.user_name ? 'Username is required.' : '';
@@ -380,3 +359,19 @@ const handleSubmit = async () => {
     }
 };
 </script>
+
+
+<style scoped>
+.custom-calendar-icon::-webkit-calendar-picker-indicator {
+    filter: invert(0);
+    opacity: 0.7;
+    cursor: pointer;
+}
+
+/* Dark Theme */
+.dark .custom-calendar-icon::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    opacity: 0.7;
+    cursor: pointer;
+}
+</style>

@@ -1,11 +1,9 @@
 <template>
   <div
     class="min-h-screen bg-white dark:bg-gray-900  shadow-xl overflow-hidden flex items-center justify-center py-12 sm:px-6 lg:px-8"
-    :class="{ 'dark': isDarkMode }"
-  >
+    :class="{ 'dark': isDarkMode }">
     <div class="absolute inset-0 z-0">
-      <img src="@/assets/whitebg.png" alt=""
-        class="fixed w-full h-full object-cover opacity-40 dark:opacity-10" />
+      <img src="@/assets/whitebg.png" alt="" class="fixed w-full h-full object-cover opacity-40 dark:opacity-10" />
     </div>
     <div class="w-full max-w-md z-10">
       <div class="bg-white dark:bg-gray-800 py-8 px-4 shadow sm:rounded-lg sm:px-10">
@@ -16,23 +14,7 @@
 
         <!-- Language Dropdown and Dark Mode Toggle -->
         <div class="flex justify-between items-center mb-10">
-          <button
-            @click="toggleDarkMode"
-            @keydown.space.prevent="toggleDarkMode"
-            class="relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 dark:focus:ring-gray-400"
-            :class="isDarkMode ? 'bg-gray-700' : 'bg-sky-100'"
-            role="switch"
-            :aria-checked="isDarkMode"
-            aria-label="Toggle dark mode"
-          >
-            <span
-              class="inline-block w-4 h-4 transform rounded-full bg-white shadow-lg transition-transform duration-200 ease-in-out"
-              :class="isDarkMode ? 'translate-x-6' : 'translate-x-1'"
-            >
-              <SunIcon v-if="!isDarkMode" class="h-4 w-4 text-yellow-500" />
-              <MoonIcon v-else class="h-4 w-4 text-sky-500" />
-            </span>
-          </button>
+          <DarkModeToggle />
           <LanguageSelector />
         </div>
 
@@ -40,7 +22,8 @@
         <form class="space-y-6" @submit.prevent="handleSubmit">
           <!-- Username or Email -->
           <div class="relative">
-            <label for="username" class="absolute -top-2 left-2 bg-white dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300 px-1">
+            <label for="username"
+              class="absolute -top-2 left-2 bg-white dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300 px-1">
               {{ t('Username') }}
             </label>
             <div class="mt-2">
@@ -54,7 +37,8 @@
 
           <!-- Password -->
           <div class="relative">
-            <label for="password" class="absolute -top-2 left-2 bg-white dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300 px-1">
+            <label for="password"
+              class="absolute -top-2 left-2 bg-white dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300 px-1">
               {{ t('password') }}
             </label>
             <div class="mt-2">
@@ -128,7 +112,7 @@ import { useAuthStore } from '@/stores/authStore';
 import LanguageSelector from '@/components/LanguageSelector.vue';
 import { SunIcon, MoonIcon } from 'lucide-vue-next';
 import ToastService from '@/utils/toast.js';
-
+import DarkModeToggle from '../../components/DarkModeToggle.vue';
 const toast = ToastService();
 
 // Access the language store
@@ -147,26 +131,13 @@ const showPassword = ref(false);
 // Router instance
 const router = useRouter();
 
-// Dark mode state
-const isDarkMode = ref(false);
 
 // Methods
 const togglePasswordVisibility = () => {
   showPassword.value = !showPassword.value;
 };
 
-const toggleDarkMode = () => {
-  isDarkMode.value = !isDarkMode.value;
-  updateTheme();
-};
 
-const updateTheme = () => {
-  if (isDarkMode.value) {
-    document.documentElement.classList.add('dark');
-  } else {
-    document.documentElement.classList.remove('dark');
-  }
-};
 
 const validateForm = () => {
   // Reset errors
@@ -219,13 +190,4 @@ const handleSubmit = async () => {
   }
 };
 
-// Initialize theme based on system preference
-isDarkMode.value = window.matchMedia('(prefers-color-scheme: dark)').matches;
-updateTheme();
-
-// Watch for system preference changes
-window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-  isDarkMode.value = e.matches;
-  updateTheme();
-});
 </script>

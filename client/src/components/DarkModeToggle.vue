@@ -53,7 +53,7 @@ const getFromCookies = () => {
 // Initialize theme based on stored value or system preference
 onMounted(() => {
   const storedTheme = getFromCookies()
-  if (storedTheme !== null) {
+if (storedTheme !== null) {
     isDarkMode.value = storedTheme
   } else {
     // Fallback to system preference if no stored value
