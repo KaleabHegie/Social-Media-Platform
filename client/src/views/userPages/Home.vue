@@ -1,5 +1,5 @@
 <template>
-  <main class="min-h-screen pt-4 pb-20 px-4 lg:px-8">
+  <main class="h-full pt-4 pb-20 px-4 lg:px-8">
     <div class="max-w-6xl mx-auto">
       <div class="flex flex-col lg:flex-row lg:space-x-8">
         <!-- Main content area -->
@@ -17,7 +17,7 @@
 
           <!-- Stories for mobile -->
           <div v-if="postStoryStore.stories.length > 0" class="lg:hidden mb-6 w-[94vw]">
-            <div class="fixed top-2 z-50 p-0 w-[94vw] flex items-center justify-between mb-2">
+            <div class="z-50 p-0 w-[94vw] flex items-center justify-between mb-2">
               <!-- Logo Button -->
               <button @click="refreshFeed" class="flex-shrink-0 max-w-10" style="scroll-snap-align: start;">
                 <img src="@/assets/logo.png" alt="Logo" class="w-full object-contain rounded-lg" />
@@ -50,7 +50,7 @@
                 </Transition>
               </Teleport>
             </div>
-            <div class="flex space-x-4 mt-16 overflow-x-auto pb-4 hide-scrollbar"
+            <div class="flex space-x-4 mt-6 overflow-x-auto pb-4 hide-scrollbar"
               style="scroll-snap-type: x mandatory;">
               <StoryCard v-for="story in postStoryStore.stories" :key="story.id" :story="story"
                 class="flex-shrink-0 w-[25%] max-w-[100px] sm:max-w-[120px]" style="scroll-snap-align: start;" />

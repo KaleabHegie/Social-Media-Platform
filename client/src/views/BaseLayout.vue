@@ -1,8 +1,7 @@
 <template>
   <div class="flex">
     <NavBar /> <!-- Include NavBar  -->
-    <main class="flex-1 lg:ml-64 min-h-screen bg-gradient-to-br from-[#ffffff] to-[#f3eeee] dark:from-gray-800 dark:to-gray-900">
-
+    <main class="flex-1 overflow-hidden lg:ml-64 min-h-screen bg-gradient-to-br from-[#ffffff] to-[#f3eeee] dark:from-gray-800 dark:to-gray-900">
       <router-view></router-view> <!-- This will render the child components -->
     </main>
   </div>
