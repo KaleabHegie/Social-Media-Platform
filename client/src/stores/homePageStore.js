@@ -311,6 +311,7 @@ export const usePostStoryStore = defineStore("postStory", {
         if (response.messages) {
           this.messages = response.messages[0].messages;
         }
+        return response
       } catch (error) {
         this.error = error.response?.message || "Failed to fetch profile.";
       } finally {
@@ -340,6 +341,18 @@ export const usePostStoryStore = defineStore("postStory", {
       try {
         const response = await MyHttpService.get("/deletePost", { query : {'postId' : postId} , useJWT: true });
         console.log(response)
+      } catch (error) {
+        this.error = error.response?.message || "Failed to delete post.";
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
+    async markAllAsRead() {
+      this.isLoading = true;
+      this.error = null;
+      try {
+        const response = await MyHttpService.post("/dismissNotifications" , { useJWT: true });
       } catch (error) {
         this.error = error.response?.message || "Failed to delete post.";
       } finally {

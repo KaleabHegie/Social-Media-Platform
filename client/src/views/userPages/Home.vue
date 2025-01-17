@@ -111,7 +111,7 @@ import NotificationCard from '@/components/NotificationCard.vue';
 const showMobileNotification = ref(false);
 const unreadNotifications = ref([]); // Replace with actual unread count from your store
 
-console.log(unreadNotifications)
+
 
 const { t } = useLanguageStore();
 const postStoryStore = usePostStoryStore();
