@@ -17,7 +17,8 @@
 
           <!-- Stories for mobile -->
           <div v-if="postStoryStore.stories.length > 0" class="lg:hidden mb-6 w-[94vw]">
-            <div class="z-50 p-0 w-[94vw] flex items-center justify-between mb-2">
+            <div
+              class="z-50 p-2 w-[94vw] flex items-center justify-between mb-4 border-b border-gray-300 dark:border-gray-700">
               <!-- Logo Button -->
               <button @click="refreshFeed" class="flex-shrink-0 max-w-10" style="scroll-snap-align: start;">
                 <img src="@/assets/logo.png" alt="Logo" class="w-full object-contain rounded-lg" />
