@@ -87,10 +87,20 @@
                       <div v-if="activeContact && activeContact._id === contact._id"
                         class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
                         <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg max-w-sm w-full">
-                          <h2 class="text-lg font-semibold mb-2 dark:text-white">Message Details</h2>
-                          <p class="text-sm text-gray-600 dark:text-gray-400">
-                            {{ contact.recentMessages }}
-                          </p>
+                          <h2 class="text-lg font-semibold mb-2 dark:text-white">Peak Message</h2>
+                          <div class="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 dark:bg-gray-900">
+                            <div v-for="message in contact.recentMessages" :key="message.sender" class="flex"
+                              :class="[message.isSentByCurrentUser ? 'justify-start' : 'justify-end']">
+                              <div class="max-w-xs text-md px-4 py-2 rounded-lg relative group" :class="[
+                                message.isSentByCurrentUser ? 'bg-gray-500 text-white' : 'bg-blue-400 text-white',
+                                message.isSentByCurrentUser ? '' : 'ml-auto']">
+                                {{ message.content }}
+                                <div class="text-sm opacity-70 ml-2 flex justify-end">{{ formatTime(message.createdAt)
+                                  }}</div>
+                              </div>
+                            </div>
+
+                          </div>
                           <button @click="closeModal"
                             class="mt-4 px-4 py-2 bg-sky-500 text-white rounded hover:bg-sky-600 dark:bg-sky-600">
                             Close
@@ -120,7 +130,7 @@ import { OhVueIcon, addIcons } from "oh-vue-icons";
 import { BiSearch, BiSend, BiChatDots, BiPeople, BiPerson, BiSun, BiMoon, BiX, BiArrowLeft } from "oh-vue-icons/icons";
 import ChatBox from '@/components/ChatBox.vue';
 import { usePostStoryStore } from '../../stores/homePageStore';
-import { useLanguageStore } from '@/stores/languageStore';import { reactive } from 'vue';
+import { useLanguageStore } from '@/stores/languageStore'; import { reactive } from 'vue';
 
 import { io } from 'socket.io-client'; // Import Socket.IO client
 import { useAuthStore } from '../../stores/authStore';
@@ -134,6 +144,9 @@ const activeTab = ref('all')
 const searchQuery = ref('')
 const isMobile = ref(window.innerWidth < 768)
 
+const formatTime = (date) => {
+  return new Date(date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+};
 
 const isLoading = ref(true);
 

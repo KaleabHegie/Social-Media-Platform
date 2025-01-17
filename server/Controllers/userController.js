@@ -243,6 +243,8 @@ const userController = {
                 sender: details.lastMessage.sender,
                 media: details.lastMessage.media || null,
                 createdAt: details.lastMessage.createdAt,
+                user_name: user.user_name, // Include user_name of the sender
+                isSentByCurrentUser: details.lastMessage.sender.toString() === currentUserId, // Boolean flag if sent by current user
               }
             : null,
           recentMessages: details.recentMessages.map((msg) => ({
@@ -250,6 +252,8 @@ const userController = {
             sender: msg.sender,
             media: msg.media || null,
             createdAt: msg.createdAt,
+            user_name: user.user_name, // Include user_name of the sender
+            isSentByCurrentUser: msg.sender.toString() === currentUserId, // Boolean flag if sent by current user
           })),
           unreadCount: details.unreadCount,
           lastOpenedAt: details.lastOpenedAt, // Include lastOpenedAt here
@@ -267,6 +271,7 @@ const userController = {
       });
     }
   },
+  
   
 
   getChats: async (req, res) => {
