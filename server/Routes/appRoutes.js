@@ -36,8 +36,16 @@ router.get("/getStories", validateToken, postController.getStories);
 
 router.get("/getExploreFeed", validateToken, postController.getExploreFeed);
 
+router.post('/reportPost', validateToken , postController.reportPost);
+
+
+
+
 
 router.get('/fetchMessages', validateToken , messageController.fetchMessages);
+
+router.get('/fetchMessages', validateToken , messageController.fetchMessages);
+
 
 
 

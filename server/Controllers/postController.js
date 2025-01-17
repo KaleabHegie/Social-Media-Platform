@@ -2,6 +2,8 @@ const cloudinary = require("cloudinary").v2;
 const { constants } = require("../Utils/constants");
 const User = require("../Models/UserModel");
 const Post = require("../Models/PostModel");
+const ReportedPost = require("../Models/ReportModel");
+
 const Hashtag = require("../Models/HashTagModel");
 
 const multer = require("multer");
@@ -86,7 +88,7 @@ const postController = {
           });
         }
       }
-      
+
       const uploadedMediaUrls = await Promise.all(
         req.files.map(
           (file) =>
@@ -103,8 +105,7 @@ const postController = {
         )
       );
 
-      
-      console.log('--------------------------')
+      console.log("--------------------------");
       const user = await User.findById(req.user.id);
       if (!user) {
         return res.status(constants.UNAUTHORIZED).json({ error: "User not found" });
@@ -270,6 +271,70 @@ const postController = {
     }
   },
 
+  reportPost: async (req, res) => {
+    try {
+      if (!req.user) {
+        return res.status(constants.UNAUTHORIZED).json({
+          message: "User must be logged in to report a post.",
+        });
+      }
+
+      const postId = req.query.postId; // Get the postId from the query parameters
+      const userId = req.user.id; // Get the logged-in user's ID
+      const reason = req.query.reason; // Get the reason for reporting from the request query
+
+
+      // Validate the required fields
+      if (!postId || !reason) {
+        return res.status(constants.VALIDATION_ERRORS).json({
+          message: "Post ID and reason are required",
+        });
+      }
+
+      // Find the post by ID
+      const post = await Post.findById(postId);
+      if (!post) {
+        return res.status(constants.NOT_FOUND).json({ message: "Post not found" });
+      }
+
+      // Check if the post has already been reported by the user
+      const existingReport = await ReportedPost.findOne({
+        postId: postId,
+        "users.userId": userId,
+      });
+
+      if (existingReport) {
+        return res.status(constants.VALIDATION_ERRORS).json({
+          message: "You have already reported this post.",
+        });
+      }
+
+      // Create a new report
+      const newReport = new ReportedPost({
+        postId: postId,
+        users: [
+          {
+            userId: userId,
+            reason: reason,
+          },
+        ],
+      });
+
+      // Save the report to the database
+      await newReport.save();
+
+      return res.json({
+        message: "Post reported successfully",
+        report: newReport,
+      });
+    } catch (error) {
+      console.error("Error reporting post:", error.toString());
+      return res.status(constants.SERVER_ERROR).json({
+        message: "An error occurred while processing your request",
+      });
+    }
+  },
+
   //@TODO Implement the hashtag algo, paginations and not showing private posts to non followers and randomized posts
   getHomeFeed: async (req, res) => {
     try {
@@ -362,15 +427,14 @@ const postController = {
       let query = { type: "post" };
 
       if (hashtag) {
-        query.hashtags = { $regex: hashtag, $options: "i" }; // Case-insensitive search 
+        query.hashtags = { $regex: hashtag, $options: "i" }; // Case-insensitive search
       }
-      
 
       // Fetch posts of type "post" with the required fields, and optionally filter by hashtag
       const explorePosts = await Post.find(query)
         .select("medias hashtags _id") // Select only
         .sort({ createdAt: -1 }) // Sort posts by creation date (newest first)
-        .limit(20); // Limit to 20 posts 
+        .limit(20); // Limit to 20 posts
 
       return res.json({
         message: "Explore feed fetched successfully",

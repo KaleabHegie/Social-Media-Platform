@@ -7,6 +7,8 @@ const { Server } = require('socket.io'); // Import Socket.IO
 
 const userAccountRoutes = require('./Routes/userAccountRoutes');
 const appRoutes = require('./Routes/appRoutes');
+const adminRoutes = require('./Routes/adminRoutes');
+
 const socketController = require('./Controllers/socketController'); // Socket.IO controller
 
 require('dotenv').config();
@@ -26,6 +28,8 @@ app.get(["/", "/ping"], async (req, res) => {
 
 app.use("/api", userAccountRoutes);
 app.use("/api", appRoutes);
+app.use("/api", adminRoutes);
+
 
 // Create HTTP server and attach Socket.IO
 const server = http.createServer(app);
