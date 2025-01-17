@@ -15,6 +15,10 @@ import CreatePost from "@/views/userPages/CreatePost.vue";
 import Messages from "@/views/userPages/Messages.vue";
 import ViewPost from "@/views/userPages/ViewPost.vue";
 import MyAccount from "../views/userPages/MyAccount.vue";
+import AdminBaseLayout from "../views/AdminBaseLayout.vue";
+import UsersView from "../views/adminPages/UsersView.vue";
+import ReportsView from "../views/adminPages/ReportsView.vue";
+import Analytics from "../views/adminPages/Analytics.vue";
 
 // Routes
 const routes = [
@@ -42,6 +46,16 @@ const routes = [
     ],
   },
 
+  {
+    path: "/admin",
+    component: AdminBaseLayout,
+    children: [
+      { path: "/userView", component: UsersView, meta: { requiresAuth: false } },
+      { path: "/reportedPosts", component: ReportsView, meta: { requiresAuth: false } },
+      { path: "/analytics", component: Analytics, meta: { requiresAuth: false } },
+
+    ],
+  },
   { path: "/:pathMatch(.*)*", redirect: "/signin" }, // Redirect unknown routes to SignIn
 ];
 
