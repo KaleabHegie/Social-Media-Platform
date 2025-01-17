@@ -150,7 +150,10 @@ const postController = {
         });
       }
 
-      const { postId } = req.query;
+      
+
+
+      const  postId  = req.query.postId;
 
       // Check if the post exists
       const post = await Post.findById(postId);

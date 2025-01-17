@@ -136,9 +136,12 @@ import { usePostStoryStore } from '../../stores/homePageStore';
 import { useRoute } from 'vue-router';
 import ToastService from '@/utils/toast.js';
 import Explore from './Explore.vue';
+import { useAuthStore } from '../../stores/authStore';
 
 const toast = ToastService();
 const { t } = useLanguageStore();
+
+const authStore = useAuthStore()
 
 const route = useRoute();
 const userId = route.params.id;
@@ -152,23 +155,32 @@ const likedposts = ref([]);
 const isLoading = ref(true);
 const following = ref([]);
 const followers = ref([]);
+const myFollowers = ref([])
+const myFollowing = ref([])
 const currentTab = ref('posts')
+const isFollowing = ref(null);
 const tabs = [
   { id: 'posts', name: 'Posts' },
   { id: 'likedposts', name: 'Liked' },
   { id: 'following', name: 'Following' },
   { id: 'followers', name: 'Followers' },
 ];
+let user = ref([])
 
 
 onMounted(async () => {
   try {
     await postStoryStore.fetchOtherUserProfile(userId);
-    profile.value = postStoryStore.myProfile;
+    await postStoryStore.fetchUserProfile()
+    profile.value = postStoryStore.otherProfile;
     myposts.value = postStoryStore.usersposts;
     likedposts.value = postStoryStore.likedPosts;
-    following.value = postStoryStore.myProfile.following;
-    followers.value = postStoryStore.myProfile.followers;
+    following.value = postStoryStore.otherProfile.following;
+    followers.value = postStoryStore.otherProfile.followers;
+    myFollowers.value = postStoryStore.myProfile.followers
+    myFollowing.value = postStoryStore.myProfile.following
+    user = authStore.user
+
     // following.value = postStoryStore.following; //@todo kalab this object are not found
     // followers.value = postStoryStore.followers;//@todo kalab this object are not found
   } catch (error) {
@@ -182,6 +194,10 @@ onMounted(async () => {
 const sendMessage = () => console.log('Message sent');
 const toggleFollow = async () => {
   await postStoryStore.followUser(profile.value._id);
+  await postStoryStore.fetchUserProfile()
+  
+  myFollowing.value = postStoryStore.myProfile.following
+  isFollowing.value = myFollowing.value.some(following => following.user._id === profile.value._id);
   toast.success('Successfull!', { position: 'top-center' });
 };
 </script>

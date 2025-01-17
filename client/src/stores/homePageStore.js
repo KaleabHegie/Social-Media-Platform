@@ -9,6 +9,7 @@ export const usePostStoryStore = defineStore("postStory", {
     explore: [],
     searchedUsers:[],
     myProfile: [],
+    otherProfile : [],
     myPosts: [],
     likedPosts: [],
     allUsers: [],
@@ -172,7 +173,7 @@ export const usePostStoryStore = defineStore("postStory", {
           useJWT: true,
         });
         if (response.profile) {
-          this.myProfile = response.profile; // Store the profile data
+          this.otherProfile = response.profile; // Store the profile data
           this.usersposts = response.usersposts || []; // Store the user's posts
           this.likedPosts = response.likedPosts || []; // Store the liked posts
         }
@@ -331,6 +332,20 @@ export const usePostStoryStore = defineStore("postStory", {
         this.isLoading = false;
       }
     },
+
+
+    async deletePost(postId) {
+      this.isLoading = true;
+      this.error = null;
+      try {
+        const response = await MyHttpService.get("/deletePost", { query : {'postId' : postId} , useJWT: true });
+      } catch (error) {
+        this.error = error.response?.message || "Failed to delete post.";
+      } finally {
+        this.isLoading = false;
+      }
+    },
+    
 
     clearData() {
       this.posts = [];

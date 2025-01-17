@@ -16,7 +16,7 @@
           </div>
 
           <!-- Stories for mobile -->
-          <div v-if="postStoryStore.stories.length > 0" class="lg:hidden mb-6 w-[94vw]">
+          <div  class="lg:hidden mb-6 w-[94vw]">
             <div
               class="z-50 p-2 w-[94vw] flex items-center justify-between mb-4 border-b border-gray-300 dark:border-gray-700">
               <!-- Logo Button -->
@@ -81,11 +81,11 @@
 
         <!-- Stories for desktop -->
 
-        <div v-if="postStoryStore.stories.length > 0" class="hidden lg:block w-80 order-1 lg:order-2 ">
+        <div  class="hidden lg:block w-80 order-1 lg:order-2 ">
           <div class="sticky top-4">
             <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">{{ t('stories') }}</h2>
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4">
-              <div class="grid grid-cols-3 gap-4">
+              <div v-if="postStoryStore.stories.length > 0" class="grid grid-cols-3 gap-4">
                 <StoryCard v-for="story in postStoryStore.stories" :key="story.id" :story="story" />
               </div>
             </div>

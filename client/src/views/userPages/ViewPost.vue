@@ -104,6 +104,7 @@ const addComment = async () => {
 
         message.comment.sender = authStore.user
 
+
         // Clear the input field
         newComment.value = '';
 

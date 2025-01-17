@@ -170,6 +170,15 @@ import { useLanguageStore } from '@/stores/languageStore';
 
 import { usePostStoryStore } from '@/stores/homePageStore';
 import { useAuthStore } from '@/stores/authStore';
+
+import ToastService from '@/utils/toast.js';
+
+
+import { useRouter } from 'vue-router';
+
+const toast = ToastService();
+
+const store = usePostStoryStore()
 const showFlagModal = ref(false);
 const showDeleteModal = ref(false);
 const selectedReason = ref('');   // Stores the selected reason from the dropdown
@@ -201,13 +210,7 @@ function showFlagConfirmation() {
   showFlagModal.value = true;  // Show the modal
 }
 
-const confirmDelete = () => {
-  // Call your delete function here
-  // deletePost();
 
-  showDeleteModal.value = false; // Close the modal after confirmation
-};
-const store = usePostStoryStore();
 const authStore = useAuthStore()
 
 
@@ -228,6 +231,16 @@ const isUserNotLiked = !props.post.likes.some(like => like.userId === authStore.
 const goToSlide = (index) => {
   activeSlide.value = index
 }
+
+
+const router = useRouter();
+
+const confirmDelete = async () => {
+  const response = await store.deletePost(props.post._id)
+  router.push('/home');
+  toast.success('Post Deleted Successfully!', { position: 'top-center' });
+  showDeleteModal.value = false; // Close the modal after confirmation
+};
 
 const onSwipeLeft = () => {
   console.log("Swipeeeeee")
