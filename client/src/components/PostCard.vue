@@ -105,11 +105,27 @@
       <!-- Flag Confirmation Modal -->
       <Teleport to="body">
         <Transition name="modal">
-          <div v-if="showFlagModal" class="fixed inset-0 z-50 flex items-center justify-center  bg-black/50">
-            <div class=" max-w-md  bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md transform transition-all">
+          <div v-if="showFlagModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+            <div class="max-w-md bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md transform transition-all">
               <h3 class="text-lg mb-4 text-gray-800 dark:text-white">Are you sure you want to flag this post?</h3>
+              <!-- Dropdown for Report Reason -->
+              <div v-if="showDropdown" class="mb-4">
+                <label for="reportReason" class="block text-sm text-gray-700 dark:text-white">Please select a reason for
+                  flagging:</label>
+                <select v-model="selectedReason" id="reportReason" class="w-full mt-2 p-2 border rounded-md">
+                  <option disabled value="">-- Select a reason --</option>
+                  <option value="inappropriate_content">Inappropriate Content</option>
+                  <option value="spam">Spam</option>
+                  <option value="hate_speech">Hate Speech</option>
+                  <option value="harassment">Harassment</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+
+              <!-- Buttons -->
               <div class="flex justify-between">
-                <button @click="confirmFlag" class="bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600">
+                <button @click="confirmFlag" :disabled="!selectedReason"
+                  class="bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600">
                   Yes, flag it
                 </button>
                 <button @click="cancelAction('flag')"
@@ -121,6 +137,7 @@
           </div>
         </Transition>
       </Teleport>
+
 
       <!-- Delete Confirmation Modal -->
       <Teleport to="body">
@@ -155,21 +172,34 @@ import { usePostStoryStore } from '@/stores/homePageStore';
 import { useAuthStore } from '@/stores/authStore';
 const showFlagModal = ref(false);
 const showDeleteModal = ref(false);
+const selectedReason = ref('');   // Stores the selected reason from the dropdown
+const showDropdown = ref(true);
+// Method to handle the modal cancel action
+function cancelAction(action) {
+  if (action === 'flag') {
+  showFlagModal.value = false; // Close the modal
+  selectedReason.value = '';   // Reset selected reason
+} else if (action === 'delete') {  // Change actionType to action here
+  showDeleteModal.value = false;  // Close the delete modal
+}
+}
 
-const cancelAction = (actionType) => {
-  if (actionType === 'flag') {
+// Method to confirm flagging
+function confirmFlag() {
+  if (selectedReason.value) {
+    // You can call your API or perform any action related to flagging the post
+    console.log(`Post flagged for reason: ${selectedReason.value}`);
+
+    // Close the modal after flagging
     showFlagModal.value = false;
-  } else if (actionType === 'delete') {
-    showDeleteModal.value = false;
+    selectedReason.value = ''; // Reset selected reason
   }
-};
+}
 
-const confirmFlag = () => {
-  // Call your flag post function here
-  // flagPost();
-
-  showFlagModal.value = false; // Close the modal after confirmation
-};
+// You can invoke this method when you want to show the flag modal
+function showFlagConfirmation() {
+  showFlagModal.value = true;  // Show the modal
+}
 
 const confirmDelete = () => {
   // Call your delete function here
