@@ -96,6 +96,7 @@
           <!-- Delete Button -->
           <button v-if="canDelete" @click.stop.prevent="showDeleteModal = true"
             class="flex items-center space-x-2 group" aria-label="Delete post">
+            
             <i
               class="ri-delete-bin-line text-xl text-gray-600 dark:text-gray-400 group-hover:text-red-500 group-hover:scale-110 transition-transform"></i>
           </button>
@@ -237,6 +238,7 @@ const router = useRouter();
 
 const confirmDelete = async () => {
   const response = await store.deletePost(props.post._id)
+  console.log(props.post._id)
   router.push('/home');
   toast.success('Post Deleted Successfully!', { position: 'top-center' });
   showDeleteModal.value = false; // Close the modal after confirmation

@@ -657,14 +657,13 @@ const userController = {
 
       // Fetch user details
       const user = await User.findById(userId)
-        .select("-password -resetToken -tokenExpiry -notifications")
+        .select("-password -resetToken -tokenExpiry")
         .populate("followers.user", "user_name first_name last_name profile_photo_url")
         .populate("following.user", "user_name first_name last_name profile_photo_url");
 
       if (!user) {
         return res.status(constants.NOT_FOUND).json({ message: "User not found" });
       }
-
       // Fetch user's posts
       const userPosts = await Post.find({ user: userId }).sort({ createdAt: -1 });
 

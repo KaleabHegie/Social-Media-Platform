@@ -63,7 +63,8 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed , onMounted } from 'vue';
+import { usePostStoryStore } from '@/stores/homePageStore';
 
 const props = defineProps({
   showCloseButton: {
@@ -72,30 +73,21 @@ const props = defineProps({
   },
 });
 
+
+const postStoryStore = usePostStoryStore();
 defineEmits(['close']);
 
 // Simulated notifications data based on the backend structure
-const notifications = ref([
-  {
-    _id: "6786f2f569cf95148732f767",
-    type: "follower",
-    content: "user1 unfollowed you.",
-    seen: false,
-    createdAt: "2025-01-14T23:27:49.766Z",
-    updatedAt: "2025-01-14T23:27:49.766Z"
-  },
-  {
-    _id: "6786f2b69cf95148732f94d",
-    type: "follower",
-    content: "user1 started following you.",
-    seen: false,
-    createdAt: "2025-01-15T00:07:07.331Z",
-    updatedAt: "2025-01-15T00:07:07.331Z"
-  }
-]);
+const notifications = ref([]);
 
 const hasUnread = computed(() => {
   return notifications.value.some(notification => !notification.seen);
+});
+
+
+onMounted( async () => {
+  const result = await postStoryStore.fetchUserProfile()
+  notifications.value = postStoryStore.myProfile.notifications.filter(notification => notification.seen === false);
 });
 
 const formatDate = (dateString) => {
@@ -110,9 +102,12 @@ const formatDate = (dateString) => {
 };
 
 const markAllAsRead = () => {
-  notifications.value = notifications.value.map(notification => ({
-    ...notification,
-    seen: true
-  }));
+  if (Array.isArray(notifications.value)) {
+    for (const notification of notifications.value) {
+      console.log('----------------')
+      console.log(notification); // Log the notification
+      notification.seen = true;  // Update the `seen` property
+    }
+  }
 };
 </script>

@@ -84,7 +84,7 @@
 
         <!-- Tab Content -->
         <div v-if="currentTab === 'posts'">
-          <div v-if="myposts.length" class="grid-layout">
+          <div v-if="myposts" class="grid-layout">
             <ExplorePostCard v-for="post in myposts" :key="post.id" :post="post" :showHashtags="true" />
           </div>
           <p v-else class="text-center text-gray-500 dark:text-gray-400">No posts available.</p>
@@ -92,7 +92,7 @@
 
         <!-- Liked Posts Tab -->
         <div v-if="currentTab === 'likedposts'">
-          <div v-if="likedposts.length" class="grid-layout">
+          <div v-if="likedposts" class="grid-layout">
             <ExplorePostCard v-for="post in likedposts" :key="post.id" :post="post" :showHashtags="false" />
           </div>
           <p v-else class="text-center text-gray-500 dark:text-gray-400">No liked posts yet.</p>

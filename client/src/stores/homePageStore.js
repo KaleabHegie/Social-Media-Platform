@@ -339,6 +339,7 @@ export const usePostStoryStore = defineStore("postStory", {
       this.error = null;
       try {
         const response = await MyHttpService.get("/deletePost", { query : {'postId' : postId} , useJWT: true });
+        console.log(response)
       } catch (error) {
         this.error = error.response?.message || "Failed to delete post.";
       } finally {

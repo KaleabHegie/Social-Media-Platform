@@ -38,7 +38,6 @@
                   </span>
                 </button>
               </div>
-
               <!-- Mobile Notification Modal -->
               <Teleport to="body">
                 <Transition name="modal">
@@ -110,7 +109,9 @@ import { usePostStoryStore } from '@/stores/homePageStore'; // Import the store
 import NotificationCard from '@/components/NotificationCard.vue';
 
 const showMobileNotification = ref(false);
-const unreadNotifications = computed(() => 2); // Replace with actual unread count from your store
+const unreadNotifications = ref([]); // Replace with actual unread count from your store
+
+console.log(unreadNotifications)
 
 const { t } = useLanguageStore();
 const postStoryStore = usePostStoryStore();
@@ -123,8 +124,10 @@ const closeMobileNotifications = () => {
   showMobileNotification.value = false;
 };
 
-onMounted(() => {
+onMounted( async () => {
   postStoryStore.fetchPosts();
   postStoryStore.fetchStories();
+  const result = await postStoryStore.fetchUserProfile()
+  unreadNotifications.value = postStoryStore.myProfile.notifications
 });
 </script>
