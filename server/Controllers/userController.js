@@ -173,14 +173,14 @@ const userController = {
           message: "Can't fetch users if the user is not logged in",
         });
       }
-
+  
       const currentUserId = req.user.id;
-
+  
       // Find all messages where the current user is a participant
       const messages = await Message.find({
         "participants.userId": currentUserId,
       });
-
+  
       // Extract unique participant IDs and details
       const userDetailsMap = new Map();
       messages.forEach((message) => {
@@ -188,20 +188,20 @@ const userController = {
           if (participant.userId.toString() !== currentUserId) {
             const otherUserId = participant.userId.toString();
             const lastOpenedAt = participant.last_opened_at;
-
+  
             // Compute last message, recent messages, and unread count
             const sortedMessages = message.messages
               .slice()
               .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
             const lastMessage = sortedMessages[0] || null;
             const recentMessages = sortedMessages.slice(0, 5);
-
+  
             const unreadCount = sortedMessages.filter(
               (msg) =>
                 msg.sender.toString() !== currentUserId &&
                 new Date(msg.createdAt) > new Date(lastOpenedAt)
             ).length;
-
+  
             // Update the map with details
             if (
               !userDetailsMap.has(otherUserId) ||
@@ -213,25 +213,26 @@ const userController = {
                 lastMessage,
                 recentMessages,
                 unreadCount,
+                lastOpenedAt, // Include lastOpenedAt here
               });
             }
           }
         });
       });
-
+  
       if (userDetailsMap.size === 0) {
         return res.status(constants.NOT_FOUND).json({
           message: "No users found",
         });
       }
-
+  
       // Fetch user details with only the required fields
       const users = await User.find(
         { _id: { $in: Array.from(userDetailsMap.keys()) } },
         "_id user_name first_name last_name profile_photo_url"
       );
-
-      // Attach last messages, recent messages, and unread count to users
+  
+      // Attach last messages, recent messages, unread count, and lastOpenedAt to users
       const usersWithExtras = users.map((user) => {
         const details = userDetailsMap.get(user._id.toString());
         return {
@@ -251,9 +252,10 @@ const userController = {
             createdAt: msg.createdAt,
           })),
           unreadCount: details.unreadCount,
+          lastOpenedAt: details.lastOpenedAt, // Include lastOpenedAt here
         };
       });
-
+  
       res.json({
         message: "Users fetched successfully",
         allUsers: usersWithExtras,
@@ -265,6 +267,7 @@ const userController = {
       });
     }
   },
+  
 
   getChats: async (req, res) => {
     try {
