@@ -114,7 +114,8 @@
         </div>
       </div>
       <!-- Confirmation Modal -->
-      <ConfirmationModal :isVisible="isModalVisible" @confirm="confirmDeleteAccount" @cancel="closeModal" />
+      <ConfirmationModal :isVisible="isModalVisible" @confirm="confirmDeleteAccount" @cancel="closeModal"
+        class="z-10 dark:bg-black " />
     </div>
 
     <!-- Tabbed View for Posts/Following/Followers -->
