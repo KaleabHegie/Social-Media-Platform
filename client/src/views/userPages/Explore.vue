@@ -27,7 +27,7 @@
         </div>
       </div>
 
-      <div class="">
+      <div class="overflow-y-auto h-80vh">
 
         <!-- Explore Content -->
         <div v-if="activeTab === 'posts'">

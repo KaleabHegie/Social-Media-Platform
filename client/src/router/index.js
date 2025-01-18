@@ -53,9 +53,9 @@ const routes = [
       { path: "/userView", component: UsersView, meta: { requiresAuth: false } },
       { path: "/reportedPosts", component: ReportsView, meta: { requiresAuth: false } },
       { path: "/analytics", component: Analytics, meta: { requiresAuth: false } },
-
     ],
   },
+
   { path: "/:pathMatch(.*)*", redirect: "/signin" }, // Redirect unknown routes to SignIn
 ];
 
@@ -68,15 +68,24 @@ const router = createRouter({
 // Navigation guard
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore();
+  const adminRoutes = ["/userView", "/reportedPosts", "/analytics"];
 
+  // Check authentication
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
-    // Redirect to SignIn if not authenticated
     next({ path: "/signin" });
-  } else if (to.path === "/signin" && authStore.isAuthenticated) {
-    // Redirect authenticated users away from SignIn
+  }
+  // Prevent authenticated users from accessing SignIn
+  else if (to.path === "/signin" && authStore.isAuthenticated) {
     next({ path: "/home" });
+  }
+
+  const isAdmin = localStorage.getItem("isAdmin") === "true"; // Ensure 'true' is a string
+
+  // Check if the route is an admin route and the user is not an admin
+  if (adminRoutes.includes(to.path) && !isAdmin) {
+    next({ path: "/home" }); // Redirect non-admin users
   } else {
-    next(); // Proceed to the route
+    next(); // Allow access
   }
 });
 

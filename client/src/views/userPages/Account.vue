@@ -23,6 +23,9 @@
           <div class="flex-grow text-center sm:text-left">
             <h1 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
               {{ profile.first_name }} {{ profile.last_name }}
+              <i v-if="profile.is_verified"
+                class="ri-check-line bg-sky-500 rounded-full text-white p-1 text-xs hover:no-underline ml-1"></i>
+
             </h1>
             <p class="text-gray-600 dark:text-gray-300">@{{ profile.user_name }}</p>
 
@@ -30,13 +33,16 @@
             <div class="mt-3 space-x-2">
               <button @click="toggleFollow"
                 class="px-3 py-1.5 sm:px-4 sm:py-2 bg-blue-500 text-white text-sm sm:text-base rounded-md hover:bg-blue-600 transition duration-300">
+                <i v-if="isFollowing" class="ri-user-unfollow-fill mr-1"></i>
+                <i v-else class="ri-user-follow-fill mr-1"></i>
                 {{ isFollowing ? 'Unfollow' : 'Follow' }}
               </button>
+
 
               <router-link :to="`/messages`" class="text-sm text-gray-600 dark:text-gray-400 hover:underline">
                 <button
                   class="px-3 py-1.5 sm:px-4 sm:py-2 bg-gray-200 text-gray-800 text-sm sm:text-base rounded-md hover:bg-gray-300 transition duration-300">
-
+                  <i class="ri-message-fill mr-1"></i>
                   {{ t('message') }}
                 </button>
               </router-link>
@@ -195,7 +201,7 @@ const sendMessage = () => console.log('Message sent');
 const toggleFollow = async () => {
   await postStoryStore.followUser(profile.value._id);
   await postStoryStore.fetchUserProfile()
-  
+
   myFollowing.value = postStoryStore.myProfile.following
   isFollowing.value = myFollowing.value.some(following => following.user._id === profile.value._id);
   toast.success('Successfull!', { position: 'top-center' });
@@ -207,6 +213,7 @@ const toggleFollow = async () => {
 <style scoped>
 .grid-layout {
   column-gap: 1rem;
+  row-gap: 5px;
   column-count: 3;
 }
 

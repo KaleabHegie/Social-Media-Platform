@@ -11,17 +11,19 @@ const router = express.Router();
  *  Admin Related Routes
  *
  *************************************************************************/
-router.post("/uploadHashTagAdmin", validateToken, adminController.uploadHashTagAdmin);
 
 router.get("/getUserDataAdmin", validateToken, adminController.getUserDataAdmin);
 
-router.delete("/deleteAccountAdmin", validateToken, adminController.deleteAccountAdmin);
+router.post("/deleteAccountAdmin", validateToken, adminController.deleteAccountAdmin);
 
 router.get("/getReportedPosts", validateToken, adminController.getReportedPosts);
 
-router.delete("/deleteReportedPost", validateToken, adminController.deleteReportedPost);
+router.post("/deleteReportedPost", validateToken, adminController.deleteReportedPost);
 
 router.get("/getPostAnalytics", validateToken, adminController.getPostAnalytics);
+
+router.post("/markAsVerifiedAdmin", validateToken, adminController.markAsVerifiedAdmin);
+
 
 
 

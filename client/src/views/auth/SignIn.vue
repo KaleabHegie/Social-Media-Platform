@@ -184,7 +184,11 @@ const handleSubmit = async () => {
 
   const success = await authStore.login(credentials);
   loading.value = false;
-
+  const isAdmin = localStorage.getItem("isAdmin") === "true";
+  if (isAdmin) {
+    router.push('/userView');
+    return;
+  }
   if (success) {
     router.push('/home'); // Navigate to the dashboard after login
   } else {

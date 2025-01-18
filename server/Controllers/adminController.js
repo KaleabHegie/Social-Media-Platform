@@ -1,15 +1,17 @@
 const { constants } = require("../Utils/constants");
 const User = require("../Models/UserModel");
+const Comment = require("../Models/CommentModel");
 const ReportedPost = require("../Models/ReportModel");
 const Post = require("../Models/PostModel");
-const Hashtag = require("../Models/HashTagModel");
 
 const adminController = {
   deleteAccountAdmin: async (req, res) => {
     try {
-      const adminUserId = req.user.id; // Assuming `req.user.id` is set by some authentication middleware
-
-      // @todo: Check if the user is an admin here
+      if (!req.user || !req.user.is_admin) {
+        return res.status(constants.UNAUTHORIZED).json({
+          message: "Not Authorized",
+        });
+      }
 
       // Get the userId from the query string
       const userIdToDelete = req.query.userId;
@@ -17,6 +19,12 @@ const adminController = {
       // Validate if userId is provided
       if (!userIdToDelete) {
         return res.status(400).json({ message: "User ID is required in the query" });
+      }
+
+      if (userIdToDelete == req.user.id) {
+        return res.status(constants.VALIDATION_ERRORS).json({
+          message: "Can't Delete Admin Account",
+        });
       }
 
       // Find and delete the user by userId
@@ -27,25 +35,74 @@ const adminController = {
         return res.status(404).json({ message: "User not found" });
       }
 
+      //Delete Related Posts
+      await Post.deleteMany({ user: userIdToDelete });
+
+      await Comment.deleteMany({ sender: userIdToDelete });
+
+      await ReportedPost.deleteMany({
+        "postId.user": userIdToDelete,
+      });
+
       // Send success message
       res.json({
-        message: "User Account Deleted successfully",
+        message: "User Account Deletedd successfully",
       });
     } catch (error) {
       console.error("Error deleting User Account:", error);
       res.status(500).json({
-        error: "An error occurred while deleting User Account",
+        message: "An error occurred while deleting User Account",
       });
     }
   },
+  markAsVerifiedAdmin: async (req, res) => {
+    try {
+      if (!req.user || !req.user.is_admin) {
+        return res.status(constants.UNAUTHORIZED).json({
+          message: "Not Authorized",
+        });
+      }
+
+      // Get the userId from the query string
+      const userId = req.query.userId;
+
+      // Validate if userId is provided
+      if (!userId) {
+        return res.status(400).json({ message: "User ID is required in the query" });
+      }
+
+      // Find the user to get the current verification status
+      const user = await User.findById(userId);
+
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Toggle the verification status
+      const newStatus = !user.is_verified;
+
+      // Update the user's verification status
+      user.is_verified = newStatus;
+      await user.save();
+
+      res.json({
+        message: `User verification Updated To: ${newStatus ? "verified" : "unverified"}`,
+        newStatus: newStatus,
+      });
+    } catch (error) {
+      console.error("Error toggling user verification:", error);
+      res.status(500).json({
+        message: "An error occurred while toggling user verification",
+      });
+    }
+  },
+
   getReportedPosts: async (req, res) => {
     try {
-      const userId = req.user.id; // Assuming `req.user.id` is set by some authentication middleware
-
-      // @todo: Check if the user is an admin here
-
-      if (!userId) {
-        return res.status(404).json({ message: "Need to be Logged In" });
+      if (!req.user || !req.user.is_admin) {
+        return res.status(constants.UNAUTHORIZED).json({
+          message: "Not Authorized",
+        });
       }
 
       // Fetch all reported posts
@@ -95,7 +152,7 @@ const adminController = {
       );
 
       // Send the response
-      return res.json(result);
+      return res.json({ posts: result });
     } catch (error) {
       console.error(error);
       return res.status(500).json({ message: "Server error" });
@@ -104,6 +161,12 @@ const adminController = {
 
   getPostAnalytics: async (req, res) => {
     try {
+      if (!req.user || !req.user.is_admin) {
+        return res.status(constants.UNAUTHORIZED).json({
+          message: "Not Authorized",
+        });
+      }
+
       const today = new Date();
       const tenDaysAgo = new Date(today);
       tenDaysAgo.setDate(today.getDate() - 10); // Get the date 10 days ago
@@ -138,6 +201,7 @@ const adminController = {
         posts: analytics[date].posts,
         stories: analytics[date].stories,
       }));
+      console.log({ analytics: result });
 
       // Return the analytics data
       return res.json({ analytics: result });
@@ -147,40 +211,47 @@ const adminController = {
     }
   },
 
-  
   deleteReportedPost: async (req, res) => {
     try {
-      const userId = req.user.id; // Assuming `req.user.id` is set by some authentication middleware
+      if (!req.user || !req.user.is_admin) {
+        return res.status(constants.UNAUTHORIZED).json({
+          message: "Not Authorized",
+        });
+      }
+      const reportedPostId = req.query.postId;
 
-      // @todo: Check if the user is an admin here
-      if (!userId) {
-        return res
-          .status(403)
-          .json({ message: "You need admin privileges to delete posts." });
+      if (!reportedPostId) {
+        return res.status(400).json({ message: "PostId required" });
       }
 
-      const postId = req.query.postId;
-      const reportedPostId = postId;
-
-      // Fetch the reported post to ensure it exists
-      const reportedPost = await ReportedPost.findById(reportedPostId);
-      if (!reportedPost) {
-        return res.status(404).json({ message: "Reported post not found." });
+      let deletedPost;
+      // Find and delete the Repoted Post by PostID
+      reportedPost = await ReportedPost.findOne({ postId: reportedPostId });
+      if (reportedPost) {
+        deletedPost = await ReportedPost.findByIdAndDelete(reportedPost._id);
+        // Check if user exists
+        if (!deletedPost) {
+          return res.status(400).json({ message: "Reported Post not found" });
+        }
+      } else {
+        return res.status(400).json({ message: "Reported Post not found" });
       }
 
-      // Fetch the post to ensure it exists
-      const post = await Post.findById(reportedPostId);
-      if (!post) {
-        return res.status(404).json({ message: "Post not found." });
-      }
+      //Delete Related Posts
+      await Post.findByIdAndDelete(reportedPostId);
 
-      // Delete the post from both collections
-      await Post.deleteOne({ _id: reportedPostId });
-      await ReportedPost.deleteOne({ _id: reportedPostId });
+      await Comment.deleteMany({ postId: reportedPostId });
+
+      const user = await User.findById(deletedPost._id);
+
+      if (user) {
+        user.post_count = user.post_count > 0 ? user.post_count - 1 : 0; // Decrease the post count, ensuring it doesn't go negative
+        await user.save();
+      }
 
       // Send the success response
       return res.json({
-        message: "Reported post and t post have been deleted successfully.",
+        message: "Reported post Removed successfully.",
       });
     } catch (error) {
       console.error(error);
@@ -220,53 +291,6 @@ const adminController = {
       return res.status(500).json({
         message: "An error occurred while fetching user data",
       });
-    }
-  },
-
-  uploadHashTagAdmin: async (req, res) => {
-    try {
-      // Check if the user is logged in
-      if (!req.user) {
-        return res.status(constants.UNAUTHORIZED).json({
-          message: "Can't upload HashTags if user is not logged in",
-        });
-      }
-
-      let { hashtag } = req.body;
-
-      // Check if hashtag is provided
-      if (!hashtag) {
-        return res.status(constants.VALIDATION_ERRORS).json({
-          message: "Hashtag is required",
-        });
-      }
-
-      // Check if the hashtag already exists
-      const existingHashtag = await Hashtag.findOne({ name: hashtag });
-
-      if (existingHashtag) {
-        return res.status(constants.VALIDATION_ERRORS).json({
-          message: "Hashtag already exists",
-          hashtag: existingHashtag,
-        });
-      }
-
-      hashtag = hashtag.trim().toLowerCase();
-
-      // Create a new hashtag if it doesn't exist
-      const newHashtag = new Hashtag({ name: hashtag });
-      await newHashtag.save();
-
-      // Return success response
-      res.json({
-        message: "Hashtag created successfully",
-        hashtag: newHashtag,
-      });
-    } catch (error) {
-      console.error("Error uploading hashtag:", error);
-      res
-        .status(constants.SERVER_ERROR)
-        .json({ error: "An error occurred while uploading the hashtag" });
     }
   },
 };

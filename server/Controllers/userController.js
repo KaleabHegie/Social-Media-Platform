@@ -1,4 +1,3 @@
-const User = require("../Models/UserModel");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
@@ -7,6 +6,11 @@ const { constants } = require("../Utils/constants");
 const crypto = require("crypto");
 const Post = require("../Models/PostModel");
 const Message = require("../Models/MessageModel");
+const User = require("../Models/UserModel");
+const Comment = require("../Models/CommentModel");
+const ReportedPost = require("../Models/ReportModel");
+
+
 
 // Configure Cloudinary
 cloudinary.config({
@@ -102,7 +106,7 @@ const userController = {
           process.env.ACCESS_TOKEN_SECRET,
           { expiresIn: "30d" }
         );
-        return res.status(200).json({ accessToken });
+        return res.status(200).json({ accessToken, is_admin: user.is_admin });
       } else {
         return res.status(401).json({ message: "Invalid username/email or password" });
       }
@@ -173,14 +177,14 @@ const userController = {
           message: "Can't fetch users if the user is not logged in",
         });
       }
-  
+
       const currentUserId = req.user.id;
-  
+
       // Find all messages where the current user is a participant
       const messages = await Message.find({
         "participants.userId": currentUserId,
       });
-  
+
       // Extract unique participant IDs and details
       const userDetailsMap = new Map();
       messages.forEach((message) => {
@@ -188,20 +192,20 @@ const userController = {
           if (participant.userId.toString() !== currentUserId) {
             const otherUserId = participant.userId.toString();
             const lastOpenedAt = participant.last_opened_at;
-  
+
             // Compute last message, recent messages, and unread count
             const sortedMessages = message.messages
               .slice()
               .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
             const lastMessage = sortedMessages[0] || null;
             const recentMessages = sortedMessages.slice(0, 5);
-  
+
             const unreadCount = sortedMessages.filter(
               (msg) =>
                 msg.sender.toString() !== currentUserId &&
                 new Date(msg.createdAt) > new Date(lastOpenedAt)
             ).length;
-  
+
             // Update the map with details
             if (
               !userDetailsMap.has(otherUserId) ||
@@ -219,19 +223,19 @@ const userController = {
           }
         });
       });
-  
+
       if (userDetailsMap.size === 0) {
         return res.status(constants.NOT_FOUND).json({
           message: "No users found",
         });
       }
-  
+
       // Fetch user details with only the required fields
       const users = await User.find(
         { _id: { $in: Array.from(userDetailsMap.keys()) } },
         "_id user_name first_name last_name profile_photo_url"
       );
-  
+
       // Attach last messages, recent messages, unread count, and lastOpenedAt to users
       const usersWithExtras = users.map((user) => {
         const details = userDetailsMap.get(user._id.toString());
@@ -244,7 +248,8 @@ const userController = {
                 media: details.lastMessage.media || null,
                 createdAt: details.lastMessage.createdAt,
                 user_name: user.user_name, // Include user_name of the sender
-                isSentByCurrentUser: details.lastMessage.sender.toString() === currentUserId, // Boolean flag if sent by current user
+                isSentByCurrentUser:
+                  details.lastMessage.sender.toString() === currentUserId, // Boolean flag if sent by current user
               }
             : null,
           recentMessages: details.recentMessages.map((msg) => ({
@@ -259,7 +264,7 @@ const userController = {
           lastOpenedAt: details.lastOpenedAt, // Include lastOpenedAt here
         };
       });
-  
+
       res.json({
         message: "Users fetched successfully",
         allUsers: usersWithExtras,
@@ -271,8 +276,6 @@ const userController = {
       });
     }
   },
-  
-  
 
   getChats: async (req, res) => {
     try {
@@ -321,6 +324,7 @@ const userController = {
 
       // Check if the profile image is provided in the request
       if (!req.file) {
+        console.log("Here");
         return res.status(constants.VALIDATION_ERRORS).json({
           message: "Profile image is required",
         });
@@ -352,7 +356,6 @@ const userController = {
         stream.end(req.file.buffer);
       });
 
-      console.log("here");
       // Get the URL of the uploaded image
       const profileImageUrl = result.secure_url;
 
@@ -524,7 +527,29 @@ const userController = {
       }
 
       // Delete the user's account
-      await User.findByIdAndDelete(req.user.id);
+      const userIdToDelete = req.user.id;
+
+      // Validate if userId is provided
+      if (!userIdToDelete) {
+        return res.status(400).json({ message: "User ID is required in the query" });
+      }
+
+      // Find and delete the user by userId
+      const deletedUser = await User.findByIdAndDelete(userIdToDelete);
+
+      // Check if user exists
+      if (!deletedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      //Delete Related Posts
+      await Post.deleteMany({ user: userIdToDelete });
+
+      await Comment.deleteMany({ sender: userIdToDelete });
+
+      await ReportedPost.deleteMany({
+        "postId.user": userIdToDelete,
+      });
 
       res.json({
         message: "User Account Deleted successfully",
@@ -792,7 +817,7 @@ const userController = {
           followers_count: user.followers_count, // Include followers count
           following_count: user.following_count, // Include following count
           bio: user.bio, // Include Bio
-
+          is_verified: user.is_verified, // Include Bio
         };
       });
 

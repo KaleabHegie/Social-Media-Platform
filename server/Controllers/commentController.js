@@ -1,7 +1,7 @@
 const cloudinary = require("cloudinary").v2;
 const { constants } = require("../Utils/constants");
 const User = require("../Models/UserModel");
-const Comment = require("../Models/commentModel");
+const Comment = require("../Models/CommentModel");
 const Post = require("../Models/PostModel");
 
 const commentController = {
