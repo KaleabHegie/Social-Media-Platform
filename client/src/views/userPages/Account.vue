@@ -199,12 +199,12 @@ onMounted(async () => {
 
 const sendMessage = () => console.log('Message sent');
 const toggleFollow = async () => {
-  await postStoryStore.followUser(profile.value._id);
+  const result = await postStoryStore.followUser(profile.value._id);
   await postStoryStore.fetchUserProfile()
 
   myFollowing.value = postStoryStore.myProfile.following
   isFollowing.value = myFollowing.value.some(following => following.user._id === profile.value._id);
-  toast.success('Successfull!', { position: 'top-center' });
+  toast.success(`${result.message}!`, { position: 'top-center' });
 };
 </script>
 

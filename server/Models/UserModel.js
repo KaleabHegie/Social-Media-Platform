@@ -6,7 +6,7 @@ const NotificationSchema = new mongoose.Schema(
   {
     type: {
       type: String,
-      enum: ["like", "comment", "follower", "other"],
+      enum: ["like", "comment", "follower", "requests" ,"other"],
       default: "other",
       required: true,
     },
@@ -40,6 +40,11 @@ const UserSchema = new mongoose.Schema(
       },
     ],
     following: [
+      {
+        user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+      },
+    ],
+    requests: [
       {
         user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
       },

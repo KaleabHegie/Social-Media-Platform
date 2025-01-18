@@ -472,8 +472,12 @@ const userController = {
         });
       }
 
-      // Clear all notifications
-      user.notifications = [];
+      // Clear all notifications=
+      if (Array.isArray(user.notifications)) {
+        user.notifications.forEach(notification => {
+          notification.seen = true; // Mark as seen
+        });
+      }
       await user.save();
 
       return res.json({
@@ -607,9 +611,15 @@ const userController = {
         // Add user to following list
 
         if (userToFollow.is_private) {
+          userToFollow.requests.push({ user: currentUserId });
+          notificationContent = `${currentUser.user_name} requeseted to follow you.`;
+          userToFollow.notifications.push({
+            type: "requests",
+            content: notificationContent,
+          });
+          await userToFollow.save();
           return res
-            .status(constants.UNAUTHORIZED)
-            .json({ message: "You cannot follow Private Accounts" });
+            .json({ message: "Requested!" });
         }
         currentUser.following.push({ user: userIdToFollow });
         userToFollow.followers.push({ user: currentUserId });
@@ -624,6 +634,8 @@ const userController = {
           type: "follower",
           content: notificationContent,
         });
+
+        
 
         actionMessage = "User followed successfully";
         userFollowed = true;
@@ -743,8 +755,10 @@ const userController = {
           (follower) => follower.user.toString() === requestingUserId.toString()
         )
       ) {
-        return res.status(constants.FORBIDDEN).json({
-          message: "This account is private. Only Followers can see this Profile",
+        return res.json({
+          profile: userToSeeProfile,
+          usersposts: [],
+          likedPosts: [],
         });
       }
 
