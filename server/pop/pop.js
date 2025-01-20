@@ -305,7 +305,7 @@ const populateWithPosts = async (numUsers) => {
       try {
         const form = new FormData();
         const caption = getRandomCaptions();
-        const type = Math.random() > 0.5 ? "post" : "story"; // Random type: post or story
+        const type = Math.random() > 0.8 ? "post" : "story"; // Random type: post or story
         const rawHashtags = Array.from({ length: Math.floor(Math.random() * 4) + 1 }, () =>
           HASHTAGS[Math.floor(Math.random() * HASHTAGS.length)]
         ).join(' '); // Random hashtags
@@ -387,7 +387,7 @@ const handleUserInput = async () => {
         await bringUsersToLifeee(parseInt(lifeCount, 10));
         break;
       case "3":
-        const postUsersCount = await askQuestion("How many users to To MAke Post on(put zero for all users)? ");
+        const postUsersCount = await askQuestion("How many users to To Make Post on(put zero for all users)? ");
         await populateWithPosts(parseInt(postUsersCount, 10));
         break;
       case "0":

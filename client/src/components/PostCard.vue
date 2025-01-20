@@ -105,6 +105,18 @@
           </button>
         </div>
       </div>
+        <!-- Hashtags -->
+        <div class="flex flex-wrap gap-2">
+          <router-link
+            v-for="tag in props.post.hashtags || []"
+            :key="tag"
+            :to="`/home`"
+            class="text-sky-500 dark:text-sky-400 text-sm hover:underline"
+            @click.stop
+          >
+            #{{ tag }}
+          </router-link>
+        </div>
 
       <!-- Flag Confirmation Modal -->
       <Teleport to="body">

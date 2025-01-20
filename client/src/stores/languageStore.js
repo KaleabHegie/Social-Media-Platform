@@ -309,26 +309,68 @@ const translations = {
     en: "Loading profile...",
     am: "መለያ በመጫን ላይ...",
   },
+  usernameLong: {
+    en: "Username must be at least 3 characters long.",
+    am: "የተጠቃሚ ስም በጣም 3 ፊደላት ርቀት አድርገዋል።",
+  },
+  emailDomain: {
+    en: "Email must include a valid domain (e.g., '.com').",
+    am: "ኢሜይል የተሳሳተ አድራሻ ነው (ለማለፍ፣ '.com')።",
+  },
+  usernameTaken: {
+    en: "Username is already taken.",
+    am: "የተጠቃሚ ስም ተወስዶዋል።",
+  },
+  agerequire: {
+    en: "You must be at least 13 years old.",
+    am: "ከ13 አመት በላይ መሆን አለበት።",
+  },
+  weak: {
+    en: "Password is weak",
+    am: "የይለፍ ቃል ደካማ ነው",
+  },
+  moderate: {
+    en: "Password is moderate",
+    am: "የይለፍ ቃል ተመን ነው",
+  },
+  strong: {
+    en: "Password is strong",
+    am: "የይለፍ ቃል ጠንካራ ነው",
+  },
+  short: {
+    en: "Password is too short",
+    am: "የይለፍ ቃል አጭር ነው",
+  },
+  match:{
+    en: "Passwords do not match",
+    am: "የይለፍ ቃልዎ አንዳይነት አይደለም",
+  },
+  emailTaken: {
+    en: "Email is already taken.",
+    am: "ኢሜይል ተወስዶዋል።",
+  },
 };
 
-export const useLanguageStore = defineStore('language', () => {
+export const useLanguageStore = defineStore("language", () => {
   // Try to get the language from localStorage, default to 'en'
-  const currentLanguage = ref(localStorage.getItem('language') || 'en');
+  const currentLanguage = ref(localStorage.getItem("language") || "en");
 
   // Function to switch between languages
   const switchLanguage = () => {
-    currentLanguage.value = currentLanguage.value === 'en' ? 'am' : 'en';
+    currentLanguage.value = currentLanguage.value === "en" ? "am" : "en";
     // Set the language in localStorage whenever it's switched
-    localStorage.setItem('language', currentLanguage.value);
+    localStorage.setItem("language", currentLanguage.value);
     console.log(currentLanguage.value);
   };
 
   // Computed property to get the translation for a key
-  const t = computed(() => (key) => translations[key]?.[currentLanguage.value] || key);
+  const t = computed(
+    () => (key) => translations[key]?.[currentLanguage.value] || key
+  );
 
   // On mounted, check for any saved language in localStorage
   onMounted(() => {
-    const savedLanguage = localStorage.getItem('language');
+    const savedLanguage = localStorage.getItem("language");
     if (savedLanguage) {
       currentLanguage.value = savedLanguage;
     }

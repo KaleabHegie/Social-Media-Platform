@@ -273,7 +273,7 @@ const isValidStep1 = async () => {
     if (!errors.user_name) {
         const isUnique = await authStore.checkUniqueness({ type: "user_name", user_name: formData.user_name });
         if (!isUnique.isUnique) {
-            errors.user_name = 'Username is already taken.';
+            errors.user_name = t('usernameTaken');
         }
     }
 
@@ -289,7 +289,7 @@ const isValidStep2 = () => {
     const age = today.getFullYear() - birthDate.getFullYear();
     const ageAdjustment = today < new Date(today.getFullYear(), birthDate.getMonth(), birthDate.getDate()) ? -1 : 0;
     if (age + ageAdjustment < 13) {
-        errors.date_of_birth = 'You must be at least 13 years old.';
+        errors.date_of_birth = t('agerequire');
     }
 
     return !errors.date_of_birth && !errors.gender;
@@ -304,7 +304,7 @@ watch(
             errors.password = '';
         } else if (newPassword.length < 8) {
             passwordStrength.value = 'Weak';
-            passwordStrengthMessage.value = 'Password is too short.';
+            passwordStrengthMessage.value = t('short');
             passwordStrengthClass.value = 'text-red-500';
         } else {
             const hasLetter = /[A-Za-z]/.test(newPassword);
@@ -315,15 +315,15 @@ watch(
 
             if (strengthLevel === 1) {
                 passwordStrength.value = 'Weak';
-                passwordStrengthMessage.value = 'Password is weak.';
+                passwordStrengthMessage.value = t('weak');
                 passwordStrengthClass.value = 'text-red-500';
             } else if (strengthLevel === 2) {
                 passwordStrength.value = 'Moderate';
-                passwordStrengthMessage.value = 'Password is moderate.';
+                passwordStrengthMessage.value = t('moderate');
                 passwordStrengthClass.value = 'text-yellow-500';
             } else if (strengthLevel === 3) {
                 passwordStrength.value = 'Strong';
-                passwordStrengthMessage.value = 'Password is strong.';
+                passwordStrengthMessage.value = t('strong');
                 passwordStrengthClass.value = 'text-green-500';
             }
         }
@@ -334,7 +334,7 @@ watch(
     () => formData.confirm_password,
     (confirmPassword) => {
         if (confirmPassword && confirmPassword !== formData.password) {
-            errors.confirm_password = 'Passwords do not match.';
+            errors.confirm_password = t('match');
         } else {
             errors.confirm_password = '';
         }
@@ -346,7 +346,7 @@ const isValidStep3 = async () => {
     if (!errors.email) {
         const isUnique = await authStore.checkUniqueness({ type: "email", email: formData.email });
         if (!isUnique.isUnique) {
-            errors.email = 'Email is already taken.';
+            errors.email = t('emailTaken');
         }
     }
 
