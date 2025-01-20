@@ -349,6 +349,46 @@ const translations = {
     en: "Email is already taken.",
     am: "ኢሜይል ተወስዶዋል።",
   },
+  notifiy: {
+    en: "Notifications",
+    am: "ማሳወቂያ",
+  },
+  dismiss:{
+    en: "Dismiss All",
+    am: "አትፋ ሁሉንም",
+  },
+  users:{
+    en: "Users",
+    am: "ተጠቃሚዎች",
+  },
+  follow:{
+    en: "Follow",
+    am: "ተከተል",
+  },
+  unfollow:{
+    en: "Unfollow",
+    am: "አትከታተል",
+  },
+  comment:{
+    en: "Comment",
+    am: "አስተያየት",
+  },
+  addComment:{
+    en: "Add a comment...",
+    am: "አስተያየት ይስጡ...",
+  },
+  searchPosts:{
+    en:"Search posts or users...",
+    am:"ለጥፍ ወይም ተጠቃሚዎች ይፈልጉ...",
+  },
+  writeCaption:{
+    en:"Write a caption...",
+    am:"መግለጫ ይፃፉ...",
+  },
+  addHashtag:{
+    en:"Add a hashtag...",
+    am:"ሃሽታግ ይጨምሩ..."
+  },
 };
 
 export const useLanguageStore = defineStore("language", () => {

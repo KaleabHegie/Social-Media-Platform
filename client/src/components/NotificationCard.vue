@@ -3,12 +3,12 @@
     <!-- Header -->
     <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
       <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200">
-        Notifications
+        {{ t('notifiy') }}
       </h3>
       <div class="flex items-center space-x-4">
         <button v-if="hasUnread" @click="markAllAsRead"
           class="text-sm text-sky-500 hover:text-sky-600 dark:hover:text-sky-400">
-          Dismiss All
+          {{ t('dismiss') }}
         </button>
         <button v-if="showCloseButton" @click="$emit('close')"
           class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
@@ -60,7 +60,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { usePostStoryStore } from '@/stores/homePageStore';
 import ToastService from '@/utils/toast.js';
-
+import { useLanguageStore } from '@/stores/languageStore';
 const toast = ToastService();
 
 const props = defineProps({
@@ -70,7 +70,7 @@ const props = defineProps({
   },
 });
 
-
+const { t } = useLanguageStore();
 const postStoryStore = usePostStoryStore();
 defineEmits(['close']);
 

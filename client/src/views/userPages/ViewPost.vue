@@ -18,7 +18,7 @@
                     <PostCard :post="post" />
                 </template>
                 <p v-else class="text-gray-500 dark:text-gray-400">
-                    Loading post or not found.
+                    {{ t('loadingPosts') }}
                 </p>
             </div>
 
@@ -29,14 +29,14 @@
                 <div class="flex-grow overflow-y-auto">
                     <div class="p-4">
                         <h2 class="text-xl font-bold mb-4 text-gray-900 dark:text-white">
-                            Comments
+                            {{ t('comment') }}
                         </h2>
                         <template v-if="post">
                             <!-- PostCard component -->
                             <CommentCard v-for="(comment, index) in post.comments" :key="index" :comment="comment" />
                         </template>
                         <p v-else class="text-gray-500 dark:text-gray-400">
-                            Loading post or not found.
+                            {{ t('noPosts') }}
                         </p>
                     </div>
                 </div>
@@ -44,11 +44,11 @@
                 <!-- New comment input -->
                 <div class="p-4 border-t border-gray-200 dark:border-gray-700">
                     <div class="flex items-center">
-                        <input v-model="newComment" type="text" placeholder="Add a comment..."
+                        <input v-model="newComment" type="text" :placeholder="t('addComment')"
                             class="flex-grow mr-2 p-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
                         <button @click="addComment"
                             class="bg-sky-500 text-white px-4 py-2 rounded-lg hover:bg-sky-600">
-                            Comment
+                            {{ t('comment') }}
                         </button>
                     </div>
                 </div>
@@ -67,7 +67,7 @@ import CommentCard from '@/components/CommentCard.vue';
 import PostCard from '@/components/PostCard.vue';
 import { usePostStoryStore } from '@/stores/homePageStore';
 import { useAuthStore } from '@/stores/authStore';
-
+import { useLanguageStore } from '@/stores/languageStore';
 
 
 addIcons(RiCloseLine);
@@ -84,7 +84,7 @@ const goBack = () => {
     router.back();
 };
 
-
+const { t } = useLanguageStore();
 const newComment = ref('');
 const content = {
     postId: postId,

@@ -2,10 +2,10 @@
   <div class="max-w-4xl mx-auto p-4">
     <!-- Loading or Error State -->
     <div v-if="isLoading" class="text-center text-gray-500 dark:text-gray-400">
-      Loading profile...
+      {{ t('Noprofile') }}
     </div>
     <div v-else-if="!profile" class="text-center text-gray-500 dark:text-gray-400">
-      No profile data available.
+      {{ t('Noprofile') }}
     </div>
 
     <!-- Profile Content -->
@@ -35,7 +35,7 @@
                 class="px-3 py-1.5 sm:px-4 sm:py-2 bg-blue-500 text-white text-sm sm:text-base rounded-md hover:bg-blue-600 transition duration-300">
                 <i v-if="isFollowing" class="ri-user-unfollow-fill mr-1"></i>
                 <i v-else class="ri-user-follow-fill mr-1"></i>
-                {{ isFollowing ? 'Unfollow' : 'Follow' }}
+                {{ isFollowing ? t('unfollow') : t('follow') }}
               </button>
 
 
@@ -56,7 +56,7 @@
             <p class="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">
               {{ profile.followers_count }}
             </p>
-            <p class="text-sm sm:text-base text-gray-600 dark:text-gray-300">{{ t('follower') }}</p>
+            <p class="text-sm sm:text-base text-gray-600 dark:text-gray-300">{{ t('followers') }}</p>
           </div>
           <div class="text-center">
             <p class="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">
@@ -93,7 +93,7 @@
           <div v-if="myposts" class="grid-layout">
             <ExplorePostCard v-for="post in myposts" :key="post.id" :post="post" :showHashtags="true" />
           </div>
-          <p v-else class="text-center text-gray-500 dark:text-gray-400">No posts available.</p>
+          <p v-else class="text-center text-gray-500 dark:text-gray-400">{{ t('noPosts') }}</p>
         </div>
 
         <!-- Liked Posts Tab -->
@@ -101,13 +101,13 @@
           <div v-if="likedposts" class="grid-layout">
             <ExplorePostCard v-for="post in likedposts" :key="post.id" :post="post" :showHashtags="false" />
           </div>
-          <p v-else class="text-center text-gray-500 dark:text-gray-400">No liked posts yet.</p>
+          <p v-else class="text-center text-gray-500 dark:text-gray-400">{{ t('noLiked') }}</p>
         </div>
 
 
         <div v-else-if="currentTab === 'following'">
           <div v-if="following.length === 0">
-            <p class="text-xl text-gray-800 dark:text-gray-200">No following yet.</p> <!-- Message for no following -->
+            <p class="text-xl text-gray-800 dark:text-gray-200">{{ t('nofollowing') }}</p> <!-- Message for no following -->
           </div>
           <div v-else class="grid-layout">
             <UserProfileSmall v-for="follow in following" :key="follow.id" :follow="follow" />
@@ -117,7 +117,7 @@
 
         <div v-else-if="currentTab === 'followers'">
           <div v-if="followers.length === 0">
-            <p class="text-xl text-gray-800 dark:text-gray-200">No followers yet.</p> <!-- Message for no followers -->
+            <p class="text-xl text-gray-800 dark:text-gray-200"> {{ t('nofollowers') }}</p> <!-- Message for no followers -->
           </div>
           <div v-else class="grid-layout">
             <UserProfileSmall v-for="follow in followers" :key="follow.id" :follow="follow" />
@@ -166,10 +166,10 @@ const myFollowing = ref([])
 const currentTab = ref('posts')
 const isFollowing = ref(null);
 const tabs = [
-  { id: 'posts', name: 'Posts' },
-  { id: 'likedposts', name: 'Liked' },
-  { id: 'following', name: 'Following' },
-  { id: 'followers', name: 'Followers' },
+  { id: 'posts', name: t('tabsposts') },
+  { id: 'likedposts', name: t('tabsliked') },
+  { id: 'following', name: t('tabsfollowing') },
+  { id: 'followers', name: t('tabsfollowers') },
 ];
 let user = ref([])
 
