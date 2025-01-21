@@ -238,7 +238,6 @@ const router = useRouter();
 
 const confirmDelete = async () => {
   const response = await store.deletePost(props.post._id)
-  console.log(props.post._id)
   router.push('/home');
   toast.success('Post Deleted Successfully!', { position: 'top-center' });
   showDeleteModal.value = false; // Close the modal after confirmation

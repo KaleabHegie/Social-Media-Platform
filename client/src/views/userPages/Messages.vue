@@ -135,7 +135,7 @@ import { useLanguageStore } from '@/stores/languageStore'; import { reactive } f
 import { io } from 'socket.io-client'; // Import Socket.IO client
 import { useAuthStore } from '../../stores/authStore';
 
-const socket = io('http://localhost:5000'); // Connect to your backend server
+
 const { t } = useLanguageStore();
 
 addIcons(BiSearch, BiSend, BiChatDots, BiPeople, BiPerson, BiSun, BiMoon, BiX, BiArrowLeft);
