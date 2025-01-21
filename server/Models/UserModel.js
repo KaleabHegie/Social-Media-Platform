@@ -50,6 +50,8 @@ const UserSchema = new mongoose.Schema(
       },
     ],
     is_admin: { type: Boolean, default: false },
+    is_verified: { type: Boolean, default: false },
+
     notifications: [NotificationSchema],
 
     resetToken: { type: String, default: null },
@@ -60,17 +62,15 @@ const UserSchema = new mongoose.Schema(
   }
 );
 
-// // Pre delete hook for User
-// UserSchema.pre('deleteOne', async function (next) {
-//   const userId = this._id;  // Get the userId of the document about to be deleted
 
-//   try {
-//     // Delete all posts related to the user
-//     await Post.deleteMany({ user: userId });
-//     next();  // Proceed with the deletion
-//   } catch (error) {
-//     next(error);  // Handle any errors
-//   }
+// // Pre-remove middleware to delete posts when a user is deleted
+// UserSchema.pre('remove', async function(next) {
+//   // Remove all posts associated with this user
+//   await Post.deleteMany({ user: this._id });
+//   next();
 // });
+
+module.exports = mongoose.model("User", UserSchema);
+
 
 module.exports = mongoose.model("User", UserSchema);

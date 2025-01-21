@@ -67,7 +67,7 @@
               class="w-24 h-24 sm:w-32 sm:h-32 rounded-full object-cover">
             <button @click="triggerFileInput"
               class="absolute bottom-0 right-0 bg-sky-500 rounded-full w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center text-white">
-              <i class="ri-add-line text-white text-sm"></i>
+              <i class="ri-camera-line text-white text-sm"></i>
             </button>
 
             <input type="file" ref="fileInput" accept="image/*" @change="handlePhotoUpload" class="hidden">

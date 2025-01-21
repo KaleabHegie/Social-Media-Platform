@@ -1,98 +1,98 @@
 <template>
-  <div class="min-h-screen bg-gray-50 flex flex-col items-center py-10">
-    <h1 class="text-3xl font-bold text-sky-800 mb-8">Content Analytics</h1>
+  <div class="space-y-6">
+    <h1 class="text-2xl font-semibold text-sky-800">Content Analytics</h1>
     <div class="w-full max-w-4xl bg-white rounded-lg shadow-md p-6">
-      <LineChart v-if="chartData" :chart-data="chartData" :options="chartOptions" class="h-96" />
-      <p v-else class="text-center text-gray-500">Loading chart...</p>
+      <!-- Loading State -->
+      <div v-if="isLoading" class="text-center py-10">
+        <p class="text-sky-600">Loading data...</p>
+      </div>
+
+      <!-- Error State -->
+      <div v-if="error" class="text-center py-10">
+        <p class="text-red-600 font-semibold">Error: {{ error }}</p>
+      </div>
+
+      <!-- Chart Display -->
+      <div v-else>
+        <canvas id="postAnalyticsChart"></canvas>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
-import { Line as LineChart } from 'vue-chartjs';
-import {
-  Chart as ChartJS,
-  Title,
-  Tooltip,
-  Legend,
-  LineElement,
-  LinearScale,
-  PointElement,
-  CategoryScale,
-} from 'chart.js';
+import { ref, computed, onMounted } from "vue";
+import { useAdminStore } from "@/stores/adminStore";
+import Chart from "chart.js/auto";
 
-// Register Chart.js components
-ChartJS.register(Title, Tooltip, Legend, LineElement, LinearScale, PointElement, CategoryScale);
+// AdminStore
+const adminStore = useAdminStore();
 
-// Ensure `chartData` is initialized to prevent errors
-const analyticsData = ref([
-  { date: '2025-01-15', type: 'post', count: 25 },
-  { date: '2025-01-15', type: 'story', count: 15 },
-  { date: '2025-01-16', type: 'post', count: 30 },
-  { date: '2025-01-16', type: 'story', count: 20 },
-  { date: '2025-01-17', type: 'post', count: 40 },
-]);
+// Reactive Bindings
+const postAnalytics = computed(() => adminStore.postAnalytics);
+const isLoading = computed(() => adminStore.isLoading);
+const error = computed(() => adminStore.error);
 
-const chartData = ref(null);
+// Chart Instance
+let chartInstance = null;
 
+// Fetch Data on Mount and Render Chart
 onMounted(() => {
-  const dates = [...new Set(analyticsData.value.map((item) => item.date))];
-  const postData = dates.map((date) =>
-    analyticsData.value.find((item) => item.date === date && item.type === 'post')?.count || 0
-  );
-  const storyData = dates.map((date) =>
-    analyticsData.value.find((item) => item.date === date && item.type === 'story')?.count || 0
-  );
-
-  chartData.value = {
-    labels: dates,
-    datasets: [
-      {
-        label: 'Posts',
-        data: postData,
-        borderColor: '#0ea5e9',
-        backgroundColor: 'rgba(14, 165, 233, 0.2)',
-        tension: 0.3,
-      },
-      {
-        label: 'Stories',
-        data: storyData,
-        borderColor: '#f97316',
-        backgroundColor: 'rgba(249, 115, 22, 0.2)',
-        tension: 0.3,
-      },
-    ],
-  };
+  adminStore.getPostAnalytics().then(() => {
+    if (!error.value && postAnalytics.value.length > 0) {
+      renderChart();
+    }
+  });
 });
 
-// Chart options
-const chartOptions = {
-  responsive: true,
-  maintainAspectRatio: false,
-  scales: {
-    y: {
-      beginAtZero: true,
-      title: {
-        display: true,
-        text: 'Count',
+// Render Chart
+function renderChart() {
+  const ctx = document.getElementById("postAnalyticsChart").getContext("2d");
+
+  // Destroy existing chart instance to prevent duplicates
+  if (chartInstance) {
+    chartInstance.destroy();
+  }
+
+  // Prepare data for the chart
+  const labels = postAnalytics.value.map((item) => item.date);
+  const postsData = postAnalytics.value.map((item) => item.posts);
+  const storiesData = postAnalytics.value.map((item) => item.stories);
+
+  // Create new chart instance
+  chartInstance = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels,
+      datasets: [
+        {
+          label: "Posts",
+          data: postsData,
+          borderColor: "rgb(54, 162, 235)",
+          backgroundColor: "rgba(54, 162, 235, 0.5)",
+          fill: true,
+        },
+        {
+          label: "Stories",
+          data: storiesData,
+          borderColor: "rgb(255, 99, 132)",
+          backgroundColor: "rgba(255, 99, 132, 0.5)",
+          fill: true,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: "top",
+        },
+        title: {
+          display: true,
+          text: "Post and Story Analytics",
+        },
       },
     },
-    x: {
-      title: {
-        display: true,
-        text: 'Date',
-      },
-    },
-  },
-  plugins: {
-    legend: {
-      position: 'top',
-    },
-    title: {
-      display: true,
-      text: 'Posts vs Stories',
-    },
-  },
-};
+  });
+}
 </script>

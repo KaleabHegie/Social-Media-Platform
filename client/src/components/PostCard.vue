@@ -1,6 +1,6 @@
 <template>
   <article
-    class="bg-white dark:bg-gray-800 rounded-xl shadow-lg mb-6 overflow-hidden hover:shadow-xl transition-shadow duration-300">
+    class="bg-white  dark:bg-gray-800 rounded-xl shadow-lg mb-6 overflow-hidden hover:shadow-xl transition-shadow duration-300">
     <!-- Carousel Section -->
 
     <div class="relative fade-mask">
@@ -15,7 +15,10 @@
             <div class="ml-3">
               <h2 class="text-white text-lg font-semibold group-hover:underline">
                 {{ props.post.user.user_name }}
+                <i v-if="props.post.user.is_verified"
+                  class="ri-check-line bg-sky-500 rounded-full text-white p-1 text-xs hover:no-underline ml-2"></i>
               </h2>
+
               <time :datetime="props.post.createdAt" class="text-md text-gray-200">
                 {{ formatDate(props.post.createdAt) }}
               </time>
@@ -27,14 +30,14 @@
       <!-- Carousel -->
       <div class="relative" v-touch:swipe.left="onSwipeLeft" v-touch:swipe.right="onSwipeRight">
         <!-- Media Slider -->
-        <div v-if="post.medias && post.medias.length" class="flex transition-transform duration-300 ease-in-out"
+        <div v-if="post.medias && post.medias.length" class="flex transition-transform duration-300 ease-in-out "
           :style="{ transform: `translateX(-${activeSlide * 100}%)` }">
-          <div v-for="(media, index) in post.medias" :key="index" class="w-full flex-shrink-0">
+          <div v-for="(media, index) in post.medias" :key="index" class="w-full  flex-shrink-0">
             <template v-if="media.endsWith('.mp4') || media.endsWith('.webm')">
-              <video :src="media" autoplay controls loop class="w-full h-auto object-contain"></video>
+              <video :src="media" autoplay controls loop class="w-full max-h-[800px] object-contain"></video>
             </template>
             <template v-else>
-              <img :src="media" alt="Media" class="w-full h-auto object-contain" />
+              <img :src="media" alt="Media" class="w-full max-h-[800px] object-contain" />
             </template>
           </div>
         </div>
@@ -96,12 +99,24 @@
           <!-- Delete Button -->
           <button v-if="canDelete" @click.stop.prevent="showDeleteModal = true"
             class="flex items-center space-x-2 group" aria-label="Delete post">
-            
+
             <i
               class="ri-delete-bin-line text-xl text-gray-600 dark:text-gray-400 group-hover:text-red-500 group-hover:scale-110 transition-transform"></i>
           </button>
         </div>
       </div>
+        <!-- Hashtags -->
+        <div class="flex flex-wrap gap-2">
+          <router-link
+            v-for="tag in props.post.hashtags || []"
+            :key="tag"
+            :to="`/home`"
+            class="text-sky-500 dark:text-sky-400 text-sm hover:underline"
+            @click.stop
+          >
+            #{{ tag }}
+          </router-link>
+        </div>
 
       <!-- Flag Confirmation Modal -->
       <Teleport to="body">
@@ -187,11 +202,11 @@ const showDropdown = ref(true);
 // Method to handle the modal cancel action
 function cancelAction(action) {
   if (action === 'flag') {
-  showFlagModal.value = false; // Close the modal
-  selectedReason.value = '';   // Reset selected reason
-} else if (action === 'delete') {  // Change actionType to action here
-  showDeleteModal.value = false;  // Close the delete modal
-}
+    showFlagModal.value = false; // Close the modal
+    selectedReason.value = '';   // Reset selected reason
+  } else if (action === 'delete') {  // Change actionType to action here
+    showDeleteModal.value = false;  // Close the delete modal
+  }
 }
 
 // Method to confirm flagging

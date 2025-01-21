@@ -2,6 +2,7 @@ const cloudinary = require("cloudinary").v2;
 const { constants } = require("../Utils/constants");
 const User = require("../Models/UserModel");
 const Post = require("../Models/PostModel");
+const Comment = require("../Models/CommentModel");
 const ReportedPost = require("../Models/ReportModel");
 
 const Hashtag = require("../Models/HashTagModel");
@@ -150,32 +151,33 @@ const postController = {
         });
       }
 
-      
+      const postId = req.query.postId;
 
-
-      const  postId  = req.query.postId;
-
-      // Check if the post exists
-      const post = await Post.findById(postId);
-
-      if (!post) {
-        return res.status(constants.NOT_FOUND).json({
-          message: "Post not found",
-        });
+      let deletedPost;
+      // Find and delete the Repoted Post by PostID
+      postToDelete = await Post.findById(postId);
+      if (postToDelete) {
+        // Check if the logged-in user is the author of the post
+        if (postToDelete.user.toString() !== req.user.id) {
+          return res.status(constants.FORBIDDEN).json({
+            message: "You are not authorized to delete this post",
+          });
+        }
+        deletedPost = await Post.findByIdAndDelete(postToDelete._id);
+        // Check if user exists
+        if (!deletedPost) {
+          return res.status(400).json({ message: "Reported Post not found 1" });
+        }
+      } else {
+        return res.status(400).json({ message: "Reported Post not found 2" });
       }
 
-      // Check if the logged-in user is the author of the post
-      if (post.user.toString() !== req.user.id) {
-        return res.status(constants.FORBIDDEN).json({
-          message: "You are not authorized to delete this post",
-        });
-      }
+      //Delete Related Posts
+      await ReportedPost.findByIdAndDelete(postId);
 
-      // Delete the post
-      await Post.findByIdAndDelete(postId);
+      await Comment.deleteMany({ postId: postId });
 
-      // Update the user's post count
-      const user = await User.findById(req.user.id);
+      const user = await User.findById(deletedPost._id);
 
       if (user) {
         user.post_count = user.post_count > 0 ? user.post_count - 1 : 0; // Decrease the post count, ensuring it doesn't go negative
@@ -186,10 +188,10 @@ const postController = {
         message: "Post deleted successfully",
       });
     } catch (error) {
-      console.error("Error creating post:", error);
+      console.error("Error Deleting post:", error);
       res
         .status(constants.SERVER_ERROR)
-        .json({ error: "An error occurred while creating the post" });
+        .json({ error: "An error occurred while Deleting the post" });
     }
   },
 
@@ -286,7 +288,6 @@ const postController = {
       const userId = req.user.id; // Get the logged-in user's ID
       const reason = req.query.reason; // Get the reason for reporting from the request query
 
-
       // Validate the required fields
       if (!postId || !reason) {
         return res.status(constants.VALIDATION_ERRORS).json({
@@ -354,7 +355,7 @@ const postController = {
       const posts = await Post.find({ type: "post" })
         .populate({
           path: "user",
-          select: "user_name profile_photo_url _id", // Only fetch these fields from the user schema
+          select: "user_name profile_photo_url _id is_verified", // Only fetch these fields from the user schema
         })
         .populate({
           path: "comments", // Populate the comments for each post

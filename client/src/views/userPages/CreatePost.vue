@@ -65,7 +65,7 @@
     <!-- Caption -->
     <div v-if="postType === 'post'" class="mb-6">
       <label class="block text-sm text-gray-600 dark:text-gray-300 mb-2"> {{ t('caption') }}</label>
-      <textarea v-model="caption" placeholder="Write a caption..."
+      <textarea v-model="caption" :placeholder="t('writeCaption')"
         class="w-full p-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#87CEEB] dark:focus:ring-[#4FA4D3] min-h-[120px]"></textarea>
     </div>
 
@@ -75,7 +75,7 @@
       <div class="relative">
         <div class="flex items-center border border-gray-200 dark:border-gray-600 rounded-lg overflow-hidden">
           <input v-model="hashtagInput" @input="updateHashtagSuggestions" @keydown.enter.prevent="addCustomHashtag"
-            placeholder="Add hashtags..."
+            :placeholder="t('addHashtag')"
             class="flex-grow p-3 bg-transparent text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-[#87CEEB] dark:focus:ring-[#4FA4D3]" />
           <button @click="addCustomHashtag"
             class="p-3 bg-[#87CEEB] dark:bg-[#4FA4D3] text-white hover:bg-[#7BBED9] dark:hover:bg-[#458DB8]">

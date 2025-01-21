@@ -1,6 +1,6 @@
 // stores/languageStore.js
 import { defineStore } from "pinia";
-import { computed, reactive,ref } from "vue";
+import { ref, computed, onMounted } from "vue";
 
 const translations = {
   currentLanguage: "en",
@@ -145,191 +145,281 @@ const translations = {
     en: "Last name is required",
     am: "አባት ስም አስፈላጊ ነው",
   },
-  home:{
+  home: {
     en: "Home",
-    am: "ዋና ገጽ"
+    am: "ዋና ገጽ",
   },
-  explore:{
+  explore: {
     en: "Explore",
-    am:"አሳሽ ገጽ"
+    am: "አሳሽ ገጽ",
   },
-  createPost:{
+  createPost: {
     en: "Create Post",
-    am: "ፖስት ይፍጠሩ"
+    am: "ፖስት ይፍጠሩ",
   },
-  message:{
+  message: {
     en: "Messages",
-    am: "መልክት"
+    am: "መልክት",
   },
-  account:{
+  account: {
     en: "Account",
-    am: "መለያ"
+    am: "መለያ",
   },
-  feed:{
+  feed: {
     en: "Feed",
-    am: "መግለጫ"
+    am: "መግለጫ",
   },
-  stories:{
-    en:"Stories",
-    am:"ታሪኮች"
+  stories: {
+    en: "Stories",
+    am: "ታሪኮች",
   },
-  readMore:{
-    en:"Read More",
-    am:"ተጨማሪ አንብብ"
+  readMore: {
+    en: "Read More",
+    am: "ተጨማሪ አንብብ",
   },
-  readLess:{
-    en:"Read Less",
-    am:"ያነሰ አንብብ"
+  readLess: {
+    en: "Read Less",
+    am: "ያነሰ አንብብ",
   },
-  create:{
-    en:"Create New Post",
-    am:"አዲስ ለጥፍ"
+  create: {
+    en: "Create New Post",
+    am: "አዲስ ለጥፍ",
   },
-  post:{
-    en:"Post",
-    am:"ለጥፍ"
+  post: {
+    en: "Post",
+    am: "ለጥፍ",
   },
-  story:{
-    en:"Story",
-    am:"ታሪክ"
+  story: {
+    en: "Story",
+    am: "ታሪክ",
   },
-  uploadMedia:{
-    en:"Upload Media (up to 4 media)",
-    am:"ሚዲያ ስቀል (እስከ 4 ሚዲያ)"
+  uploadMedia: {
+    en: "Upload Media (up to 4 media)",
+    am: "ሚዲያ ስቀል (እስከ 4 ሚዲያ)",
   },
-  upload:{
-    en:"Upload",
-    am: "ስቀል"
+  upload: {
+    en: "Upload",
+    am: "ስቀል",
   },
-  camera:{
-    en:"Camera",
-    am:"ካሜራ"
+  camera: {
+    en: "Camera",
+    am: "ካሜራ",
   },
-  caption:{
-    en:"Caption",
-    am: "መግለጫ ጽሑፍ"
+  caption: {
+    en: "Caption",
+    am: "መግለጫ ጽሑፍ",
   },
-  hashtag:{
-    en:"Hashtag",
-    am:"ሃሽታግ"
+  hashtag: {
+    en: "Hashtag",
+    am: "ሃሽታግ",
   },
-  submitPost:{
-    en:"Submit Post",
-    am:"ልጥፍ አስገባ"
+  submitPost: {
+    en: "Submit Post",
+    am: "ልጥፍ አስገባ",
   },
-  all:{
-    en:"All",
-    am:"ሁሉም"
+  all: {
+    en: "All",
+    am: "ሁሉም",
   },
-  personal:{
-    en:"Personal",
-    am:"ግልጽ"
+  personal: {
+    en: "Personal",
+    am: "ግልጽ",
   },
-  group:{
-    en:"Group",
-    am:"ቡድን"
+  group: {
+    en: "Group",
+    am: "ቡድን",
   },
-  Noprofile:{
-    en:"No Profile",
-    am:"ምንም መረጃ የለም"
+  Noprofile: {
+    en: "No Profile",
+    am: "ምንም መረጃ የለም",
   },
-  language:{
-    en:"Language",
-    am:"ቋንቋ"
+  language: {
+    en: "Language",
+    am: "ቋንቋ",
   },
-  theme:{
-    en:"Theme",
-    am:"ትም"
+  theme: {
+    en: "Theme",
+    am: "ትም",
   },
-  delete:{
-    en:"Delete Account",
-    am:"ሰርዝ መለያ"
+  delete: {
+    en: "Delete Account",
+    am: "ሰርዝ መለያ",
   },
-  Logout:
-  {
-    en:"Logout",
-    am:"ውጣ"
+  Logout: {
+    en: "Logout",
+    am: "ውጣ",
   },
-  switchPublic:{
-    en:"Switch to Public",
-    am:"ወደ ሰርተው ቀላል"
+  switchPublic: {
+    en: "Switch to Public",
+    am: "ወደ ሰርተው ቀላል",
   },
-  switchPrivate:{
-    en:"Switch to Private",
-    am:"ወደ ግልጽ ቀላል"
+  switchPrivate: {
+    en: "Switch to Private",
+    am: "ወደ ግልጽ ቀላል",
   },
-  followers:{
-    en:"Followers",
-    am:"ተከታዮች"
+  followers: {
+    en: "Followers",
+    am: "ተከታዮች",
   },
-  following:{
-    en:"Following",
-    am:"መከታተያ"
+  following: {
+    en: "Following",
+    am: "መከታተያ",
   },
-  updateBio:{
-    en:"Update Bio",
-    am:"ባዮ አስተካክል"
+  updateBio: {
+    en: "Update Bio",
+    am: "ባዮ አስተካክል",
   },
-  noPosts:{
-    en:"No posts available",
-    am:"ምንም ለጥፍ የለም"
+  noPosts: {
+    en: "No posts available",
+    am: "ምንም ለጥፍ የለም",
   },
-  noLiked:{
-    en:"No liked posts available",
-    am:"ምንም ተወዳጆች የለም"
+  noLiked: {
+    en: "No liked posts available",
+    am: "ምንም ተወዳጆች የለም",
   },
-  nofollowing:{
-    en:"No following yet",
-    am:"ምንም መከታተያ የለም"
+  nofollowing: {
+    en: "No following yet",
+    am: "ምንም መከታተያ የለም",
   },
-  nofollowers:{
-    en:"No followers yet",
-    am:"ምንም ተከታዮች የለም"
+  nofollowers: {
+    en: "No followers yet",
+    am: "ምንም ተከታዮች የለም",
   },
-  tabsposts:{
-    en:"Posts",
-    am:"ልጥፍዎች"
+  tabsposts: {
+    en: "Posts",
+    am: "ልጥፍዎች",
   },
-  tabsliked:{
-    en:"Liked",
-    am:"ተወዳጆች"
+  tabsliked: {
+    en: "Liked",
+    am: "ተወዳጆች",
   },
-  tabsfollowing:{
-    en:"Following",
-    am:"መከታተያ"
+  tabsfollowing: {
+    en: "Following",
+    am: "መከታተያ",
   },
-  tabsfollowers:{
-    en:"Followers",
-    am:"ተከታዮች"
+  tabsfollowers: {
+    en: "Followers",
+    am: "ተከታዮች",
   },
-  loadingPosts:{
-    en:"Loading stories and posts...",
-    am:"ለጥፍ በመጫን ላይ..."
+  loadingPosts: {
+    en: "Loading stories and posts...",
+    am: "ለጥፍ በመጫን ላይ...",
   },
-  loadProfile:{
-    en:"Loading profile...",
-    am:"መለያ በመጫን ላይ..."
-  }
+  loadProfile: {
+    en: "Loading profile...",
+    am: "መለያ በመጫን ላይ...",
+  },
+  usernameLong: {
+    en: "Username must be at least 3 characters long.",
+    am: "የተጠቃሚ ስም በጣም 3 ፊደላት ርቀት አድርገዋል።",
+  },
+  emailDomain: {
+    en: "Email must include a valid domain (e.g., '.com').",
+    am: "ኢሜይል የተሳሳተ አድራሻ ነው (ለማለፍ፣ '.com')።",
+  },
+  usernameTaken: {
+    en: "Username is already taken.",
+    am: "የተጠቃሚ ስም ተወስዶዋል።",
+  },
+  agerequire: {
+    en: "You must be at least 13 years old.",
+    am: "ከ13 አመት በላይ መሆን አለበት።",
+  },
+  weak: {
+    en: "Password is weak",
+    am: "የይለፍ ቃል ደካማ ነው",
+  },
+  moderate: {
+    en: "Password is moderate",
+    am: "የይለፍ ቃል ተመን ነው",
+  },
+  strong: {
+    en: "Password is strong",
+    am: "የይለፍ ቃል ጠንካራ ነው",
+  },
+  short: {
+    en: "Password is too short",
+    am: "የይለፍ ቃል አጭር ነው",
+  },
+  match:{
+    en: "Passwords do not match",
+    am: "የይለፍ ቃልዎ አንዳይነት አይደለም",
+  },
+  emailTaken: {
+    en: "Email is already taken.",
+    am: "ኢሜይል ተወስዶዋል።",
+  },
+  notifiy: {
+    en: "Notifications",
+    am: "ማሳወቂያ",
+  },
+  dismiss:{
+    en: "Dismiss All",
+    am: "አትፋ ሁሉንም",
+  },
+  users:{
+    en: "Users",
+    am: "ተጠቃሚዎች",
+  },
+  follow:{
+    en: "Follow",
+    am: "ተከተል",
+  },
+  unfollow:{
+    en: "Unfollow",
+    am: "አትከታተል",
+  },
+  comment:{
+    en: "Comment",
+    am: "አስተያየት",
+  },
+  addComment:{
+    en: "Add a comment...",
+    am: "አስተያየት ይስጡ...",
+  },
+  searchPosts:{
+    en:"Search posts or users...",
+    am:"ለጥፍ ወይም ተጠቃሚዎች ይፈልጉ...",
+  },
+  writeCaption:{
+    en:"Write a caption...",
+    am:"መግለጫ ይፃፉ...",
+  },
+  addHashtag:{
+    en:"Add a hashtag...",
+    am:"ሃሽታግ ይጨምሩ..."
+  },
 };
 
-
-
-export const useLanguageStore = defineStore('language', () => {
-  const currentLanguage = ref('en');
+export const useLanguageStore = defineStore("language", () => {
+  // Try to get the language from localStorage, default to 'en'
+  const currentLanguage = ref(localStorage.getItem("language") || "en");
 
   // Function to switch between languages
   const switchLanguage = () => {
-    currentLanguage.value = currentLanguage.value === 'en' ? 'am' : 'en';
+    currentLanguage.value = currentLanguage.value === "en" ? "am" : "en";
+    // Set the language in localStorage whenever it's switched
+    localStorage.setItem("language", currentLanguage.value);
     console.log(currentLanguage.value);
   };
 
   // Computed property to get the translation for a key
-  const t = computed(() => (key) => translations[key]?.[currentLanguage.value] || key);
+  const t = computed(
+    () => (key) => translations[key]?.[currentLanguage.value] || key
+  );
+
+  // On mounted, check for any saved language in localStorage
+  onMounted(() => {
+    const savedLanguage = localStorage.getItem("language");
+    if (savedLanguage) {
+      currentLanguage.value = savedLanguage;
+    }
+  });
 
   return {
     currentLanguage,
     switchLanguage,
     t,
+    translations, // Returning the translations object as well
   };
 });
-

@@ -3,7 +3,7 @@ import { useAuthStore } from "@/stores/authStore";
 export default class MyHttpService {
   static API_BASE_URL = "http://localhost:5000/api"; // Replace with your backend URL
 
-  static loadImage(imageUrl){
+  static loadImage(imageUrl) {
     return `http://localhost:3000/Uploads/${imageUrl}`;
   }
 
@@ -86,8 +86,8 @@ export default class MyHttpService {
   }
 
   // Convenience method for POST requests
-  static post(endpoint, { body = {}, useJWT = false, delay = 0 } = {}) {
-    return this.request("POST", endpoint, { body, useJWT, delay });
+  static post(endpoint, { body = {}, query = {}, useJWT = false, delay = 0 } = {}) {
+    return this.request("POST", endpoint, { body, query, useJWT, delay });
   }
 
   // Convenience method for PUT requests

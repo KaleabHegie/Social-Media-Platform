@@ -8,12 +8,12 @@
           <button
             :class="{ 'bg-sky-500 text-white': activeTab === 'posts', 'text-gray-800 dark:text-gray-200': activeTab !== 'posts' }"
             @click="setActiveTab('posts')" class="px-4 py-2 mr-1 rounded-lg focus:outline-none">
-            Posts
+            {{ t('tabsposts') }}
           </button>
           <button
             :class="{ 'bg-sky-500 text-white': activeTab === 'users', 'text-gray-800 dark:text-gray-200': activeTab !== 'users' }"
             @click="setActiveTab('users')" class="px-4 py-2 rounded-lg focus:outline-none">
-            Users
+            {{ t('users') }}
           </button>
         </div>
 
@@ -21,13 +21,13 @@
         <div class="relative w-30 sm:w-64 md:w-96 mb-6">
           <i
             class="ri-search-line absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 text-xl"></i>
-          <input v-model="searchQuery" type="text" placeholder="Search posts or users..."
+          <input v-model="searchQuery" type="text" :placeholder="t('searchPosts')"
             class="pl-10 pr-4 py-2 rounded-lg bg-white dark:bg-gray-800 text-gray-800 dark:text-white border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-1 focus:ring-sky-200 w-full"
             @input="onSearch" />
         </div>
       </div>
 
-      <div class="">
+      <div class="overflow-y-auto h-80vh">
 
         <!-- Explore Content -->
         <div v-if="activeTab === 'posts'">
