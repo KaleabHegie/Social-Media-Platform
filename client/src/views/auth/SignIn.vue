@@ -90,7 +90,7 @@
           <div>
             <button type="submit" :disabled="loading"
               class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-sky-400 hover:bg-sky-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 dark:bg-sky-600 dark:hover:bg-sky-700">
-              <span v-if="loading">Signing in ...</span>
+              <span v-if="loading">{{ t('signin') }}</span>
               <span v-else>{{ t('signin') }}</span>
             </button>
           </div>
@@ -155,16 +155,16 @@ const validateForm = () => {
     const hasDomain = /\.[a-zA-Z]{2,}$/.test(form.username);
 
     if (!hasAtSymbol) {
-      errors.username = "Email must include an '@' symbol.";
+      errors.username = t('emailDomain');
     } else if (!hasDomain) {
-      errors.username = "Email must include a valid domain (e.g., '.com').";
+      errors.username = t('emailDomain');
     } else if (!emailRegex.test(form.username)) {
-      errors.username = 'Please enter a valid email address.';
+      errors.username = t('emailDomain');
     }
   } else {
     // Treat as a username if it's not a valid email
     if (form.username.length < 3) {
-      errors.username = 'Username must be at least 3 characters long.';
+      errors.username = t('usernameLong');
     }
   }
   return Object.keys(errors).length === 0;

@@ -305,6 +305,7 @@ const userController = {
         message: "Users fetched successfully",
         allUsers: finalChats,
       });
+
     } catch (error) {
       console.error("Error fetching users:", error.toString());
       res.status(constants.SERVER_ERROR).json({

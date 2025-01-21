@@ -4,12 +4,15 @@ const connectDB = require('./Config/dbConn');
 const cors = require('cors');
 const http = require('http'); // Import HTTP module
 const { Server } = require('socket.io'); // Import Socket.IO
+const Message = require('./Models/MessageModel')
 
 const userAccountRoutes = require('./Routes/userAccountRoutes');
 const appRoutes = require('./Routes/appRoutes');
 const adminRoutes = require('./Routes/adminRoutes');
 
 const socketController = require('./Controllers/socketController'); // Socket.IO controller
+
+const { ObjectId } = require('mongodb');
 
 require('dotenv').config();
 
@@ -41,7 +44,76 @@ const io = new Server(server, {
 });
 
 // Initialize Socket.IO controller
-socketController(io);
+// socketController(io);
+
+
+
+let socketConnected = new Set ()
+
+const findRoomId = async (data) =>{
+  try {
+    
+    const chats = await Message.findById(data.selectedChat)
+      .populate("messages.sender", "username profilePhoto") // Populate sender details
+      .select("messages participants"); // Select required field
+
+
+    
+  
+    return chats?._id.toString()
+
+   
+  } catch (error) {
+    console.error("Error fetching messages:", error);
+  }
+}
+
+io.on('connection' , async(socket) => {
+ 
+
+  socket.on('room_id' , async (data) => {
+  const room = await findRoomId(data)
+  socket.join(room)
+
+  })
+
+
+io.emit('client-total' , socketConnected.size)
+
+
+socket.on('disconnect' , () => {
+    socketConnected.delete(socket.id)
+    io.emit('client-total' , socketConnected.size)
+ })
+ 
+  socket.on('send-message' , async(data) => {
+    
+    const room = await findRoomId({
+       selectedChat : data.selectedChat._id,
+    })
+
+    const response = await Message.findById(room).exec()
+
+    const messageId = new ObjectId();
+    const messageData = {
+      _id: messageId,
+      sender: data.sender._id,
+      content : data.content,
+      media:  null,
+    };
+
+    response.messages.push(messageData);
+
+    
+    await response.save()
+    
+    socket.to(room).emit('recive-message', data)
+ })
+
+})
+
+
+
 
 // Start the server
 server.listen(port, () => {

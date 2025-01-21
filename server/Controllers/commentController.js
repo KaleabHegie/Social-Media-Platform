@@ -23,7 +23,6 @@ const commentController = {
           message: "User must be logged in to make a comment.",
         });
       }
-      console.log(req.body, req.user);
       const { postId, content, parentId } = req.body;
 
       // Validate the required fields

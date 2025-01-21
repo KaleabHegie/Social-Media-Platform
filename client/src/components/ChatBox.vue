@@ -1,6 +1,6 @@
 <template>
   <div class="flex-1 flex flex-col w-full">
-    <template v-if="selectedContact">
+    <template ref="box_id" v-if="selectedContact">
       <!-- Chat header -->
       <div
         class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-3 flex items-center justify-between">
@@ -60,15 +60,22 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { usePostStoryStore } from '../stores/homePageStore';
+import { useAuthStore } from '../stores/authStore';
+
+
 import { io } from 'socket.io-client'; // Import socket.io-client
 
+
+const authStore = useAuthStore();
 const postStoryStore = usePostStoryStore();
 const props = defineProps({
   selectedContact: Object,
+  selectedChat : Object,
   isMobile: Boolean,
   messages: Array,
   newMessage: String,
 });
+
 
 const emit = defineEmits(['leave-chat', 'send-message', 'update:new-message']);
 let messages = ref([]);
@@ -77,17 +84,63 @@ const localNewMessage = computed({
   set: (value) => emit('update:new-message', value),
 });
 
+const currentUserId = authStore.user
+
+const socket = io('http://localhost:5000'); // Connect to your backend server
+
+socket.on('connect', ()=>{
+  const data = {
+    selectedChat : props.selectedChat._id
+  }
+  socket.emit('room_id' , data)
+})
+
+
+
+socket.on('recive-message' , (data) => {
+  messages.value.push({
+    id:  data.messageId, // Use the current length of `messages.value`
+    content: data.content,
+    isSent: true,
+    sender: data.sender,
+    updatedAt: new Date(),
+  });
+})
+
 const sendMessage = () => {// Logs the current message content
-  emit('send-message', { content: localNewMessage.value, });
+
+const data = {
+   sender : {
+    _id:currentUserId?.id
+   },
+   reciver : props.selectedContact,
+   content : props.newMessage ,
+   date : new Date(),
+   selectedChat : props.selectedChat 
+}
+
+socket.emit('send-message' , data)
   messages.value.push({
     id: messages.value.length + 1, // Use the current length of `messages.value`
     content: localNewMessage.value,
     isSent: true,
-    sender: 'You',
+    sender: data.sender,
     updatedAt: new Date(),
   });
   localNewMessage.value = ''; // Clear input after sending
+
+  scrollToBottom();
+
 };
+
+
+const scrollToBottom = () => {
+  const chatBox = document.querySelector('.flex-1.overflow-y-auto');
+  if (chatBox) {
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+};
+  
 
 const formatTime = (date) => {
   return new Date(date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -138,7 +191,7 @@ watch(
 );
 
 // Initialize socket
-let socket;
+
 onMounted(async () => {
   try {
     await postStoryStore.fetchMessages(props.selectedContact._id);
@@ -146,20 +199,10 @@ onMounted(async () => {
   } catch (error) {
     console.error('Error loading messages:', error);
   }
-
-  // Initialize the socket
-  socket = io('http://localhost:5000'); // Replace with your actual server URL
-
-  // Listen for incoming messages
-  socket.on('receiveMessage', (newMessage) => {
-    console.log('Received new message:', newMessage);
-    // Add the new message to the message list
-    if (newMessage.receiverId === props.selectedContact._id || newMessage.senderId === props.selectedContact._id) {
-      messages.value.push(newMessage);  // Add new message to the message list
-    }
-  });
+  
 
   document.addEventListener('click', closeContextMenu);
+  scrollToBottom();
 });
 
 

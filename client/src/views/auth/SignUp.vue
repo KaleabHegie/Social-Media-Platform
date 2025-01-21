@@ -127,6 +127,10 @@
                                     :type="showPassword ? 'text' : 'password'" required
                                     class="appearance-none block w-full px-3 py-2 border bg-white dark:bg-gray-800 border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-sky-500 focus:border-sky-500 sm:text-sm"
                                     :class="{ 'border-red-500': errors.password }" />
+                                <div v-if="passwordStrengthMessage" :class="[passwordStrengthClass, 'mt-2']">
+                                    {{ passwordStrengthMessage }}
+                                </div>
+
                                 <!-- Toggle Password Visibility -->
                                 <button type="button" @click="togglePasswordVisibility"
                                     class="absolute right-3 top-3 text-sky-400 hover:text-sky-500"
@@ -216,20 +220,18 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue';
+import { ref, reactive, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useLanguageStore } from '@/stores/languageStore';
 import { useAuthStore } from '@/stores/authStore';
 import ToastService from '@/utils/toast.js';
 import LanguageSelector from '@/components/LanguageSelector.vue';
 import DarkModeToggle from '../../components/DarkModeToggle.vue';
-const authStore = useAuthStore();
 
+const authStore = useAuthStore();
 const toast = ToastService();
-// Store access
 const { t } = useLanguageStore();
 
-// Reactive Data
 const currentStep = ref(1);
 const formData = reactive({
     user_name: '',
@@ -253,28 +255,28 @@ const errors = reactive({
     confirm_password: '',
 });
 
-// Password visibility toggles
+const passwordStrength = ref(''); 
+const passwordStrengthMessage = ref(''); 
 const showPassword = ref(false);
+const passwordStrengthClass = ref('');
 
-
-// Toggle visibility for both password fields
 const togglePasswordVisibility = () => {
     showPassword.value = !showPassword.value;
 };
 
-
-// Validation Functions with Error Messages
+// Validation Functions
 const isValidStep1 = async () => {
     errors.user_name = !formData.user_name ? 'Username is required.' : '';
     errors.first_name = !formData.first_name ? 'First name is required.' : '';
     errors.last_name = !formData.last_name ? 'Last name is required.' : '';
+
     if (!errors.user_name) {
-        // Check username uniqueness
         const isUnique = await authStore.checkUniqueness({ type: "user_name", user_name: formData.user_name });
-        if (isUnique.isUnique == false) {
-            errors.user_name = 'Username is already taken.';
+        if (!isUnique.isUnique) {
+            errors.user_name = t('usernameTaken');
         }
     }
+
     return !errors.user_name && !errors.first_name && !errors.last_name;
 };
 
@@ -287,46 +289,66 @@ const isValidStep2 = () => {
     const age = today.getFullYear() - birthDate.getFullYear();
     const ageAdjustment = today < new Date(today.getFullYear(), birthDate.getMonth(), birthDate.getDate()) ? -1 : 0;
     if (age + ageAdjustment < 13) {
-        errors.date_of_birth = 'You must be at least 13 years old.';
+        errors.date_of_birth = t('agerequire');
     }
 
     return !errors.date_of_birth && !errors.gender;
 };
 
-const isValidStep3 = async () => {
-    // Email validation
-    errors.email = !formData.email ? 'Email is required.' : '';
-    if (!errors.email) {
-        // Check email uniqueness
-        const isUnique = await authStore.checkUniqueness({ type: "email", email: formData.email });
-        if (!isUnique.isUnique) {
-            errors.email = 'Email is already taken.';
+watch(
+    () => formData.password,
+    (newPassword) => {
+        if (!newPassword) {
+            passwordStrength.value = '';
+            passwordStrengthMessage.value = '';
+            errors.password = '';
+        } else if (newPassword.length < 8) {
+            passwordStrength.value = 'Weak';
+            passwordStrengthMessage.value = t('short');
+            passwordStrengthClass.value = 'text-red-500';
+        } else {
+            const hasLetter = /[A-Za-z]/.test(newPassword);
+            const hasNumber = /\d/.test(newPassword);
+            const hasSpecialChar = /[@$!%*#?&]/.test(newPassword);
+
+            const strengthLevel = [hasLetter, hasNumber, hasSpecialChar].filter(Boolean).length;
+
+            if (strengthLevel === 1) {
+                passwordStrength.value = 'Weak';
+                passwordStrengthMessage.value = t('weak');
+                passwordStrengthClass.value = 'text-red-500';
+            } else if (strengthLevel === 2) {
+                passwordStrength.value = 'Moderate';
+                passwordStrengthMessage.value = t('moderate');
+                passwordStrengthClass.value = 'text-yellow-500';
+            } else if (strengthLevel === 3) {
+                passwordStrength.value = 'Strong';
+                passwordStrengthMessage.value = t('strong');
+                passwordStrengthClass.value = 'text-green-500';
+            }
         }
     }
+);
 
-    // Password validation
-    const hasLetter = /[A-Za-z]/.test(formData.password);
-    const hasNumber = /\d/.test(formData.password);
-    const hasSpecialChar = /[@$!%*#?&]/.test(formData.password);
-    const isLongEnough = formData.password && formData.password.length >= 8;
-    if (!formData.password) {
-        errors.password = 'Password is required.';
-    } else if (!isLongEnough) {
-        errors.password = 'Password must be at least 8 characters long.';
-    } else if (!hasLetter) {
-        errors.password = 'Password must include at least one letter.';
-    } else if (!hasNumber) {
-        errors.password = 'Password must include at least one number.';
-    } else if (!hasSpecialChar) {
-        errors.password = 'Password must include at least one special character (@, $, !, %, *, #, ?, &).';
-    } else {
-        errors.password = '';
+watch(
+    () => formData.confirm_password,
+    (confirmPassword) => {
+        if (confirmPassword && confirmPassword !== formData.password) {
+            errors.confirm_password = t('match');
+        } else {
+            errors.confirm_password = '';
+        }
     }
+);
 
-    // Confirm password validation
-    errors.confirm_password = formData.password !== formData.confirm_password
-        ? 'Passwords do not match.'
-        : '';
+const isValidStep3 = async () => {
+    errors.email = !formData.email ? 'Email is required.' : '';
+    if (!errors.email) {
+        const isUnique = await authStore.checkUniqueness({ type: "email", email: formData.email });
+        if (!isUnique.isUnique) {
+            errors.email = t('emailTaken');
+        }
+    }
 
     return !errors.email && !errors.password && !errors.confirm_password;
 };
@@ -334,7 +356,6 @@ const isValidStep3 = async () => {
 // Step Navigation
 const nextStep = async () => {
     if (currentStep.value === 1 && await isValidStep1()) {
-        console.log(isValidStep1())
         currentStep.value++;
     } else if (currentStep.value === 2 && isValidStep2()) {
         currentStep.value++;
@@ -377,3 +398,4 @@ const handleSubmit = async () => {
     cursor: pointer;
 }
 </style>
+

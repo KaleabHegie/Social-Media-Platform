@@ -45,3 +45,4 @@ app.use(router);
 app.use(VueTouchEvents)
 app.mount("#app");
 app.component("v-icon", OhVueIcon);
+

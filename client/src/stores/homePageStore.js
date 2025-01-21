@@ -71,7 +71,6 @@ export const usePostStoryStore = defineStore("postStory", {
           useJWT: true,
         });
         this.explore = Array.isArray(response.posts) ? response.posts : [];
-        console.log(this.explore);
       } catch (error) {
         this.error = error.response?.message || "Story Fetch failed";
         return false;
@@ -90,7 +89,6 @@ export const usePostStoryStore = defineStore("postStory", {
           useJWT: true,
         });
         this.searchedUsers = Array.isArray(response.users) ? response.users : [];
-        console.log(this.users);
       } catch (error) {
         this.error = error.response?.message || "Users Fetch failed";
         return false;
@@ -340,7 +338,6 @@ export const usePostStoryStore = defineStore("postStory", {
       this.error = null;
       try {
         const response = await MyHttpService.get("/deletePost", { query : {'postId' : postId} , useJWT: true });
-        console.log(response)
       } catch (error) {
         this.error = error.response?.message || "Failed to delete post.";
       } finally {

@@ -88,6 +88,18 @@
           </router-link>
         </div>
       </div>
+        <!-- Hashtags -->
+        <div class="flex flex-wrap gap-2">
+          <router-link
+            v-for="tag in props.post.hashtags || []"
+            :key="tag"
+            :to="`/home`"
+            class="text-sky-500 dark:text-sky-400 text-sm hover:underline"
+            @click.stop
+          >
+            #{{ tag }}
+          </router-link>
+        </div>
 
       <!-- Hashtags -->
       <div class="flex flex-wrap gap-2">
@@ -138,7 +150,6 @@ const router = useRouter();
 
 const confirmDelete = async () => {
   const response = await store.deletePost(props.post._id)
-  console.log(props.post._id)
   router.push('/home');
   toast.success('Post Deleted Successfully!', { position: 'top-center' });
   showDeleteModal.value = false; // Close the modal after confirmation

@@ -349,7 +349,6 @@ const postController = {
         });
       }
 
-      console.log(await Message.find());
       const userId = req.user.id;
 
       // Fetch posts with user details populated
