@@ -70,6 +70,7 @@ const authStore = useAuthStore();
 const postStoryStore = usePostStoryStore();
 const props = defineProps({
   selectedContact: Object,
+  selectedChat : Object,
   isMobile: Boolean,
   messages: Array,
   newMessage: String,
@@ -89,18 +90,14 @@ const socket = io('http://localhost:5000'); // Connect to your backend server
 
 socket.on('connect', ()=>{
   const data = {
-    sender : currentUserId?.id,
-    reciver : props.selectedContact._id
+    selectedChat : props.selectedChat._id
   }
   socket.emit('room_id' , data)
 })
 
-socket.on('client-total' , (data) => {
-  console.log(props.selectedContact , 'total clients')
-})
+
 
 socket.on('recive-message' , (data) => {
-  console.log('message-recived' , data)
   messages.value.push({
     id:  data.messageId, // Use the current length of `messages.value`
     content: data.content,
@@ -118,7 +115,8 @@ const data = {
    },
    reciver : props.selectedContact,
    content : props.newMessage ,
-   date : new Date()
+   date : new Date(),
+   selectedChat : props.selectedChat 
 }
 
 socket.emit('send-message' , data)
@@ -131,13 +129,19 @@ socket.emit('send-message' , data)
   });
   localNewMessage.value = ''; // Clear input after sending
 
+  scrollToBottom();
 
 };
 
 
 const scrollToBottom = () => {
-  const chat_box = this.$refs.box_id
-}
+  const chatBox = document.querySelector('.flex-1.overflow-y-auto');
+  if (chatBox) {
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+};
+  
+
 const formatTime = (date) => {
   return new Date(date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 };
@@ -196,11 +200,9 @@ onMounted(async () => {
     console.error('Error loading messages:', error);
   }
   
-scrollToBottom()
-
- 
 
   document.addEventListener('click', closeContextMenu);
+  scrollToBottom();
 });
 
 

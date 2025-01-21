@@ -53,26 +53,14 @@ let socketConnected = new Set ()
 const findRoomId = async (data) =>{
   try {
     
-    const chats = await Message.find()
+    const chats = await Message.findById(data.selectedChat)
       .populate("messages.sender", "username profilePhoto") // Populate sender details
       .select("messages participants"); // Select required field
 
-    const ChatsWithCurrentUser = chats.filter((chat) =>
-      chat.participants.some(
-        (participant) => participant.userId.toString() === data.sender.toString()
-      )
-    );
 
-    const finalChats = ChatsWithCurrentUser.filter((chat) =>
-      chat.participants.some(
-        (participant) => participant.userId.toString() === data.reciver.toString()
-      )
-    );
-
-    if (!finalChats) {
-      console.error("No chat found between these participants.");
-    }
-    return finalChats[0]._id.toString()
+    
+  
+    return chats?._id.toString()
 
    
   } catch (error) {
@@ -85,7 +73,6 @@ io.on('connection' , async(socket) => {
 
   socket.on('room_id' , async (data) => {
   const room = await findRoomId(data)
-  console.log(room, 'user joined!')
   socket.join(room)
 
   })
@@ -100,9 +87,9 @@ socket.on('disconnect' , () => {
  })
  
   socket.on('send-message' , async(data) => {
+    
     const room = await findRoomId({
-       sender : data.sender._id,
-       reciver : data.reciver._id
+       selectedChat : data.selectedChat._id,
     })
 
     const response = await Message.findById(room).exec()

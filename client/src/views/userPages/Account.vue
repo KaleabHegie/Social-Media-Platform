@@ -33,13 +33,11 @@
                 {{ isFollowing ? 'Unfollow' : 'Follow' }}
               </button>
 
-              <router-link :to="`/messages`" class="text-sm text-gray-600 dark:text-gray-400 hover:underline">
-                <button
-                  class="px-3 py-1.5 sm:px-4 sm:py-2 bg-gray-200 text-gray-800 text-sm sm:text-base rounded-md hover:bg-gray-300 transition duration-300">
-
-                  {{ t('message') }}
-                </button>
-              </router-link>
+              <button
+  @click="handleFetchMessage"
+  class="px-3 py-1.5 sm:px-4 sm:py-2 bg-gray-200 text-gray-800 text-sm sm:text-base rounded-md hover:bg-gray-300 transition duration-300">
+  {{ t('message') }}
+</button>
             </div>
           </div>
         </div>
@@ -137,6 +135,9 @@ import { useRoute } from 'vue-router';
 import ToastService from '@/utils/toast.js';
 import Explore from './Explore.vue';
 import { useAuthStore } from '../../stores/authStore';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const toast = ToastService();
 const { t } = useLanguageStore();
@@ -199,6 +200,17 @@ const toggleFollow = async () => {
   myFollowing.value = postStoryStore.myProfile.following
   isFollowing.value = myFollowing.value.some(following => following.user._id === profile.value._id);
   toast.success(`${result.message}!`, { position: 'top-center' });
+};
+
+
+
+const handleFetchMessage = async () => {
+  try {
+    await postStoryStore.fetchMessages(profile.value._id)
+    router.push('/messages'); // Redirect to the /messages route
+  } catch (error) {
+    console.error("Error fetching messages:", error);
+  }
 };
 </script>
 

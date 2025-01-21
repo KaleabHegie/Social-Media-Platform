@@ -72,7 +72,7 @@
                   </div>
                 </div>
 
-                <div class="ml-3 flex justify-between relative">
+                <div v-if="contact.lastMessage"  class="ml-3 flex justify-between relative">
                   <!-- Last Message Content -->
                   <div class="text-sm text-gray-500 dark:text-gray-400 truncate max-w-64 sm:max-w-76">
                     {{ contact.lastMessage.content }}
@@ -117,7 +117,7 @@
       </div>
 
       <!-- Chat area -->
-      <ChatBox v-if="selectedContact" :selected-contact="selectedContact" :is-mobile="isMobile" :messages="messages"
+      <ChatBox v-if="selectedContact" :selected-contact="selectedContact" :selected-chat="selectedChat" :is-mobile="isMobile" :messages="messages"
         :new-message="newMessage" @leave-chat="leaveChat" @send-message="sendMessage"
         @update:new-message="newMessage = $event" />
     </div>
@@ -172,6 +172,7 @@ const closeModal = () => {
 
 
 const contacts = ref([])
+const chats = ref([])
 
 const formatDate = (dateString) => {
   const date = new Date(dateString);
@@ -187,9 +188,14 @@ const formatDate = (dateString) => {
 const messages = ref([])
 
 const selectedContact = ref(null)
+const selectedChat = ref(null)
 const newMessage = ref('')
 
 const selectContact = (contact) => {
+  console.log(chats)
+  selectedChat.value = chats.value.find(chat => 
+    chat.participants.some(participant => participant.userId === contact._id)
+  );
   selectedContact.value = contact
 }
 
@@ -235,6 +241,7 @@ const filteredGroups = computed(() => {
 })
 
 const filteredContacts = computed(() => {
+  console.log(filteredContacts)
   return contacts.value.filter(contact =>
     contact.user_name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
     contact.last_name.toLowerCase().includes(searchQuery.value.toLowerCase())
@@ -245,8 +252,11 @@ const filteredContacts = computed(() => {
 onMounted(async () => {
   try {
     await postStoryStore.getAllUsersChattedWith();
+    await postStoryStore.fetchChats();
+
     contacts.value = postStoryStore.allUsers;
-    console.log(contacts.value);
+    chats.value = postStoryStore.chats;
+    console.log(postStoryStore.chats)
   } catch (error) {
     console.error("Error loading profile:", error);
   } finally {
