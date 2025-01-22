@@ -13,9 +13,13 @@ const MessageSubSchema = new mongoose.Schema({
 // Main Message Schema
 const MessageSchema = new mongoose.Schema(
   {
+        
+        name : { type: String, required: false}, 
+        is_group : {type : Boolean , default : false},
         participants: [
           {
             userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+            is_group_admin : {type : Boolean , default : false},
             last_opened_at: { type: Date, default: Date.now },
           },
         ],

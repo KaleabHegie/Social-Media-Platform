@@ -10,8 +10,6 @@ const User = require("../Models/UserModel");
 const Comment = require("../Models/CommentModel");
 const ReportedPost = require("../Models/ReportModel");
 
-
-
 // Configure Cloudinary
 cloudinary.config({
   cloud_name: "dwkvbn1vu",
@@ -30,8 +28,15 @@ const transporter = nodemailer.createTransport({
 const userController = {
   register: async (req, res) => {
     try {
-      const { first_name, last_name, user_name, date_of_birth, email, gender, password } =
-        req.body;
+      const {
+        first_name,
+        last_name,
+        user_name,
+        date_of_birth,
+        email,
+        gender,
+        password,
+      } = req.body;
 
       // Validate required fields
       if (!first_name || !last_name || !user_name || !email || !password) {
@@ -108,11 +113,84 @@ const userController = {
         );
         return res.status(200).json({ accessToken, is_admin: user.is_admin });
       } else {
-        return res.status(401).json({ message: "Invalid username/email or password" });
+        return res
+          .status(401)
+          .json({ message: "Invalid username/email or password" });
       }
     } catch (error) {
       console.error("Error during login:", error);
-      return res.status(500).json({ message: "An internal server error occurred" });
+      return res
+        .status(500)
+        .json({ message: "An internal server error occurred" });
+    }
+  },
+
+  createGroup: async (req, res) => {
+    try {
+      const { name, participants } = req.body;
+
+      const creator = req.user;
+
+      creator.is_group_admin = true;
+
+      participants.push(creator);
+      // Validation: Check if name and participants are provided
+      if (!name || !participants || participants.length < 1) {
+        return res
+          .status(400)
+          .json({ error: "Group name and participants are required." });
+      }
+
+      // Ensure at least one participant is a group admin
+      const hasAdmin = participants.some(
+        (participant) => participant.is_group_admin
+      );
+      if (!hasAdmin) {
+        return res
+          .status(400)
+          .json({
+            error: "At least one participant must be marked as a group admin.",
+          });
+      }
+
+      // Validate each participant's userId
+      let participants_id = []; // Initialize an empty array to store participant data
+
+      const validParticipants = await Promise.all(
+        participants.map(async (participant) => {
+          // Push each participant's data into the array
+          participants_id.push({
+            userId: participant._id || participant.id,
+            is_group_admin: participant.is_group_admin ? true : false,
+          });
+        })
+      );
+
+      // Now participants_id will be an array of participant objects
+
+
+      if (validParticipants.includes(false)) {
+        return res
+          .status(404)
+          .json({ error: "One or more participants do not exist." });
+      }
+
+      // Create the group
+      const group = new Message({
+        name,
+        is_group: true,
+        participants : participants_id
+      });
+
+      const savedGroup = await group.save();
+
+      res.status(201).json({
+        message: "Group created successfully.",
+        group: savedGroup,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Internal server error." });
     }
   },
 
@@ -292,7 +370,8 @@ const userController = {
 
       const finalChats = chats.filter((chat) =>
         chat.participants.some(
-          (participant) => participant.userId.toString() === currentUserId.toString()
+          (participant) =>
+            participant.userId.toString() === currentUserId.toString()
         )
       );
       if (!finalChats || finalChats.length === 0) {
@@ -305,7 +384,41 @@ const userController = {
         message: "Users fetched successfully",
         allUsers: finalChats,
       });
+    } catch (error) {
+      console.error("Error fetching users:", error.toString());
+      res.status(constants.SERVER_ERROR).json({
+        message: "An error occurred while fetching users",
+      });
+    }
+  },
 
+  getGroups: async (req, res) => {
+    try {
+      if (!req.user) {
+        return res.status(constants.UNAUTHORIZED).json({
+          message: "Can't fetch users if the user is not logged in",
+        });
+      }
+
+      const currentUserId = req.user.id; // Assuming the user's ID is available
+      const chats = await Message.find({ is_group : true });
+
+      const groupChats = chats.filter((chat) =>
+        chat.participants.some(
+          (participant) =>
+            participant.userId.toString() === currentUserId.toString()
+        )
+      );
+      if (!groupChats || groupChats.length === 0) {
+        return res.status(constants.NOT_FOUND).json({
+          message: "No chats found",
+        });
+      }
+
+      res.json({
+        message: "Users fetched successfully",
+        allGroups: groupChats,
+      });
     } catch (error) {
       console.error("Error fetching users:", error.toString());
       res.status(constants.SERVER_ERROR).json({
@@ -475,7 +588,7 @@ const userController = {
 
       // Clear all notifications=
       if (Array.isArray(user.notifications)) {
-        user.notifications.forEach(notification => {
+        user.notifications.forEach((notification) => {
           notification.seen = true; // Mark as seen
         });
       }
@@ -536,7 +649,9 @@ const userController = {
 
       // Validate if userId is provided
       if (!userIdToDelete) {
-        return res.status(400).json({ message: "User ID is required in the query" });
+        return res
+          .status(400)
+          .json({ message: "User ID is required in the query" });
       }
 
       // Find and delete the user by userId
@@ -581,7 +696,9 @@ const userController = {
       // Check if the current user exists
       const currentUser = await User.findById(currentUserId);
       if (!currentUser) {
-        return res.status(constants.NOT_FOUND).json({ message: "User not found" });
+        return res
+          .status(constants.NOT_FOUND)
+          .json({ message: "User not found" });
       }
 
       // Check if the user to follow exists
@@ -619,8 +736,7 @@ const userController = {
             content: notificationContent,
           });
           await userToFollow.save();
-          return res
-            .json({ message: "Requested!" });
+          return res.json({ message: "Requested!" });
         }
         currentUser.following.push({ user: userIdToFollow });
         userToFollow.followers.push({ user: currentUserId });
@@ -635,8 +751,6 @@ const userController = {
           type: "follower",
           content: notificationContent,
         });
-
-        
 
         actionMessage = "User followed successfully";
         userFollowed = true;
@@ -653,7 +767,9 @@ const userController = {
         currentUser.following_count =
           currentUser.following_count > 0 ? currentUser.following_count - 1 : 0;
         userToFollow.followers_count =
-          userToFollow.followers_count > 0 ? userToFollow.followers_count - 1 : 0;
+          userToFollow.followers_count > 0
+            ? userToFollow.followers_count - 1
+            : 0;
 
         // Notification for the user who lost a follower
         notificationContent = `${currentUser.user_name} unfollowed you.`;
@@ -696,14 +812,24 @@ const userController = {
       // Fetch user details
       const user = await User.findById(userId)
         .select("-password -resetToken -tokenExpiry")
-        .populate("followers.user", "user_name first_name last_name profile_photo_url")
-        .populate("following.user", "user_name first_name last_name profile_photo_url");
+        .populate(
+          "followers.user",
+          "user_name first_name last_name profile_photo_url"
+        )
+        .populate(
+          "following.user",
+          "user_name first_name last_name profile_photo_url"
+        );
 
       if (!user) {
-        return res.status(constants.NOT_FOUND).json({ message: "User not found" });
+        return res
+          .status(constants.NOT_FOUND)
+          .json({ message: "User not found" });
       }
       // Fetch user's posts
-      const userPosts = await Post.find({ user: userId }).sort({ createdAt: -1 });
+      const userPosts = await Post.find({ user: userId }).sort({
+        createdAt: -1,
+      });
 
       // Fetch user's liked posts
       const likedPosts = await Post.find({ "likes.userId": userId }).sort({
@@ -743,10 +869,18 @@ const userController = {
       // Fetch the user's profile
       const userToSeeProfile = await User.findById(userIdOfPersonToSeeProfile)
         .select("-password -resetToken -tokenExpiry -notifications")
-        .populate("followers.user", "user_name first_name last_name profile_photo_url")
-        .populate("following.user", "user_name first_name last_name profile_photo_url");
+        .populate(
+          "followers.user",
+          "user_name first_name last_name profile_photo_url"
+        )
+        .populate(
+          "following.user",
+          "user_name first_name last_name profile_photo_url"
+        );
       if (!userToSeeProfile) {
-        return res.status(constants.NOT_FOUND).json({ message: "User not found" });
+        return res
+          .status(constants.NOT_FOUND)
+          .json({ message: "User not found" });
       }
 
       // Handle private accounts
@@ -765,7 +899,9 @@ const userController = {
 
       // Fetch user's posts
 
-      const userPosts = await Post.find({ user: userIdOfPersonToSeeProfile }).sort({
+      const userPosts = await Post.find({
+        user: userIdOfPersonToSeeProfile,
+      }).sort({
         createdAt: -1,
       });
 

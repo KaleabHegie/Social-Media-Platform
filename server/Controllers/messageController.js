@@ -1,5 +1,6 @@
 const Message = require("../Models/MessageModel"); // Import your Message model
 
+
 const messageController = {
   fetchMessages: async (req, res) => {
     const currentUserId = req.user.id; // Hardcoded for testing; replace with req.body or req.params in a real app
@@ -30,8 +31,6 @@ const messageController = {
           (participant) => participant.userId.toString() === selectedUserId.toString()
         )
       );
-
-  
 
       if (finalChats.length === 0) {
         // No chat found, create a new one
@@ -73,7 +72,7 @@ const messageController = {
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch messages." });
     }
-  },
+  }
 };
 
 module.exports = messageController;

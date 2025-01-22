@@ -37,9 +37,13 @@ router.get("/searchUsers", validateToken, userController.searchUsers);
 
 router.get("/getAllUsersChattedWith" , validateToken, userController.getAllUsersChattedWith)
 
-router.get("/getAllUsers" , validateToken, userController.getAllUsers)
+router.get("/getAllPublicUsers" , validateToken, userController.getAllUsers)
 
 router.get("/getChats" , validateToken, userController.getChats)
+
+router.get("/getGroups" , validateToken, userController.getGroups)
+
+router.post('/createGroup', validateToken, userController.createGroup)
 
 
 

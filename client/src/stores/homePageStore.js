@@ -13,6 +13,8 @@ export const usePostStoryStore = defineStore("postStory", {
     myPosts: [],
     likedPosts: [],
     allUsers: [],
+    allGroups : [],
+    allPublicUsers: [],
     messages: [],
     currentUser: [],
     chats: [],
@@ -145,6 +147,25 @@ export const usePostStoryStore = defineStore("postStory", {
       }
     },
 
+
+    async createGroup(data) {
+      this.isLoading = true;
+      this.error = null;
+      try {
+        console.log(data)
+        // Don't manually set 'Content-Type' since FormData will set it correctly
+        const response = await MyHttpService.post("/createGroup", {
+          body: data,
+          useJWT: true,
+        });
+        return response;
+      } catch (error) {
+        this.error = error.response?.message || "Failed to create Group.";
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
     async fetchUserProfile() {
       this.isLoading = true;
       this.error = null;
@@ -191,6 +212,44 @@ export const usePostStoryStore = defineStore("postStory", {
         });
         if (response.allUsers) {
           this.allUsers = response.allUsers;
+        }
+      } catch (error) {
+        this.error = error.response?.message || "Failed to fetch profile.";
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
+
+    async getMyGroups() {
+      this.isLoading = true;
+      this.error = null;
+      try {
+        const response = await MyHttpService.get("/getGroups", {
+          useJWT: true,
+        });
+        if (response.allGroups) {
+          this.allGroups = response.allGroups;
+        }
+      } catch (error) {
+        this.error = error.response?.message || "Failed to fetch profile.";
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
+    
+
+    async getAllPublicUsers() {
+      this.isLoading = true;
+      this.error = null;
+      try {
+        const response = await MyHttpService.get("/getAllPublicUsers", {
+          useJWT: true,
+        });
+        if (response.allUsers) {
+          this.allPublicUsers = response.allUsers;
+          console.log(response.allUsers)
         }
       } catch (error) {
         this.error = error.response?.message || "Failed to fetch profile.";

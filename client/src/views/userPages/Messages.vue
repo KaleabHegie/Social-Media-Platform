@@ -23,6 +23,37 @@
     </div>
 
 
+
+    <Teleport to="body">
+      <Transition name="fade">
+        <div v-if="showGroupModal" class="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
+          <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md">
+            <h2 class="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Create Group</h2>
+            <div class="mb-4">
+              <label for="groupName" class="block text-sm font-medium text-gray-700 dark:text-gray-400">Group
+                Name</label>
+              <input id="groupName" v-model="newGroup.name" type="text"
+                class="mt-1 block w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-sky-500 focus:border-sky-500 sm:text-sm" />
+            </div>
+            <Multiselect v-model="selectedUsers" :options="users" :multiple="true" :searchable="true"
+              :clear-on-select="false" :close-on-select="false" placeholder="Search and select users" label="user_name"
+              track-by="_id" @select="addParticipant" @remove="onRemove" />
+
+            <div class="flex mt-4 justify-end space-x-2">
+              <button @click="closeGroupModal"
+                class="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 dark:bg-gray-600 dark:text-gray-200">
+                Cancel
+              </button>
+              <button @click="createGroup"
+                class="px-4 py-2 bg-sky-500 text-white rounded hover:bg-sky-600 dark:bg-sky-600">
+                Create
+              </button>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
+
     <div class="flex flex-1 overflow-hidden">
       <!-- Message list (visible on mobile when no chat is selected) -->
       <div v-if="(isMobile && !selectedContact) || !isMobile"
@@ -39,6 +70,14 @@
         <div class="overflow-y-auto flex-1">
           <!-- Display contacts dynamically based on activeTab -->
           <div v-if="activeTab === 'groups' || activeTab === 'all'">
+            <div v-if="activeTab === 'groups'" class="m-4 text-2xl">
+              <div class="flex justify-end m-2">
+                <button @click="openGroupModal"
+                  class="text-white bg-sky-500 rounded-full w-10 h-10 flex items-center justify-center hover:bg-sky-600 dark:bg-sky-400 dark:hover:bg-sky-500">
+                  +
+                </button>
+              </div>
+            </div>
             <div v-for="group in filteredGroups" :key="group.id" @click="selectContact(group)"
               class="flex items-center p-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">
               <div
@@ -72,7 +111,7 @@
                   </div>
                 </div>
 
-                <div v-if="contact.lastMessage"  class="ml-3 flex justify-between relative">
+                <div v-if="contact.lastMessage" class="ml-3 flex justify-between relative">
                   <!-- Last Message Content -->
                   <div class="text-sm text-gray-500 dark:text-gray-400 truncate max-w-64 sm:max-w-76">
                     {{ contact.lastMessage.content }}
@@ -117,9 +156,9 @@
       </div>
 
       <!-- Chat area -->
-      <ChatBox v-if="selectedContact" :selected-contact="selectedContact" :selected-chat="selectedChat" :is-mobile="isMobile" :messages="messages"
-        :new-message="newMessage" @leave-chat="leaveChat" @send-message="sendMessage"
-        @update:new-message="newMessage = $event" />
+      <ChatBox v-if="selectedContact" :selected-contact="selectedContact" :selected-chat="selectedChat"
+        :is-mobile="isMobile" :messages="messages" :new-message="newMessage" @leave-chat="leaveChat"
+        @send-message="sendMessage" @update:new-message="newMessage = $event" />
     </div>
   </div>
 </template>
@@ -127,18 +166,81 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { OhVueIcon, addIcons } from "oh-vue-icons";
-import { BiSearch, BiSend, BiChatDots, BiPeople, BiPerson, BiSun, BiMoon, BiX, BiArrowLeft } from "oh-vue-icons/icons";
+import { BiSearch, BiSend, BiChatDots, BiPeople, BiPerson, BiSun, BiMoon, BiX, BiArrowLeft, BiPlusCircle } from "oh-vue-icons/icons";
 import ChatBox from '@/components/ChatBox.vue';
 import { usePostStoryStore } from '../../stores/homePageStore';
 import { useLanguageStore } from '@/stores/languageStore'; import { reactive } from 'vue';
 
 import { io } from 'socket.io-client'; // Import Socket.IO client
 import { useAuthStore } from '../../stores/authStore';
-
-
+import Multiselect from 'vue-multiselect';
+import 'vue-multiselect/dist/vue-multiselect.css';
+import ToastService from '@/utils/toast.js';
 const { t } = useLanguageStore();
+const toast = ToastService();
 
-addIcons(BiSearch, BiSend, BiChatDots, BiPeople, BiPerson, BiSun, BiMoon, BiX, BiArrowLeft);
+
+const postStoryStore = usePostStoryStore();
+const authStore = useAuthStore();
+
+
+
+addIcons(BiSearch, BiSend, BiPlusCircle, BiChatDots, BiPeople, BiPerson, BiSun, BiMoon, BiX, BiArrowLeft);
+
+
+const showGroupModal = ref(false);
+const newGroup = ref({
+  name: '',
+  participantSearch: '',
+  participants: []
+});
+
+const users = ref([
+]);
+const selectedUsers = ref([]);
+
+
+
+
+const filteredUsers = computed(() =>
+  users.value.filter(user =>
+    user.user_name.toLowerCase().includes(newGroup.value.participantSearch.toLowerCase())
+  )
+);
+
+const openGroupModal = () => {
+  showGroupModal.value = true;
+};
+
+const closeGroupModal = () => {
+  showGroupModal.value = false;
+  newGroup.value = { name: '', participantSearch: '', participants: [] };
+};
+
+const addParticipant = (user) => {
+  if (!newGroup.value.participants.find(participant => participant._id === user._id)) {
+    newGroup.value.participants.push(user);
+  }
+};
+const createGroup = async () => {
+  if (!newGroup.value.name || newGroup.value.participants.length === 0) {
+    toast.error('Group name and at least one participant are required!', { position: 'top-center' });
+    return;
+  }
+
+  try {
+    // Simulate API call
+    const response = await postStoryStore.createGroup(newGroup.value)
+    if (response.error) {
+      toast.error(`Error creating group: ${response.error}`, { position: 'top-center' });
+    } else {
+      toast.success(`Group Created Successfully!`, { position: 'top-center' });
+    }
+    closeGroupModal();
+  } catch (error) {
+    console.error('Error creating group:', error);
+  }
+};
 
 const activeTab = ref('all')
 const searchQuery = ref('')
@@ -151,13 +253,8 @@ const formatTime = (date) => {
 const isLoading = ref(true);
 
 
-const postStoryStore = usePostStoryStore();
-const authStore = useAuthStore();
 
-const groups = ref([
-  // { id: 'g1', name: 'Work Team', lastMessage: 'Meeting at 3 PM' },
-  // { id: 'g2', name: 'Family', lastMessage: 'Mom: Don\'t forget dinner!' },
-])
+const groups = ref([])
 
 const activeContact = ref(null);
 
@@ -192,8 +289,7 @@ const selectedChat = ref(null)
 const newMessage = ref('')
 
 const selectContact = (contact) => {
-  console.log(chats)
-  selectedChat.value = chats.value.find(chat => 
+  selectedChat.value = chats.value.find(chat =>
     chat.participants.some(participant => participant.userId === contact._id)
   );
   selectedContact.value = contact
@@ -253,10 +349,13 @@ onMounted(async () => {
   try {
     await postStoryStore.getAllUsersChattedWith();
     await postStoryStore.fetchChats();
+    await postStoryStore.getAllPublicUsers();
+    await postStoryStore.getMyGroups();
 
     contacts.value = postStoryStore.allUsers;
     chats.value = postStoryStore.chats;
-    console.log(postStoryStore.chats)
+    users.value = postStoryStore.allPublicUsers
+    groups.value = postStoryStore.allGroups
   } catch (error) {
     console.error("Error loading profile:", error);
   } finally {
