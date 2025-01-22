@@ -67,7 +67,7 @@ const translations = {
   },
   reset: {
     en: "Reset Password",
-    am: "የይለፍ ቃልዎን ያስታውሱ",
+    am: "የይለፍ ቃልዎን ይቀይሩ",
   },
   or: {
     en: "or",
