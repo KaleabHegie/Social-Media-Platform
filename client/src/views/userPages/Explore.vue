@@ -2,9 +2,9 @@
   <main class="min-h-screen pt-4 pb-20 px-4">
     <div class="max-w-7xl mx-auto">
       <!-- Explore Tabs -->
-      <div class="flex justify-between">
-        <!-- the buttons -->
-        <div>
+      <div class="flex sm:flex-row flex-wrap justify-between items-center">
+        <!-- the buttons on larger screens -->
+        <div class="hidden space-x-2 sm:flex -mt-6">
           <button
             :class="{ 'bg-sky-500 text-white': activeTab === 'posts', 'text-gray-800 dark:text-gray-200': activeTab !== 'posts' }"
             @click="setActiveTab('posts')" class="px-4 py-2 mr-1 rounded-lg focus:outline-none">
@@ -17,12 +17,21 @@
           </button>
         </div>
 
+        <!-- icons on mobile -->
+        <div class="flex space-x-6 -mt-8 sm:hidden">
+          <i :class="{ 'text-sky-500': activeTab === 'posts', 'text-gray-800 dark:text-gray-200': activeTab !== 'posts' }"
+            @click="setActiveTab('posts')" class="ri-file-list-3-line text-2xl cursor-pointer"></i>
+          <i :class="{ 'text-sky-500': activeTab === 'users', 'text-gray-800 dark:text-gray-200': activeTab !== 'users' }"
+            @click="setActiveTab('users')" class="ri-user-3-line text-2xl cursor-pointer"></i>
+
+        </div>
+
         <!-- Search Bar (Same for both Posts and Users) -->
-        <div class="relative w-30 sm:w-64 md:w-96 mb-6">
+        <div class="relative w-30 sm:w-64 md:w-96 mb-6 mt-3 sm:mt-0">
           <i
-            class="ri-search-line absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 text-xl"></i>
+            class="ri-search-line absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 -mt-0.5 text-xl"></i>
           <input v-model="searchQuery" type="text" :placeholder="t('searchPosts')"
-            class="pl-10 pr-4 py-2 rounded-lg bg-white dark:bg-gray-800 text-gray-800 dark:text-white border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-1 focus:ring-sky-200 w-full"
+            class="pl-10 pr-4 py-2 -mt-2 rounded-lg bg-white dark:bg-gray-800 text-gray-800 dark:text-white border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-1 focus:ring-sky-200 w-full"
             @input="onSearch" />
         </div>
       </div>
@@ -61,7 +70,6 @@
             <ExploreUserProfileCard v-for="user in postStoryStore.searchedUsers" :key="user.id" :user="user" />
           </div>
 
-
           <!-- No Users Message -->
           <div v-else class="text-center text-gray-600 dark:text-gray-400 mt-8">
             {{ t('noUsersFound') }}
@@ -72,7 +80,6 @@
     </div>
   </main>
 </template>
-
 <script setup>
 import { ref, watch, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
@@ -146,5 +153,22 @@ const setActiveTab = (tab) => {
 
 button {
   transition: background-color 0.3s, color 0.3s;
+}
+
+@media (max-width: 768px) {
+  .flex {
+    justify-content: space-between;
+  }
+}
+
+@media (max-width: 480px) {
+  .flex-wrap {
+    flex-wrap: nowrap;
+  }
+
+  .relative {
+    width: auto;
+    margin-top: 0;
+  }
 }
 </style>
