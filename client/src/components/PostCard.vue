@@ -2,7 +2,6 @@
   <article
     class="bg-white  dark:bg-gray-800 rounded-xl shadow-lg mb-6 overflow-hidden hover:shadow-xl transition-shadow duration-300">
     <!-- Carousel Section -->
-
     <div class="relative fade-mask">
       <!-- User Info Overlay -->
       <div class="absolute top-0 left-0 right-0 z-10 p-4 bg-gradient-to-b from-black/60 to-transparent">
@@ -30,14 +29,14 @@
       <!-- Carousel -->
       <div class="relative" v-touch:swipe.left="onSwipeLeft" v-touch:swipe.right="onSwipeRight">
         <!-- Media Slider -->
-        <div v-if="post.medias && post.medias.length" class="flex transition-transform duration-300 ease-in-out "
+        <div v-if="post.medias && post.medias.length" class="flex transition-transform duration-300 ease-in-out"
           :style="{ transform: `translateX(-${activeSlide * 100}%)` }">
-          <div v-for="(media, index) in post.medias" :key="index" class="w-full  flex-shrink-0">
+          <div v-for="(media, index) in post.medias" :key="index" class="w-full flex-shrink-0">
             <template v-if="media.endsWith('.mp4') || media.endsWith('.webm')">
-              <video :src="media" autoplay controls loop class="w-full max-h-[800px] object-contain"></video>
+              <video :src="media" autoplay controls loop class="w-full h-[500px] object-cover"></video>
             </template>
             <template v-else>
-              <img :src="media" alt="Media" class="w-full max-h-[800px] object-contain" />
+              <img :src="media" alt="Media" class="w-full h-[500px] object-cover" />
             </template>
           </div>
         </div>
@@ -52,7 +51,6 @@
         </div>
       </div>
     </div>
-
     <!-- Post Content -->
     <div class="p-4">
       <router-link :to="`/viewpost/${props.post._id}`" class="block">
@@ -105,18 +103,13 @@
           </button>
         </div>
       </div>
-        <!-- Hashtags -->
-        <div class="flex flex-wrap gap-2">
-          <router-link
-            v-for="tag in props.post.hashtags || []"
-            :key="tag"
-            :to="`/home`"
-            class="text-sky-500 dark:text-sky-400 text-sm hover:underline"
-            @click.stop
-          >
-            #{{ tag }}
-          </router-link>
-        </div>
+      <!-- Hashtags -->
+      <div class="flex flex-wrap gap-2">
+        <router-link v-for="tag in props.post.hashtags || []" :key="tag" :to="`/home`"
+          class="text-sky-500 dark:text-sky-400 text-sm hover:underline" @click.stop>
+          #{{ tag }}
+        </router-link>
+      </div>
 
       <!-- Flag Confirmation Modal -->
       <Teleport to="body">
