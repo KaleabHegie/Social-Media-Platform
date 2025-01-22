@@ -87,23 +87,6 @@
             <span class="text-sm text-gray-600 dark:text-gray-400">{{ props.post.comments_count || 0 }}</span>
           </router-link>
         </div>
-
-        <div class="flex items-center space-x-4">
-          <!-- Flag Button -->
-          <button v-if="!isPostOwner" @click.stop.prevent="showFlagModal = true"
-            class="flex items-center space-x-2 group" aria-label="Flag post">
-            <i
-              class="ri-flag-line text-xl text-gray-600 dark:text-gray-400 group-hover:text-red-500 group-hover:scale-110 transition-transform"></i>
-          </button>
-
-          <!-- Delete Button -->
-          <button v-if="canDelete" @click.stop.prevent="showDeleteModal = true"
-            class="flex items-center space-x-2 group" aria-label="Delete post">
-
-            <i
-              class="ri-delete-bin-line text-xl text-gray-600 dark:text-gray-400 group-hover:text-red-500 group-hover:scale-110 transition-transform"></i>
-          </button>
-        </div>
       </div>
         <!-- Hashtags -->
         <div class="flex flex-wrap gap-2">
@@ -118,62 +101,15 @@
           </router-link>
         </div>
 
-      <!-- Flag Confirmation Modal -->
-      <Teleport to="body">
-        <Transition name="modal">
-          <div v-if="showFlagModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-            <div class="max-w-md bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md transform transition-all">
-              <h3 class="text-lg mb-4 text-gray-800 dark:text-white">Are you sure you want to flag this post?</h3>
-              <!-- Dropdown for Report Reason -->
-              <div v-if="showDropdown" class="mb-4">
-                <label for="reportReason" class="block text-sm text-gray-700 dark:text-white">Please select a reason for
-                  flagging:</label>
-                <select v-model="selectedReason" id="reportReason" class="w-full mt-2 p-2 border rounded-md">
-                  <option disabled value="">-- Select a reason --</option>
-                  <option value="inappropriate_content">Inappropriate Content</option>
-                  <option value="spam">Spam</option>
-                  <option value="hate_speech">Hate Speech</option>
-                  <option value="harassment">Harassment</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>
+      <!-- Hashtags -->
+      <div class="flex flex-wrap gap-2">
+        <router-link v-for="tag in props.post.hashtags || []" :key="tag"
+          :to="{ path: '/explore', query: { hashtag: tag } }"
+          class="text-sky-500 dark:text-sky-400 text-sm hover:underline" @click.stop.prevent>
+          #{{ tag }}
+        </router-link>
+      </div>
 
-              <!-- Buttons -->
-              <div class="flex justify-between">
-                <button @click="confirmFlag" :disabled="!selectedReason"
-                  class="bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600">
-                  Yes, flag it
-                </button>
-                <button @click="cancelAction('flag')"
-                  class="bg-gray-500 text-white py-2 px-4 rounded-md hover:bg-gray-700">
-                  Cancel
-                </button>
-              </div>
-            </div>
-          </div>
-        </Transition>
-      </Teleport>
-
-
-      <!-- Delete Confirmation Modal -->
-      <Teleport to="body">
-        <Transition name="modal">
-          <div v-if="showDeleteModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-            <div class="  max-w-md bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md transform transition-all">
-              <h3 class="text-lg text-gray-900 dark:text-white mb-4">Are you sure you want to delete this post?</h3>
-              <div class="flex justify-between">
-                <button @click="confirmDelete" class="bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-700">
-                  Yes, delete it
-                </button>
-                <button @click="cancelAction('delete')"
-                  class="bg-gray-500 text-white py-2 px-4 rounded-md hover:bg-gray-700">
-                  Cancel
-                </button>
-              </div>
-            </div>
-          </div>
-        </Transition>
-      </Teleport>
     </div>
   </article>
 </template>
@@ -187,46 +123,7 @@ import { useLanguageStore } from '@/stores/languageStore';
 import { usePostStoryStore } from '@/stores/homePageStore';
 import { useAuthStore } from '@/stores/authStore';
 
-import ToastService from '@/utils/toast.js';
-
-
-import { useRouter } from 'vue-router';
-
-const toast = ToastService();
-
-const store = usePostStoryStore()
-const showFlagModal = ref(false);
-const showDeleteModal = ref(false);
-const selectedReason = ref('');   // Stores the selected reason from the dropdown
-const showDropdown = ref(true);
-// Method to handle the modal cancel action
-function cancelAction(action) {
-  if (action === 'flag') {
-    showFlagModal.value = false; // Close the modal
-    selectedReason.value = '';   // Reset selected reason
-  } else if (action === 'delete') {  // Change actionType to action here
-    showDeleteModal.value = false;  // Close the delete modal
-  }
-}
-
-// Method to confirm flagging
-function confirmFlag() {
-  if (selectedReason.value) {
-    // You can call your API or perform any action related to flagging the post
-    console.log(`Post flagged for reason: ${selectedReason.value}`);
-
-    // Close the modal after flagging
-    showFlagModal.value = false;
-    selectedReason.value = ''; // Reset selected reason
-  }
-}
-
-// You can invoke this method when you want to show the flag modal
-function showFlagConfirmation() {
-  showFlagModal.value = true;  // Show the modal
-}
-
-
+const store = usePostStoryStore();
 const authStore = useAuthStore()
 
 
