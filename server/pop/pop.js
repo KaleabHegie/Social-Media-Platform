@@ -40,6 +40,7 @@ const ETHIOPIAN_NAMES = [
   "Yemisirach",
   "Zewdu",
   "Zelalem",
+  "Mahedere"
 ];
 
 const HASHTAGS = [
@@ -133,7 +134,7 @@ const setProfilePictureAndBio = async (user, adminToken) => {
     // Set profile picture
     const profilePicFile =
       fs.readdirSync(PROFILE_PICS_DIR)[
-        Math.floor(Math.random() * fs.readdirSync(PROFILE_PICS_DIR).length)
+      Math.floor(Math.random() * fs.readdirSync(PROFILE_PICS_DIR).length)
       ];
     const profilePicPath = path.join(PROFILE_PICS_DIR, profilePicFile);
     const form = new FormData();
@@ -175,14 +176,12 @@ const setProfilePictureAndBio = async (user, adminToken) => {
         error.response?.data || error
       );
     }
-
-    // Follow random users
     // Follow random users
     const usersToFollow = await fetchUsers(adminToken);
 
     // Determine a random number of users to follow (e.g., between 1 and 5 or total users available)
     const followCount = Math.min(
-      Math.floor(Math.random() * 5) + 1, // Random number between 1 and 5
+      Math.floor(Math.random() * 41) + 40, // Random number between 40 and 41
       usersToFollow.length // Ensure it doesn't exceed available users
     );
 
@@ -233,7 +232,7 @@ const bringUsersToLifeee = async (numUsers) => {
 
 
   const users = await fetchUsers(adminToken);
-  if(numUsers==0){
+  if (numUsers == 0) {
     users.length
   }
   const usersToProcess = users.slice(0, numUsers);
@@ -278,7 +277,7 @@ const populateWithPosts = async (numUsers) => {
   if (numUsers === 0) {
     numUsers = users.length;
   }
-  
+
   const usersToProcess = users.slice(0, numUsers);
 
   for (let user of usersToProcess) {
@@ -294,14 +293,14 @@ const populateWithPosts = async (numUsers) => {
       const getRandomCaptions = () => {
         const numCaptions = Math.floor(Math.random() * 10) + 1; // Randomize number of captions (1 to all captions)
         const randomCaptions = [];
-      
+
         for (let i = 0; i < numCaptions; i++) {
           randomCaptions.push(CAPTIONS[Math.floor(Math.random() * CAPTIONS.length)]);
         }
-      
+
         return randomCaptions.join(' '); // Concatenate captions with a space separator
       };
-      
+
       try {
         const form = new FormData();
         const caption = getRandomCaptions();
@@ -309,15 +308,15 @@ const populateWithPosts = async (numUsers) => {
         const rawHashtags = Array.from({ length: Math.floor(Math.random() * 4) + 1 }, () =>
           HASHTAGS[Math.floor(Math.random() * HASHTAGS.length)]
         ).join(' '); // Random hashtags
-        
+
         const postFiles = getRandomPostFiles();
 
         postFiles.forEach((file, index) => {
           form.append('files', fs.createReadStream(file), `file${index + 1}`);
         });
-      
+
         // Add caption, type, and hashtags to the form
-        form.append('caption', caption);  
+        form.append('caption', caption);
         form.append('type', type);
         form.append('rawHashtags', rawHashtags);
 
@@ -341,11 +340,146 @@ const populateWithPosts = async (numUsers) => {
   }
 };
 
+// like posts
+const likePosts = async (numUsers) => {
+  const adminToken = await login("user1"); // Log in as admin
+  if (!adminToken) {
+    console.error("Failed to log in as admin.");
+    return;
+  }
 
+  const users = await fetchUsers(adminToken);
+  if (numUsers === 0) numUsers = users.length;
 
+  const usersToProcess = users.slice(0, numUsers);
 
+  for (let user of usersToProcess) {
+    const userToken = await login(user.user_name);
+    if (!userToken) {
+      console.error(`Failed to log in as ${user.user_name}`);
+      continue;
+    }
 
+    try {
+      const postsResponse = await axios.get(`${BASE_URL}/getHomeFeed`, {
+        headers: { Authorization: `Bearer ${userToken}` },
+      });
 
+      const posts = postsResponse.data.posts;
+
+      // Log the posts data to see its structure
+      console.log(`Fetched posts for ${user.user_name}:`, posts);
+
+      // Ensure the posts array is not empty and contains valid post objects with an _id
+      if (!posts || posts.length === 0) {
+        console.error(`No posts found for ${user.user_name}`);
+        continue;
+      }
+
+      // Randomize the number of likes and select posts
+      const likeCount = Math.floor(Math.random() * 41) + 40; // Randomize likes (40-80)
+      const randomPosts = posts.sort(() => 0.5 - Math.random()).slice(0, likeCount);
+
+      for (const post of randomPosts) {
+        // Ensure the post has a valid _id before liking it
+        if (!post._id) {
+          console.error(`Post is missing an _id:`, post);
+          continue; // Skip this post if it doesn't have a valid _id
+        }
+
+        try {
+          await axios.post(
+            `${BASE_URL}/likePost`,
+            { postId: post._id }, // Use _id instead of id
+            {
+              headers: {
+                Authorization: `Bearer ${userToken}`,
+              },
+            }
+          );
+          console.log(`${user.user_name} liked post ${post._id}`);
+        } catch (error) {
+          console.error(
+            `Error: ${user.user_name} could not like post ${post._id}.`,
+            error.response?.data?.message || error.message
+          );
+        }
+      }
+    } catch (error) {
+      console.error(`Error fetching posts for ${user.user_name}:`, error.message);
+    }
+  }
+};
+//add comment
+const addComments = async (numUsers) => {
+  const adminToken = await login("user1"); // Log in as admin
+  if (!adminToken) {
+    console.error("Failed to log in as admin.");
+    return;
+  }
+
+  const users = await fetchUsers(adminToken);
+  if (numUsers === 0) numUsers = users.length;
+
+  const usersToProcess = users.slice(0, numUsers);
+
+  for (let user of usersToProcess) {
+    const userToken = await login(user.user_name);
+    if (!userToken) {
+      console.error(`Failed to log in as ${user.user_name}`);
+      continue;
+    }
+
+    try {
+      const postsResponse = await axios.get(`${BASE_URL}/getHomeFeed`, {
+        headers: { Authorization: `Bearer ${userToken}` },
+      });
+
+      const posts = postsResponse.data.posts;
+      const commentCount = Math.floor(Math.random() * 41) + 40; // Randomize comments (40-80)
+      const randomPosts = posts.sort(() => 0.5 - Math.random()).slice(0, commentCount);
+
+      for (const post of randomPosts) {
+        // Validate postId
+        if (!post._id) {
+          console.error(`Post is missing an _id:`, post);
+          continue;
+        }
+
+        const commentText = faker.lorem.sentence(); // Generate random content
+        if (!commentText.trim()) {
+          console.error(`Generated comment is empty, skipping post ${post._id}`);
+          continue;
+        }
+
+        try {
+          // Send the API request to make a comment
+          const response = await axios.post(
+            `${BASE_URL}/makeComment`,
+            {
+              postId: post._id, // Correctly send post._id as postId
+              content: commentText, // Send comment text as "content"
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${userToken}`,
+              },
+            }
+          );
+
+          console.log(`${user.user_name} commented on post ${post._id}: "${commentText}"`);
+        } catch (error) {
+          console.error(
+            `Error: ${user.user_name} could not comment on post ${post._id}.`,
+            error.response?.data?.message || error.message
+          );
+        }
+      }
+    } catch (error) {
+      console.error(`Error fetching posts for ${user.user_name}:`, error.message);
+    }
+  }
+};
 
 
 const readline = require("readline");
@@ -360,7 +494,11 @@ const showMenu = () => {
 1. Register Users
 2. Bring Users to Life
 3. Populate With Posts
+4. Simulate Following
+5. Like Posts
+6. Add Comments
 0. Exit
+
 `);
 };
 
@@ -390,6 +528,21 @@ const handleUserInput = async () => {
         const postUsersCount = await askQuestion("How many users to To Make Post on(put zero for all users)? ");
         await populateWithPosts(parseInt(postUsersCount, 10));
         break;
+      case "4":
+        const followUsersCount = await askQuestion("How many users to simulate following relationships (put zero for all users)? ");
+        await simulateFollowing(parseInt(followUsersCount, 10));
+        break;
+
+      case "5":
+        const likeUsersCount = await askQuestion("How many users to like posts (put zero for all users)? ");
+        await likePosts(parseInt(likeUsersCount, 10));
+        break;
+
+      case "6":
+        const commentUsersCount = await askQuestion("How many users to add comments on posts (put zero for all users)? ");
+        await addComments(parseInt(commentUsersCount, 10));
+        break;
+
       case "0":
         console.log("Exiting...");
         rl.close();
