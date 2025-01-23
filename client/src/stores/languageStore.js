@@ -389,6 +389,22 @@ const translations = {
     en:"Add a hashtag...",
     am:"ሃሽታግ ይጨምሩ..."
   },
+  youfollow:{
+    en:"You are following this user",
+    am:"ይህን ተጠቃሚ እየተከተሉ ነው።"
+  },
+  typeMessage:{
+    en:"Type a message...",
+    am:"መልዕክት ይተይቡ..."
+  },
+  peak:{
+    en:"Peak Message",
+    am:"የድብቅ መልዕክት"
+  },
+  close:{
+    en:"Close",
+    am:"ዝጋ"
+  }
 };
 
 export const useLanguageStore = defineStore("language", () => {

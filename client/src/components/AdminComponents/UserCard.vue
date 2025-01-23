@@ -16,7 +16,7 @@
             </span>
             <button @click="onVerify(user._id)"
               class="flex items-center gap-1 px-3 py-1 text-sm font-semibold text-white rounded-lg"
-              :class="user.is_verified ? 'bg-red-500 hover:bg-red-600' : 'bg-blue-500 hover:bg-blue-600'">
+              :class="user.is_verified ? 'bg-red-500 hover:bg-red-600' : 'bg-sky-500 hover:bg-sky-600'">
               <i :class="user.is_verified ? 'ri-close-circle-line' : 'ri-check-line'"></i>
               {{ user.is_verified ? "Remove Verification" : "Verify User" }}
             </button>

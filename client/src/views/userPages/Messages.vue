@@ -105,8 +105,8 @@
                     class="text-gray-800 hover:text-sky-500 dark:text-gray-200 dark:hover:text-sky-400">
                     {{ contact.user_name }}
                   </router-link>
-                  <div v-if="contact.unreadCount > 0" class="w-6 h-6 bg-blue-600 text-white text-md font-semibold flex items-center justify-center rounded-full 
-            dark:bg-blue-400">
+                  <div v-if="contact.unreadCount > 0" class="w-6 h-6 bg-sky-600 text-white text-md font-semibold flex items-center justify-center rounded-full 
+            dark:bg-sky-400">
                     {{ contact.unreadCount }}
                   </div>
                 </div>
@@ -126,12 +126,12 @@
                       <div v-if="activeContact && activeContact._id === contact._id"
                         class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
                         <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg max-w-sm w-full">
-                          <h2 class="text-lg font-semibold mb-2 dark:text-white">Peak Message</h2>
+                          <h2 class="text-lg font-semibold mb-2 dark:text-white">  {{ t('peak') }}</h2>
                           <div class="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 dark:bg-gray-900">
                             <div v-for="message in contact.recentMessages" :key="message.sender" class="flex"
                               :class="[message.isSentByCurrentUser ? 'justify-start' : 'justify-end']">
                               <div class="max-w-xs text-md px-4 py-2 rounded-lg relative group" :class="[
-                                message.isSentByCurrentUser ? 'bg-gray-500 text-white' : 'bg-blue-400 text-white',
+                                message.isSentByCurrentUser ? 'bg-gray-500 text-white' : 'bg-sky-400 text-white',
                                 message.isSentByCurrentUser ? '' : 'ml-auto']">
                                 {{ message.content }}
                                 <div class="text-sm opacity-70 ml-2 flex justify-end">{{ formatTime(message.createdAt)
@@ -142,7 +142,7 @@
                           </div>
                           <button @click="closeModal"
                             class="mt-4 px-4 py-2 bg-sky-500 text-white rounded hover:bg-sky-600 dark:bg-sky-600">
-                            Close
+                            {{ t('close') }}
                           </button>
                         </div>
                       </div>
