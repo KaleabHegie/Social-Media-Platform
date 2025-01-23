@@ -87,10 +87,20 @@ socket.on('disconnect' , () => {
  })
  
   socket.on('send-message' , async(data) => {
+
+    let room ;
     
-    const room = await findRoomId({
-       selectedChat : data.selectedChat._id,
-    })
+    if(!data.selectedChat){
+      console.log(data.reciver._id)
+       room = await findRoomId({
+        selectedChat : data.reciver._id
+     })
+    }
+    else{
+       room = await findRoomId({
+        selectedChat : data.selectedChat._id,
+     })
+    }
 
     const response = await Message.findById(room).exec()
 

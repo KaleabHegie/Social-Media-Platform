@@ -45,6 +45,9 @@ router.post('/reportPost', validateToken , postController.reportPost);
 router.get('/fetchMessages', validateToken , messageController.fetchMessages);
 
 
+router.get('/fetchMessagesGroup', validateToken , messageController.fetchMessagesGroup);
+
+
 
 
 

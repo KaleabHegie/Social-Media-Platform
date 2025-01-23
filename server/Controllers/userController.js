@@ -261,6 +261,7 @@ const userController = {
       // Find all messages where the current user is a participant
       const messages = await Message.find({
         "participants.userId": currentUserId,
+        is_group : false
       });
 
       // Extract unique participant IDs and details

@@ -82,7 +82,7 @@
               class="flex items-center p-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">
               <div
                 class="w-12 h-12 rounded-full bg-sky-400 flex items-center justify-center text-xl font-bold text-white">
-                {{ group.name }}
+                {{ group.name[0] }}
               </div>
               <div class="ml-3">
                 <p class="font-semibold">{{ group.name }}</p>

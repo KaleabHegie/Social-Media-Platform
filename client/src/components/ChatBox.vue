@@ -15,7 +15,8 @@
           <div v-else class="w-10 h-10 rounded-full overflow-hidden">
             <img src="../assets/avatar.jpg" alt="avatar" class="w-full h-full object-cover" />
           </div>
-          <h2 class="ml-3 font-semibold">{{ selectedContact.user_name }}</h2>
+          <h2 v-if="selectedContact.is_group" class="ml-3 font-semibold">{{ selectedContact.name }}</h2>
+          <h2 v-else class="ml-3 font-semibold">{{ selectedContact.user_name }}</h2>
         </div>
         <button v-if="!isMobile" @click="$emit('leave-chat')"
           class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
@@ -88,10 +89,20 @@ const currentUserId = authStore.user
 
 const socket = io('http://localhost:5000'); // Connect to your backend server
 
-socket.on('connect', ()=>{
-  const data = {
+let data = []
+  if (props.selectedContact.is_group){
+    console.log('-------------------------')
+     data = {
+    selectedChat : props.selectedContact._id
+  }
+  }
+  else{
+     data = {
     selectedChat : props.selectedChat._id
   }
+  }
+
+socket.on('connect', ()=>{
   socket.emit('room_id' , data)
 })
 
@@ -175,7 +186,9 @@ watch(
     if (newContact && newContact._id !== oldContact?._id) {
       // Clear the messages immediately
 
+      console.log(props.selectedContact.is_group)
 
+      if(props.selectedContact.is_group == false){
       try {
         isLoading = true; // Show the loading state
         await postStoryStore.fetchMessages(newContact._id); // Fetch messages for the new contact
@@ -186,6 +199,7 @@ watch(
         isLoading = false; // Hide the loading state
       }
     }
+    }
   },
   { immediate: true } // Trigger immediately to handle the initial load
 );
@@ -193,13 +207,26 @@ watch(
 // Initialize socket
 
 onMounted(async () => {
-  try {
+  if(typeof props.selectedContact.is_group === "undefined"){
+    try {
     await postStoryStore.fetchMessages(props.selectedContact._id);
     messages.value = postStoryStore.messages;  // Assuming fetchMessages updates the store's state
   } catch (error) {
     console.error('Error loading messages:', error);
   }
-  
+  }
+  else{
+      try {
+        isLoading = true; // Show the loading state
+        await postStoryStore.fetchMessagesGroup(props.selectedContact._id); // Fetch messages for the new contact
+        messages.value = postStoryStore.messages; // Update the messages array
+      } catch (error) {
+        console.error('Error loading messages:', error);
+      } finally {
+        isLoading = false; // Hide the loading state
+      }
+    }
+ 
 
   document.addEventListener('click', closeContextMenu);
   scrollToBottom();

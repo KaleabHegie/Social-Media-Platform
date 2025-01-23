@@ -281,9 +281,31 @@ export const usePostStoryStore = defineStore("postStory", {
           query: { selectedUserId: selectedUserId },
           useJWT: true,
         });
+        console.log(response)
         if (response.messages) {
           this.messages = [];
           this.messages = response.messages[0].messages;
+        }
+      } catch (error) {
+        this.error = error.response?.message || "Failed to fetch profile.";
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
+
+    async fetchMessagesGroup(selectedGroupId) {
+      this.isLoading = true;
+      this.error = null;
+      try {
+        const response = await MyHttpService.get("/fetchMessagesGroup", {
+          query: { selectedGroupId: selectedGroupId },
+          useJWT: true,
+        });
+        console.log(response)
+        if (response.messages) {
+          this.messages = [];
+          this.messages = response.messages.messages;
         }
       } catch (error) {
         this.error = error.response?.message || "Failed to fetch profile.";
