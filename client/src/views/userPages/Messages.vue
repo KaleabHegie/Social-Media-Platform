@@ -28,25 +28,23 @@
       <Transition name="fade">
         <div v-if="showGroupModal" class="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
           <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md">
-            <h2 class="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Create Group</h2>
+            <h2 class="text-2xl font-semibold mb-4 text-gray-900 dark:text-gray-100">{{ t('createGroup') }}</h2>
             <div class="mb-4">
-              <label for="groupName" class="block text-sm font-medium text-gray-700 dark:text-gray-400">Group
-                Name</label>
+              <label for="groupName" class="block text-sm font-medium text-gray-700 dark:text-gray-400">
+                {{ t('groupName') }}
+              </label>
               <input id="groupName" v-model="newGroup.name" type="text"
-                class="mt-1 block w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-sky-500 focus:border-sky-500 sm:text-sm" />
+                class="mt-1 block w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-sky-500 focus:border-sky-500 sm:text-sm" />
             </div>
-            <Multiselect v-model="selectedUsers" :options="users" :multiple="true" :searchable="true"
-              :clear-on-select="false" :close-on-select="false" placeholder="Search and select users" label="user_name"
-              track-by="_id" @select="addParticipant" @remove="onRemove" />
-
-            <div class="flex mt-4 justify-end space-x-2">
+            <ParticipantSelector :users="users" v-model="newGroup.participants" />
+            <div class="flex justify-end space-x-2 mt-4">
               <button @click="closeGroupModal"
-                class="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 dark:bg-gray-600 dark:text-gray-200">
-                Cancel
+                class="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 dark:bg-gray-600 dark:text-gray-200 transition-colors duration-200">
+                {{ t('cancel') }}
               </button>
               <button @click="createGroup"
-                class="px-4 py-2 bg-sky-500 text-white rounded hover:bg-sky-600 dark:bg-sky-600">
-                Create
+                class="px-4 py-2 bg-sky-500 text-white rounded hover:bg-sky-600 dark:bg-sky-600 dark:hover:bg-sky-700 transition-colors duration-200">
+                {{ t('createGroup') }}
               </button>
             </div>
           </div>
@@ -71,83 +69,55 @@
           <!-- Display contacts dynamically based on activeTab -->
           <div v-if="activeTab === 'groups' || activeTab === 'all'">
             <div v-if="activeTab === 'groups'" class="m-4 text-2xl">
-              <div class="flex justify-end m-2">
+              <div class="flex justify-between items-center m-2">
+                <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mr-4">  {{ t('createNew') }}</p>
                 <button @click="openGroupModal"
-                  class="text-white bg-sky-500 rounded-full w-10 h-10 flex items-center justify-center hover:bg-sky-600 dark:bg-sky-400 dark:hover:bg-sky-500">
-                  +
+                  class="text-white bg-sky-500 hover:bg-sky-600 dark:bg-sky-600 dark:hover:bg-sky-700 rounded-full w-10 h-10 flex items-center justify-center transition-colors duration-200">
+                  <v-icon name="bi-plus-lg" class="text-xl" />
                 </button>
               </div>
             </div>
             <div v-for="group in filteredGroups" :key="group.id" @click="selectContact(group)"
-              class="flex items-center p-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">
+              class="flex items-center p-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 bg-white dark:bg-gray-800 rounded-lg m-2 shadow-sm transition-all duration-200">
               <div
-                class="w-12 h-12 rounded-full bg-sky-400 flex items-center justify-center text-xl font-bold text-white">
-                {{ group.name[0] }}
+                class="w-12 h-12 rounded-full bg-gradient-to-br from-sky-400 to-sky-600 flex items-center justify-center text-xl font-bold text-white shadow-md">
+                {{ group.name[0].toUpperCase() }}
               </div>
-              <div class="ml-3">
-                <p class="font-semibold">{{ group.name }}</p>
-                <p class="text-sm text-gray-500 dark:text-gray-400 truncate">{{ group.lastMessage }} </p>
+              <div class="ml-3 flex-grow">
+                <p class="font-semibold text-gray-800 dark:text-gray-200">{{ group.name }}</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400 truncate">{{ group.lastMessage || 'No messages yet'
+                  }}</p>
+              </div>
+              <div class="text-xs text-gray-400 dark:text-gray-500">
+                {{ formatDate(group.updatedAt) }}
               </div>
             </div>
           </div>
           <div v-if="activeTab === 'personal' || activeTab === 'all'">
             <div v-for="contact in filteredContacts" :key="contact.id" @click="selectContact(contact)"
-              class="flex items-center p-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 bg-[#e4e4e44f] dark:bg-[#00000010] rounded-lg m-1 overflow-hidden">
+              class="flex items-center p-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 bg-white dark:bg-gray-800 rounded-lg m-2 shadow-sm transition-all duration-200">
               <div @click.stop.prevent="viewRecentMsg(contact)"
                 class="w-10 h-10 rounded-full overflow-hidden transform transition-transform duration-200 hover:scale-110">
                 <img :src="contact.profile_photo_url || '/default-avatar.png'" alt="avatar"
                   class="w-full h-full object-cover" />
               </div>
-
-              <div class="w-full">
-                <div class="flex justify-between  font-semibold ml-3">
+              <div class="ml-3 flex-grow">
+                <div class="flex justify-between items-center">
                   <router-link :to="`/viewAccount/${contact._id}`"
-                    class="text-gray-800 hover:text-sky-500 dark:text-gray-200 dark:hover:text-sky-400">
+                    class="font-semibold text-gray-800 hover:text-sky-500 dark:text-gray-200 dark:hover:text-sky-400">
                     {{ contact.user_name }}
                   </router-link>
-                  <div v-if="contact.unreadCount > 0" class="w-6 h-6 bg-sky-600 text-white text-md font-semibold flex items-center justify-center rounded-full 
-            dark:bg-sky-400">
+                  <div v-if="contact.unreadCount > 0"
+                    class="w-6 h-6 bg-sky-500 text-white text-xs font-semibold flex items-center justify-center rounded-full">
                     {{ contact.unreadCount }}
                   </div>
                 </div>
-
-                <div v-if="contact.lastMessage" class="ml-3 flex justify-between relative">
-                  <!-- Last Message Content -->
-                  <div class="text-sm text-gray-500 dark:text-gray-400 truncate max-w-64 sm:max-w-76">
+                <div v-if="contact.lastMessage" class="flex justify-between items-center mt-1">
+                  <p class="text-sm text-gray-500 dark:text-gray-400 truncate max-w-[150px]">
                     {{ contact.lastMessage.content }}
-                  </div>
-
-                  <!-- Created At -->
-                  <div>{{ formatDate(contact.lastMessage.createdAt) }}</div>
-
-                  <!-- Modal for Recent Messages -->
-                  <Teleport to="body">
-                    <Transition name="fade">
-                      <div v-if="activeContact && activeContact._id === contact._id"
-                        class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-                        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg max-w-sm w-full">
-                          <h2 class="text-lg font-semibold mb-2 dark:text-white">  {{ t('peak') }}</h2>
-                          <div class="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 dark:bg-gray-900">
-                            <div v-for="message in contact.recentMessages" :key="message.sender" class="flex"
-                              :class="[message.isSentByCurrentUser ? 'justify-start' : 'justify-end']">
-                              <div class="max-w-xs text-md px-4 py-2 rounded-lg relative group" :class="[
-                                message.isSentByCurrentUser ? 'bg-gray-500 text-white' : 'bg-sky-400 text-white',
-                                message.isSentByCurrentUser ? '' : 'ml-auto']">
-                                {{ message.content }}
-                                <div class="text-sm opacity-70 ml-2 flex justify-end">{{ formatTime(message.createdAt)
-                                  }}</div>
-                              </div>
-                            </div>
-
-                          </div>
-                          <button @click="closeModal"
-                            class="mt-4 px-4 py-2 bg-sky-500 text-white rounded hover:bg-sky-600 dark:bg-sky-600">
-                            {{ t('close') }}
-                          </button>
-                        </div>
-                      </div>
-                    </Transition>
-                  </Teleport>
+                  </p>
+                  <span class="text-xs text-gray-400 dark:text-gray-500">{{ formatDate(contact.lastMessage.createdAt)
+                    }}</span>
                 </div>
               </div>
             </div>
@@ -166,11 +136,11 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { OhVueIcon, addIcons } from "oh-vue-icons";
-import { BiSearch, BiSend, BiChatDots, BiPeople, BiPerson, BiSun, BiMoon, BiX, BiArrowLeft, BiPlusCircle } from "oh-vue-icons/icons";
+import { BiSearch, BiSend, BiChatDots, BiPeople, BiPerson, BiSun, BiMoon, BiX, BiArrowLeft, BiPlusLg } from "oh-vue-icons/icons";
 import ChatBox from '@/components/ChatBox.vue';
 import { usePostStoryStore } from '../../stores/homePageStore';
 import { useLanguageStore } from '@/stores/languageStore'; import { reactive } from 'vue';
-
+import ParticipantSelector from '@/components/ParticipantSelector.vue';
 import { io } from 'socket.io-client'; // Import Socket.IO client
 import { useAuthStore } from '../../stores/authStore';
 import Multiselect from 'vue-multiselect';
@@ -185,7 +155,7 @@ const authStore = useAuthStore();
 
 
 
-addIcons(BiSearch, BiSend, BiPlusCircle, BiChatDots, BiPeople, BiPerson, BiSun, BiMoon, BiX, BiArrowLeft);
+addIcons(BiSearch, BiSend, BiPlusLg, BiChatDots, BiPeople, BiPerson, BiSun, BiMoon, BiX, BiArrowLeft);
 
 
 const showGroupModal = ref(false);
@@ -378,5 +348,21 @@ window.addEventListener('resize', () => {
   .md\:hidden {
     display: none !important;
   }
+}
+
+.multiselect-sky-theme {
+  --ms-option-bg-selected: theme('colors.sky.100');
+  --ms-option-color-selected: theme('colors.sky.800');
+  --ms-tag-bg: theme('colors.sky.100');
+  --ms-tag-color: theme('colors.sky.800');
+  --ms-ring-color: theme('colors.sky.500');
+}
+
+.dark .multiselect-sky-theme {
+  --ms-option-bg-selected: theme('colors.sky.800');
+  --ms-option-color-selected: theme('colors.sky.100');
+  --ms-tag-bg: theme('colors.sky.800');
+  --ms-tag-color: theme('colors.sky.100');
+  --ms-ring-color: theme('colors.sky.400');
 }
 </style>

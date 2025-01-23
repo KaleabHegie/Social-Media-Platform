@@ -341,7 +341,7 @@ const translations = {
     en: "Password is too short",
     am: "የይለፍ ቃል አጭር ነው",
   },
-  match:{
+  match: {
     en: "Passwords do not match",
     am: "የይለፍ ቃልዎ አንዳይነት አይደለም",
   },
@@ -353,57 +353,77 @@ const translations = {
     en: "Notifications",
     am: "ማሳወቂያ",
   },
-  dismiss:{
+  dismiss: {
     en: "Dismiss All",
     am: "አትፋ ሁሉንም",
   },
-  users:{
+  users: {
     en: "Users",
     am: "ተጠቃሚዎች",
   },
-  follow:{
+  follow: {
     en: "Follow",
     am: "ተከተል",
   },
-  unfollow:{
+  unfollow: {
     en: "Unfollow",
     am: "አትከታተል",
   },
-  comment:{
+  comment: {
     en: "Comment",
     am: "አስተያየት",
   },
-  addComment:{
+  addComment: {
     en: "Add a comment...",
     am: "አስተያየት ይስጡ...",
   },
-  searchPosts:{
-    en:"Search posts or users...",
-    am:"ለጥፍ ወይም ተጠቃሚዎች ይፈልጉ...",
+  searchPosts: {
+    en: "Search posts or users...",
+    am: "ለጥፍ ወይም ተጠቃሚዎች ይፈልጉ...",
   },
-  writeCaption:{
-    en:"Write a caption...",
-    am:"መግለጫ ይፃፉ...",
+  writeCaption: {
+    en: "Write a caption...",
+    am: "መግለጫ ይፃፉ...",
   },
-  addHashtag:{
-    en:"Add a hashtag...",
-    am:"ሃሽታግ ይጨምሩ..."
+  addHashtag: {
+    en: "Add a hashtag...",
+    am: "ሃሽታግ ይጨምሩ..."
   },
-  youfollow:{
-    en:"You are following this user",
-    am:"ይህን ተጠቃሚ እየተከተሉ ነው።"
+  youfollow: {
+    en: "You are following this user",
+    am: "ይህን ተጠቃሚ እየተከተሉ ነው።"
   },
-  typeMessage:{
-    en:"Type a message...",
-    am:"መልዕክት ይተይቡ..."
+  typeMessage: {
+    en: "Type a message...",
+    am: "መልዕክት ይተይቡ..."
   },
-  peak:{
-    en:"Peak Message",
-    am:"የድብቅ መልዕክት"
+  peak: {
+    en: "Peak Message",
+    am: "የድብቅ መልዕክት"
   },
-  close:{
-    en:"Close",
-    am:"ዝጋ"
+  close: {
+    en: "Close",
+    am: "ዝጋ"
+  },
+  groupName: {
+    en: "Group Name",
+    am: "ቡድን ስም"
+  },
+  createGroup: {
+    en: "Create Group",
+    am: "ቡድን ፍጠር"
+  },
+  selectParticipants: {
+    en: "Select Participants",
+    am: "ተሳታፊዎችን ይምረጡ"
+  },
+  cancel: {
+    en: "Cancel",
+    am: "ሰርዝ"
+  },
+  createNew:{
+     en: "Create New Group",
+    am: "አዲስ ቡድን ፍጠር"
   }
 };
 
