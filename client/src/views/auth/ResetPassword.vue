@@ -1,6 +1,6 @@
 <template>
     <div
-        class="min-h-screen bg-white dark:bg-gray-800  text-gray-900 dark:text-gray-300 shadow-xl overflow-hidden flex items-center justify-center py-12 sm:px-6 lg:px-8">
+        class="min-h-screen bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-300 shadow-xl overflow-hidden flex items-center justify-center py-12 sm:px-6 lg:px-8">
         <div class="absolute inset-0 z-0">
             <img src="@/assets/whitebg.png" alt="Background"
                 class="fixed w-full h-full object-cover opacity-40 dark:hidden" />
@@ -9,7 +9,7 @@
         </div>
         <div class="w-full max-w-md z-10">
             <div
-                class="bg-white dark:bg-gray-800  text-gray-900 dark:text-gray-300 py-8 px-4 shadow sm:rounded-lg sm:px-10">
+                class="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-300 py-8 px-4 shadow sm:rounded-lg sm:px-10">
                 <!-- Logo Section -->
                 <div class="text-center -mt-24 h-64">
                     <img src="@/assets/logo.svg" alt="Tsede Logo" />
@@ -29,12 +29,13 @@
                         {{ t('return') }}
                     </router-link>
                 </p>
+
                 <!-- Form -->
-                <form @submit.prevent="nextStep">
+                <form @submit.prevent="handleSubmit">
                     <!-- Password Field -->
                     <div class="relative mt-8 mb-4">
                         <label for="password"
-                            class="absolute -top-2 left-2 bg-white dark:bg-gray-800  text-gray-900 dark:text-gray-300 text-sm font-medium  px-1">
+                            class="absolute -top-2 left-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-300 text-sm font-medium px-1">
                             {{ t('password') }}
                         </label>
                         <div class="mt-2">
@@ -44,8 +45,7 @@
                                 :class="{ 'border-red-500': errors.password }" />
                             <!-- Toggle Password Visibility -->
                             <button type="button" @click="togglePasswordVisibility"
-                                class="absolute right-3 top-3 text-sky-400 hover:text-sky-500"
-                                aria-label="Toggle password visibility">
+                                class="absolute right-3 top-3 text-sky-400 hover:text-sky-500">
                                 <svg v-if="showPassword" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
                                     viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path
@@ -61,14 +61,13 @@
                                 </svg>
                             </button>
                         </div>
-                        <!-- Display error -->
                         <p v-if="errors.password" class="text-sm text-red-500 mt-1">{{ errors.password }}</p>
                     </div>
 
                     <!-- Confirm Password Field -->
                     <div class="relative mb-4">
                         <label for="confirm-password"
-                            class="absolute -top-2 left-2 bg-white dark:bg-gray-800  text-gray-900 dark:text-gray-300 text-sm font-medium px-1">
+                            class="absolute -top-2 left-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-300 text-sm font-medium px-1">
                             {{ t('confirmpass') }}
                         </label>
                         <div class="mt-2">
@@ -76,10 +75,8 @@
                                 :type="showPassword ? 'text' : 'password'" required
                                 class="appearance-none block w-full px-3 py-2 border bg-white dark:bg-gray-800 border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-sky-500 focus:border-sky-500 sm:text-sm"
                                 :class="{ 'border-red-500': errors.confirm_password }" />
-                            <!-- Toggle Password Visibility -->
                             <button type="button" @click="togglePasswordVisibility"
-                                class="absolute right-3 top-3 text-sky-400 hover:text-sky-500"
-                                aria-label="Toggle password visibility">
+                                class="absolute right-3 top-3 text-sky-400 hover:text-sky-500">
                                 <svg v-if="showPassword" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
                                     viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path
@@ -95,23 +92,19 @@
                                 </svg>
                             </button>
                         </div>
-                        <!-- Display error -->
-                        <p v-if="errors.confirm_password" class="text-sm text-red-500 mt-1">{{
-                            errors.confirm_password }}</p>
+                        <p v-if="errors.confirm_password" class="text-sm text-red-500 mt-1">{{ errors.confirm_password
+                            }}</p>
                     </div>
 
+                    <!-- Submit Button -->
                     <div>
-                        <button type="button" @click="handleSubmit"
+                        <button type="submit"
                             class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-sky-400 hover:bg-sky-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500">
-                            <span> {{ t('submit') }}</span>
+                            <span>{{ t('submit') }}</span>
                         </button>
-
                     </div>
-
-                    <!-- Navigation Buttons -->
 
                 </form>
-
 
             </div>
         </div>
@@ -120,33 +113,33 @@
 
 <script setup>
 import { ref, reactive } from 'vue';
-import { useRouter } from 'vue-router';
 import { useLanguageStore } from '@/stores/languageStore';
 import { useAuthStore } from '@/stores/authStore';
+import { useRoute, useRouter } from 'vue-router';
 import LanguageSelector from '@/components/LanguageSelector.vue';
-import DarkModeToggle from '../../components/DarkModeToggle.vue';
-import { useRoute } from 'vue-router';
-
+import DarkModeToggle from '@/components/DarkModeToggle.vue';
 import ToastService from '@/utils/toast.js';
-// Password visibility toggles
-const showPassword = ref(false);
 
-
+const { t } = useLanguageStore();
+const router = useRouter();
 const route = useRoute();
-const token = route.params.token;
-// Store access
-const { currentLanguage, t } = useLanguageStore();
+const toast = ToastService();
+const showPassword = ref(false);
 
 const formData = reactive({
     password: '',
     confirm_password: '',
-    token: token
+    token: route.params.token
 });
 
 const errors = reactive({
     password: '',
-    confirm_password: '',
+    confirm_password: ''
 });
+
+const togglePasswordVisibility = () => {
+    showPassword.value = !showPassword.value;
+};
 
 // Validation function that runs only on submit
 const isValid = () => {
