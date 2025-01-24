@@ -187,7 +187,7 @@ export const usePostStoryStore = defineStore("postStory", {
       try {
         const response = await MyHttpService.get("/getMyUserProfile", { useJWT: true });
         if (response.profile) {
-          console.log(response.likedPosts)
+          console.log(response.likedPosts);
           this.myProfile = response.profile;
           this.myPosts = response.myposts || []; // Store the user's posts
           this.likedPosts = response.likedPosts || []; // Store the liked posts
@@ -442,16 +442,24 @@ export const usePostStoryStore = defineStore("postStory", {
       }
     },
     async markAllAsRead() {
-      this.isLoading = true;
-      this.error = null;
       try {
         const response = await MyHttpService.post("/dismissNotifications", {
           useJWT: true,
         });
+        return response;
       } catch (error) {
-        this.error = error.response?.message || "Failed to delete post.";
-      } finally {
-        this.isLoading = false;
+        return { error: "Failed to Get Notifications." };
+      }
+    },
+
+    async getNotifications() {
+      try {
+        const response = await MyHttpService.get("/getNotifications", {
+          useJWT: true,
+        });
+        return response;
+      } catch (error) {
+        return { error: "Failed to Get Notifications." };
       }
     },
 

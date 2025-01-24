@@ -567,12 +567,8 @@ const userController = {
         });
       }
 
-      // Clear all notifications=
-      if (Array.isArray(user.notifications)) {
-        user.notifications.forEach((notification) => {
-          notification.seen = true; // Mark as seen
-        });
-      }
+      // Clear all notifications []
+      user.notifications = [];
       await user.save();
 
       return res.json({
@@ -585,7 +581,6 @@ const userController = {
       });
     }
   },
-
   getNotifications: async (req, res) => {
     try {
       // Check if the user is logged in
