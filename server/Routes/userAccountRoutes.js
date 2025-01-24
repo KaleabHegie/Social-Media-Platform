@@ -45,6 +45,7 @@ router.get("/getGroups" , validateToken, userController.getGroups)
 
 router.post('/createGroup', validateToken, userController.createGroup)
 
+router.post('/acceptRequest', validateToken, userController.acceptRequest)
 
 
 

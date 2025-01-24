@@ -24,6 +24,7 @@
                 <img src="@/assets/logo.png" alt="Logo" class="w-full object-contain rounded-lg" />
               </button>
 
+              
               <!-- Notification Icon Button -->
               <div class="relative">
                 <button @click="toggleMobileNotifications"
@@ -32,9 +33,10 @@
                   <i class="ri-notification-line text-gray-800 dark:text-gray-200 text-2xl"></i>
 
                   <!-- Notification Badge -->
-                  <span v-if="unreadNotifications > 0"
+                  <span v-if="unreadNotifications?.length > 0"
                     class="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 rounded-full">
-                    {{ unreadNotifications }}
+                    
+                    {{ unreadNotifications?.length }}
                   </span>
                 </button>
               </div>
@@ -128,6 +130,6 @@ onMounted( async () => {
   postStoryStore.fetchPosts();
   postStoryStore.fetchStories();
   const result = await postStoryStore.fetchUserProfile()
-  unreadNotifications.value = postStoryStore.myProfile.notifications
+  unreadNotifications.value = postStoryStore.myProfile.notifications.filter(notification => notification.seen === false).reverse();
 });
 </script>

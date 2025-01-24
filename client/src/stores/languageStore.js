@@ -265,6 +265,10 @@ const translations = {
     en: "Following",
     am: "መከታተያ",
   },
+  requests: {
+    en: "Requests",
+    am: "ጥያቄ",
+  },
   updateBio: {
     en: "Update Bio",
     am: "ባዮ አስተካክል",
@@ -285,6 +289,10 @@ const translations = {
     en: "No followers yet",
     am: "ምንም ተከታዮች የለም",
   },
+  norequests: {
+    en: "No requests yet",
+    am: "ምንም ጥያቄ የለም",
+  },
   tabsposts: {
     en: "Posts",
     am: "ልጥፍዎች",
@@ -300,6 +308,10 @@ const translations = {
   tabsfollowers: {
     en: "Followers",
     am: "ተከታዮች",
+  },
+  tabsrequests: {
+    en: "Requests",
+    am: "ጥያቄ",
   },
   loadingPosts: {
     en: "Loading stories and posts...",

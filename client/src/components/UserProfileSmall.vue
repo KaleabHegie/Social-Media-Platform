@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-center bg-black dark:bg-gray-800 p-4 rounded-lg shadow-lg mt2">
+  <div class="flex items-center bg-light dark:bg-gray-800 p-4 rounded-lg shadow-lg mt2">
     <router-link :to="`/viewAccount/${follow.user._id}`" class="flex items-center group">
       <div class="relative w-12 h-12 rounded-full overflow-hidden border-2 border-gray-300 dark:border-gray-600">
         <img

@@ -42,12 +42,7 @@
               <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
                 {{ formatDate(notification.createdAt) }}
               </p>
-              <div class="flex justify-end mt-2"> <!-- Wrapper to align button to the right -->
-                <button  v-if="notification.type == 'requests'" @click="acceptRequest"
-                  class="bg-sky-400 dark:bg-sky-700 hover:bg-sky-400 dark:hover:bg-sky-600 text-white px-3 p-1 rounded">
-                  Accept
-                </button>
-              </div>
+             
             </div>
           </div>
         </div>
@@ -84,7 +79,7 @@ const hasUnread = computed(() => {
 
 onMounted(async () => {
   const result = await postStoryStore.fetchUserProfile()
-  notifications.value = postStoryStore.myProfile.notifications.filter(notification => notification.seen === false);
+  notifications.value = postStoryStore.myProfile.notifications.filter(notification => notification.seen === false).reverse();
 });
 
 const formatDate = (dateString) => {
@@ -101,10 +96,6 @@ const formatDate = (dateString) => {
 const markAllAsRead = async () => {
   await postStoryStore.markAllAsRead();
   toast.success('Successful!', { position: 'top-center' });
-};
-
-const acceptRequest = async () => {
-  console.log('accepting')
 };
 
 

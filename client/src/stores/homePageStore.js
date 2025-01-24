@@ -249,7 +249,6 @@ export const usePostStoryStore = defineStore("postStory", {
         });
         if (response.allUsers) {
           this.allPublicUsers = response.allUsers;
-          console.log(response.allUsers)
         }
       } catch (error) {
         this.error = error.response?.message || "Failed to fetch profile.";
@@ -437,6 +436,40 @@ export const usePostStoryStore = defineStore("postStory", {
         this.isLoading = false;
       }
     },
+
+
+    async reportPost(content) {
+      this.isLoading = true;
+      this.error = null;
+      try {
+        const response = await MyHttpService.post("/reportPost", {
+          body: { content: content },
+          useJWT: true,
+        });
+      } catch (error) {
+        this.error = error.response?.message || "Failed to delete post.";
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
+    async acceptRequest(requestId) {
+      this.isLoading = true;
+      this.error = null;
+      try {
+        const response = await MyHttpService.post("/acceptRequest", {
+          body: {"requestId" : requestId},
+          useJWT: true,
+        });
+        console.log(response)
+      } catch (error) {
+        this.error = error.response?.message || "Failed to accept request";
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
+
     
 
     clearData() {

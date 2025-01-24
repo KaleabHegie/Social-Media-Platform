@@ -118,6 +118,8 @@
         class="z-10 dark:bg-black " />
     </div>
 
+    
+   
     <!-- Tabbed View for Posts/Following/Followers -->
     <div>
       <div class="flex border-b border-gray-200 dark:border-gray-700 mb-4">
@@ -164,6 +166,19 @@
         </div>
       </div>
 
+      
+      
+
+      <div v-else-if="currentTab === 'requests'">
+        <div v-if="requests.length === 0">
+          <p class="text-center text-gray-500 dark:text-gray-400"> {{ t('norequests') }}</p>
+          <!-- Message for no requests -->
+        </div>
+        <div v-else class="grid-layout">
+          <RequestsList v-for="request in requests" :key="request.id" :request="request" />
+        </div>
+      </div>
+
     </div>
   </div>
 </template>
@@ -183,6 +198,7 @@ import { useAuthStore } from '../../stores/authStore';
 import ToastService from '@/utils/toast.js';
 import ConfirmationModal from '@/components/ConfirmationModal.vue'; // Import your modal component
 import { useLanguageStore } from '@/stores/languageStore';
+import RequestsList from '../../components/RequestsList.vue';
 
 const { t, switchLanguage } = useLanguageStore();
 const currentLanguage = ref('en');
@@ -215,6 +231,7 @@ const profile = ref(null);
 const myposts = ref([]);
 const following = ref([]);
 const followers = ref([]);
+const requests = ref([])
 const likedposts = ref([]);
 const isLoading = ref(true);
 const currentTab = ref('posts');
@@ -223,6 +240,8 @@ const tabs = [
   { id: 'likedposts', name: t('tabsliked') },
   { id: 'following', name: t('tabsfollowing') },
   { id: 'followers', name: t('tabsfollowers') },
+  { id: 'requests', name: t('tabsrequests') },
+  
 ];
 
 
@@ -234,12 +253,16 @@ onMounted(async () => {
     likedposts.value = postStoryStore.likedPosts;
     following.value = postStoryStore.myProfile.following;
     followers.value = postStoryStore.myProfile.followers;
+    requests.value = postStoryStore.myProfile.requests;
+    console.log(requests.value)
   } catch (error) {
     console.error("Error loading profile:", error);
   } finally {
     isLoading.value = false;
   }
 });
+
+
 
 const fileInput = ref(null);
 

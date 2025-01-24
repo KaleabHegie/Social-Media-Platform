@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="isStoryActive">
     <div @click="openModal" class="relative w-20 h-20 cursor-pointer group">
       <div class="absolute inset-0 bg-gradient-to-br from-sky-500 to-sky-100 rounded-lg p-0.5">
         <div class="w-full h-full bg-white dark:bg-gray-800 rounded-lg overflow-hidden">
@@ -34,7 +34,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import StoryViewCard from './StoryViewCard.vue'
 
 const props = defineProps({
@@ -54,4 +54,12 @@ const openModal = () => {
 const closeModal = () => {
   isModalOpen.value = false
 }
+
+// Check if the story is within 24 hours
+const isStoryActive = computed(() => {
+  const now = new Date()
+  const createdAt = new Date(story.created_at) // Ensure `created_at` is included in your story data
+  const differenceInHours = (now - createdAt) / (1000 * 60 * 60)
+  return differenceInHours <= 24
+})
 </script>

@@ -284,9 +284,11 @@ const postController = {
         });
       }
 
-      const postId = req.query.postId; // Get the postId from the query parameters
+      console.log(req.body)
+
+      const postId = req.body.content.postId; // Get the postId from the query parameters
       const userId = req.user.id; // Get the logged-in user's ID
-      const reason = req.query.reason; // Get the reason for reporting from the request query
+      const reason = req.body.content.reason; // Get the reason for reporting from the request query
 
       // Validate the required fields
       if (!postId || !reason) {

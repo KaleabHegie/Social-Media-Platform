@@ -133,7 +133,7 @@
 
               <!-- Buttons -->
               <div class="flex justify-between">
-                <button @click="confirmFlag" :disabled="!selectedReason"
+                <button @click="confirmFlag(props.post._id)" :disabled="!selectedReason"
                   class="bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600">
                   Yes, flag it
                 </button>
@@ -203,10 +203,20 @@ function cancelAction(action) {
 }
 
 // Method to confirm flagging
-function confirmFlag() {
+async function confirmFlag(postId) {
   if (selectedReason.value) {
     // You can call your API or perform any action related to flagging the post
     console.log(`Post flagged for reason: ${selectedReason.value}`);
+
+   const content = {
+    reason : selectedReason.value,
+    postId : postId
+    }
+
+    await store.reportPost(content)
+
+    toast.success('Successfully reported post!', { position: 'top-center' });
+   
 
     // Close the modal after flagging
     showFlagModal.value = false;

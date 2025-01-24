@@ -820,6 +820,10 @@ const userController = {
         .populate(
           "following.user",
           "user_name first_name last_name profile_photo_url"
+        )
+        .populate(
+          "requests.user",
+          "user_name first_name last_name profile_photo_url"
         );
 
       if (!user) {
@@ -924,6 +928,7 @@ const userController = {
       });
     }
   },
+
   searchUsers: async (req, res) => {
     try {
       // Check if the user is logged in
@@ -1073,6 +1078,57 @@ const userController = {
       res.status(500).json({ message: "Error resetting password", error });
     }
   },
+
+  acceptRequest : async (req , res) => {
+    try {
+      // Check if the user is logged in
+      if (!req.user) {
+        return res.status(constants.UNAUTHORIZED).json({
+          message: "Can't set Bio if user is not logged in",
+        });
+      }
+
+
+    const user = await User.findById(req.user.id);
+
+    const requestId = req.body.requestId
+
+    const request = user.requests.find((r) => r._id.toString() === requestId);
+
+    if (!request) {
+      return res.status(404).json({ success: false, message: "Request not found" });
+    }
+
+
+    
+
+    const requesterId = request.user; 
+    const requester = await User.findById(requesterId);
+
+    console.log(requester)
+
+
+    user.followers.push({ user: requesterId });
+    user.followers_count += 1;
+
+    // Add user to requester's following list
+    requester.following.push({ user: userId });
+    requester.following_count += 1;
+
+    // Remove requester from requests list
+    user.requests.splice(requestIndex, 1);
+
+    // Save both users
+    await user.save();
+    await requester.save();
+
+    res.json({ message: "Successfully accepted." });
+
+    }
+    catch (error) {
+      res.status(500).json({ message: "Error resetting password", error });
+    }
+  }
 };
 
 module.exports = userController;
