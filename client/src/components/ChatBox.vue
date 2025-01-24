@@ -30,7 +30,7 @@
         <div v-for="message in messages" :key="message.id" class="flex"
           :class="[message.sender._id === selectedContact._id ? 'justify-start' : 'justify-end']">
           <div class="max-w-xs text-md px-4 py-2 rounded-lg relative group" :class="[
-            message.sender._id === selectedContact._id ? 'bg-gray-500 text-white' : 'bg-blue-400 text-white',
+            message.sender._id === selectedContact._id ? 'bg-gray-500 text-white' : 'bg-sky-400 text-white',
             message.sender === currentUserId ? 'ml-auto' : ''
           ]">
             {{ message.content }}
@@ -42,7 +42,7 @@
       <!-- Message input -->
       <div
         class="p-4 mb-20 sm:mb-0 bg-gray-100 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 flex items-center">
-        <input v-model="localNewMessage" type="text" placeholder="Type a message..."
+        <input v-model="localNewMessage" type="text" :placeholder="t('typeMessage')"
           class="flex-1 bg-white dark:bg-gray-700 rounded-full px-4 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-sky-400 dark:focus:ring-sky-400"
           @keyup.enter="sendMessage" />
         <button @click="sendMessage" class="ml-2 p-2 rounded-full bg-sky-400 hover:bg-sky-600 text-white">
@@ -62,16 +62,16 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { usePostStoryStore } from '../stores/homePageStore';
 import { useAuthStore } from '../stores/authStore';
-
+import { useLanguageStore } from '@/stores/languageStore';
 
 import { io } from 'socket.io-client'; // Import socket.io-client
 
-
+const { t} = useLanguageStore();
 const authStore = useAuthStore();
 const postStoryStore = usePostStoryStore();
 const props = defineProps({
   selectedContact: Object,
-  selectedChat : Object,
+  selectedChat: Object,
   isMobile: Boolean,
   messages: Array,
   newMessage: String,
@@ -90,26 +90,27 @@ const currentUserId = authStore.user
 const socket = io('http://localhost:5000'); // Connect to your backend server
 
 let data = []
-  if (props.selectedContact.is_group){
-     data = {
-    selectedChat : props.selectedContact._id
+if (props.selectedContact.is_group) {
+  console.log('-------------------------')
+  data = {
+    selectedChat: props.selectedContact._id
   }
+}
+else {
+  data = {
+    selectedChat: props.selectedChat._id
   }
-  else{
-     data = {
-    selectedChat : props.selectedChat._id
-  }
-  }
+}
 
-socket.on('connect', ()=>{
-  socket.emit('room_id' , data)
+socket.on('connect', () => {
+  socket.emit('room_id', data)
 })
 
 
 
-socket.on('recive-message' , (data) => {
+socket.on('recive-message', (data) => {
   messages.value.push({
-    id:  data.messageId, // Use the current length of `messages.value`
+    id: data.messageId, // Use the current length of `messages.value`
     content: data.content,
     isSent: true,
     sender: data.sender,
@@ -150,7 +151,7 @@ const scrollToBottom = () => {
     chatBox.scrollTop = chatBox.scrollHeight;
   }
 };
-  
+
 
 const formatTime = (date) => {
   return new Date(date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -187,17 +188,17 @@ watch(
 
       console.log(props.selectedContact.is_group)
 
-      if(props.selectedContact.is_group == false){
-      try {
-        isLoading = true; // Show the loading state
-        await postStoryStore.fetchMessages(newContact._id); // Fetch messages for the new contact
-        messages.value = postStoryStore.messages; // Update the messages array
-      } catch (error) {
-        console.error('Error loading messages:', error);
-      } finally {
-        isLoading = false; // Hide the loading state
+      if (props.selectedContact.is_group == false) {
+        try {
+          isLoading = true; // Show the loading state
+          await postStoryStore.fetchMessages(newContact._id); // Fetch messages for the new contact
+          messages.value = postStoryStore.messages; // Update the messages array
+        } catch (error) {
+          console.error('Error loading messages:', error);
+        } finally {
+          isLoading = false; // Hide the loading state
+        }
       }
-    }
     }
   },
   { immediate: true } // Trigger immediately to handle the initial load
@@ -206,26 +207,26 @@ watch(
 // Initialize socket
 
 onMounted(async () => {
-  if(typeof props.selectedContact.is_group === "undefined"){
+  if (typeof props.selectedContact.is_group === "undefined") {
     try {
-    await postStoryStore.fetchMessages(props.selectedContact._id);
-    messages.value = postStoryStore.messages;  // Assuming fetchMessages updates the store's state
-  } catch (error) {
-    console.error('Error loading messages:', error);
-  }
-  }
-  else{
-      try {
-        isLoading = true; // Show the loading state
-        await postStoryStore.fetchMessagesGroup(props.selectedContact._id); // Fetch messages for the new contact
-        messages.value = postStoryStore.messages; // Update the messages array
-      } catch (error) {
-        console.error('Error loading messages:', error);
-      } finally {
-        isLoading = false; // Hide the loading state
-      }
+      await postStoryStore.fetchMessages(props.selectedContact._id);
+      messages.value = postStoryStore.messages;  // Assuming fetchMessages updates the store's state
+    } catch (error) {
+      console.error('Error loading messages:', error);
     }
- 
+  }
+  else {
+    try {
+      isLoading = true; // Show the loading state
+      await postStoryStore.fetchMessagesGroup(props.selectedContact._id); // Fetch messages for the new contact
+      messages.value = postStoryStore.messages; // Update the messages array
+    } catch (error) {
+      console.error('Error loading messages:', error);
+    } finally {
+      isLoading = false; // Hide the loading state
+    }
+  }
+
 
   document.addEventListener('click', closeContextMenu);
   scrollToBottom();

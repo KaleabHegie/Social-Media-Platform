@@ -12,7 +12,7 @@
           <UserIcon class="w-12 h-12 text-gray-500 dark:text-gray-400" />
         </div>
         <div v-if="user.isFollowing" class="absolute bottom-0 right-0 bg-green-500 rounded-full p-1"
-          title="You are following this user">
+          :title="t('youfollow')">
           <i class="ri-user-follow-fill text-white rounded-full p-[3px]"></i>
         </div>
       </div>
@@ -52,7 +52,8 @@
 
 <script setup>
 import { UserIcon, CheckIcon, AtSignIcon, MapPinIcon, PlusIcon } from 'lucide-vue-next'
-
+import { useLanguageStore } from '@/stores/languageStore';
+const { t } = useLanguageStore();
 defineProps({
   user: {
     type: Object,
