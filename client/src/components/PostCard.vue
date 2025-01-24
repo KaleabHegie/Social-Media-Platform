@@ -5,7 +5,7 @@
     <div class="relative fade-mask">
       <!-- User Info Overlay -->
       <div class="absolute top-0 left-0 right-0 z-10 p-4 bg-gradient-to-b from-black/60 to-transparent">
-        <div class="flex justify-between">
+        <div class="flex items-center">
           <router-link :to="`/viewAccount/${props.post.user._id}`" class="flex items-center group" @click.stop>
             <div class="relative w-10 h-10 rounded-full overflow-hidden border-2 border-white">
               <img :src="props.post.user.profile_photo_url || '/default-avatar.png'" :alt="props.post.user.user_name"
@@ -23,24 +23,7 @@
               </time>
             </div>
           </router-link>
-
-
-          <!-- Delete Button -->
-          <button v-if="canDelete" @click.stop.prevent="showDeleteModal = true"
-            class="flex items-center space-x-2 group" aria-label="Delete post">
-            <i
-              class="ri-delete-bin-line text-xl text-gray-600 dark:text-gray-400 group-hover:text-red-500 group-hover:scale-110 transition-transform"></i>
-          </button>
-
-
-          <!-- Flag Button -->
-          <button v-if="!isPostOwner" @click.stop.prevent="showFlagModal = true"
-            class="flex items-center space-x-2 group" aria-label="Flag post">
-            <i
-              class="ri-flag-line text-xl text-gray-600 dark:text-gray-400 group-hover:text-red-500 group-hover:scale-110 transition-transform"></i>
-          </button>
         </div>
-
       </div>
 
       <!-- Carousel -->
@@ -106,8 +89,19 @@
         </div>
 
         <div class="flex items-center space-x-4">
+          <!-- Flag Button -->
+          <button v-if="!isPostOwner" @click.stop.prevent="showFlagModal = true"
+            class="flex items-center space-x-2 group" aria-label="Flag post">
+            <i
+              class="ri-flag-line text-xl text-gray-600 dark:text-gray-400 group-hover:text-red-500 group-hover:scale-110 transition-transform"></i>
+          </button>
 
-
+          <!-- Delete Button -->
+          <button v-if="canDelete" @click.stop.prevent="showDeleteModal = true"
+            class="flex items-center space-x-2 group" aria-label="Delete post">
+            <i
+              class="ri-delete-bin-line text-xl text-gray-600 dark:text-gray-400 group-hover:text-red-500 group-hover:scale-110 transition-transform"></i>
+          </button>
 
           <button @click.stop.prevent="sharePost" class="flex items-center space-x-2 group" aria-label="Share post">
             <i
