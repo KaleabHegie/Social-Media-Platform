@@ -32,6 +32,9 @@ router.post("/likePost", validateToken, postController.likePost);
 
 router.get("/getHomeFeed", validateToken, postController.getHomeFeed);
 
+router.get("/getSinglePost", validateToken, postController.getSinglePost);
+
+
 router.get("/getStories", validateToken, postController.getStories);
 
 router.get("/getExploreFeed", validateToken, postController.getExploreFeed);

@@ -53,7 +53,7 @@
               </Teleport>
             </div>
             <div class="flex space-x-4 mt-6 overflow-x-auto pb-4 hide-scrollbar" style="scroll-snap-type: x mandatory;">
-              <StoryCard v-for="story in postStoryStore.stories" :key="story.id" :story="story"
+              <StoryCard v-for="story in postStoryStore.stories" :key="story._id" :story="story"
                 class="flex-shrink-0 w-[25%] max-w-[100px] sm:max-w-[120px]" style="scroll-snap-align: start;" />
             </div>
           </div>
@@ -87,7 +87,7 @@
             <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">{{ t('stories') }}</h2>
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4">
               <div v-if="postStoryStore.stories.length > 0" class="grid grid-cols-3 gap-4">
-                <StoryCard v-for="story in postStoryStore.stories" :key="story.id" :story="story" />
+                <StoryCard v-for="story in postStoryStore.stories" :key="story._id" :story="story" />
               </div>
             </div>
             <div class="mt-6">

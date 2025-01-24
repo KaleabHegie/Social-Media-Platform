@@ -28,15 +28,8 @@ const transporter = nodemailer.createTransport({
 const userController = {
   register: async (req, res) => {
     try {
-      const {
-        first_name,
-        last_name,
-        user_name,
-        date_of_birth,
-        email,
-        gender,
-        password,
-      } = req.body;
+      const { first_name, last_name, user_name, date_of_birth, email, gender, password } =
+        req.body;
 
       // Validate required fields
       if (!first_name || !last_name || !user_name || !email || !password) {
@@ -113,15 +106,11 @@ const userController = {
         );
         return res.status(200).json({ accessToken, is_admin: user.is_admin });
       } else {
-        return res
-          .status(401)
-          .json({ message: "Invalid username/email or password" });
+        return res.status(401).json({ message: "Invalid username/email or password" });
       }
     } catch (error) {
       console.error("Error during login:", error);
-      return res
-        .status(500)
-        .json({ message: "An internal server error occurred" });
+      return res.status(500).json({ message: "An internal server error occurred" });
     }
   },
 
@@ -142,15 +131,11 @@ const userController = {
       }
 
       // Ensure at least one participant is a group admin
-      const hasAdmin = participants.some(
-        (participant) => participant.is_group_admin
-      );
+      const hasAdmin = participants.some((participant) => participant.is_group_admin);
       if (!hasAdmin) {
-        return res
-          .status(400)
-          .json({
-            error: "At least one participant must be marked as a group admin.",
-          });
+        return res.status(400).json({
+          error: "At least one participant must be marked as a group admin.",
+        });
       }
 
       // Validate each participant's userId
@@ -168,18 +153,15 @@ const userController = {
 
       // Now participants_id will be an array of participant objects
 
-
       if (validParticipants.includes(false)) {
-        return res
-          .status(404)
-          .json({ error: "One or more participants do not exist." });
+        return res.status(404).json({ error: "One or more participants do not exist." });
       }
 
       // Create the group
       const group = new Message({
         name,
         is_group: true,
-        participants : participants_id
+        participants: participants_id,
       });
 
       const savedGroup = await group.save();
@@ -261,7 +243,7 @@ const userController = {
       // Find all messages where the current user is a participant
       const messages = await Message.find({
         "participants.userId": currentUserId,
-        is_group : false
+        is_group: false,
       });
 
       // Extract unique participant IDs and details
@@ -371,8 +353,7 @@ const userController = {
 
       const finalChats = chats.filter((chat) =>
         chat.participants.some(
-          (participant) =>
-            participant.userId.toString() === currentUserId.toString()
+          (participant) => participant.userId.toString() === currentUserId.toString()
         )
       );
       if (!finalChats || finalChats.length === 0) {
@@ -402,12 +383,11 @@ const userController = {
       }
 
       const currentUserId = req.user.id; // Assuming the user's ID is available
-      const chats = await Message.find({ is_group : true });
+      const chats = await Message.find({ is_group: true });
 
       const groupChats = chats.filter((chat) =>
         chat.participants.some(
-          (participant) =>
-            participant.userId.toString() === currentUserId.toString()
+          (participant) => participant.userId.toString() === currentUserId.toString()
         )
       );
       if (!groupChats || groupChats.length === 0) {
@@ -650,9 +630,7 @@ const userController = {
 
       // Validate if userId is provided
       if (!userIdToDelete) {
-        return res
-          .status(400)
-          .json({ message: "User ID is required in the query" });
+        return res.status(400).json({ message: "User ID is required in the query" });
       }
 
       // Find and delete the user by userId
@@ -697,9 +675,7 @@ const userController = {
       // Check if the current user exists
       const currentUser = await User.findById(currentUserId);
       if (!currentUser) {
-        return res
-          .status(constants.NOT_FOUND)
-          .json({ message: "User not found" });
+        return res.status(constants.NOT_FOUND).json({ message: "User not found" });
       }
 
       // Check if the user to follow exists
@@ -768,9 +744,7 @@ const userController = {
         currentUser.following_count =
           currentUser.following_count > 0 ? currentUser.following_count - 1 : 0;
         userToFollow.followers_count =
-          userToFollow.followers_count > 0
-            ? userToFollow.followers_count - 1
-            : 0;
+          userToFollow.followers_count > 0 ? userToFollow.followers_count - 1 : 0;
 
         // Notification for the user who lost a follower
         notificationContent = `${currentUser.user_name} unfollowed you.`;
@@ -813,26 +787,16 @@ const userController = {
       // Fetch user details
       const user = await User.findById(userId)
         .select("-password -resetToken -tokenExpiry")
-        .populate(
-          "followers.user",
-          "user_name first_name last_name profile_photo_url"
-        )
-        .populate(
-          "following.user",
-          "user_name first_name last_name profile_photo_url"
-        )
-        .populate(
-          "requests.user",
-          "user_name first_name last_name profile_photo_url"
-        );
+        .populate("followers.user", "user_name first_name last_name profile_photo_url")
+        .populate("following.user", "user_name first_name last_name profile_photo_url")
+        .populate("requests.user", "user_name first_name last_name profile_photo_url");
 
       if (!user) {
-        return res
-          .status(constants.NOT_FOUND)
-          .json({ message: "User not found" });
+        return res.status(constants.NOT_FOUND).json({ message: "User not found" });
       }
+
       // Fetch user's posts
-      const userPosts = await Post.find({ user: userId }).sort({
+      const userPosts = await Post.find({ user: userId, type: "post" }).sort({
         createdAt: -1,
       });
 
@@ -874,18 +838,10 @@ const userController = {
       // Fetch the user's profile
       const userToSeeProfile = await User.findById(userIdOfPersonToSeeProfile)
         .select("-password -resetToken -tokenExpiry -notifications")
-        .populate(
-          "followers.user",
-          "user_name first_name last_name profile_photo_url"
-        )
-        .populate(
-          "following.user",
-          "user_name first_name last_name profile_photo_url"
-        );
+        .populate("followers.user", "user_name first_name last_name profile_photo_url")
+        .populate("following.user", "user_name first_name last_name profile_photo_url");
       if (!userToSeeProfile) {
-        return res
-          .status(constants.NOT_FOUND)
-          .json({ message: "User not found" });
+        return res.status(constants.NOT_FOUND).json({ message: "User not found" });
       }
 
       // Handle private accounts
@@ -1079,7 +1035,7 @@ const userController = {
     }
   },
 
-  acceptRequest : async (req , res) => {
+  acceptRequest: async (req, res) => {
     try {
       // Check if the user is logged in
       if (!req.user) {
@@ -1088,47 +1044,40 @@ const userController = {
         });
       }
 
+      const user = await User.findById(req.user.id);
 
-    const user = await User.findById(req.user.id);
+      const requestId = req.body.requestId;
 
-    const requestId = req.body.requestId
+      const request = user.requests.find((r) => r._id.toString() === requestId);
 
-    const request = user.requests.find((r) => r._id.toString() === requestId);
+      if (!request) {
+        return res.status(404).json({ success: false, message: "Request not found" });
+      }
 
-    if (!request) {
-      return res.status(404).json({ success: false, message: "Request not found" });
-    }
+      const requesterId = request.user;
+      const requester = await User.findById(requesterId);
 
+      console.log(requester);
 
-    
+      user.followers.push({ user: requesterId });
+      user.followers_count += 1;
 
-    const requesterId = request.user; 
-    const requester = await User.findById(requesterId);
+      // Add user to requester's following list
+      requester.following.push({ user: userId });
+      requester.following_count += 1;
 
-    console.log(requester)
+      // Remove requester from requests list
+      user.requests.splice(requestIndex, 1);
 
+      // Save both users
+      await user.save();
+      await requester.save();
 
-    user.followers.push({ user: requesterId });
-    user.followers_count += 1;
-
-    // Add user to requester's following list
-    requester.following.push({ user: userId });
-    requester.following_count += 1;
-
-    // Remove requester from requests list
-    user.requests.splice(requestIndex, 1);
-
-    // Save both users
-    await user.save();
-    await requester.save();
-
-    res.json({ message: "Successfully accepted." });
-
-    }
-    catch (error) {
+      res.json({ message: "Successfully accepted." });
+    } catch (error) {
       res.status(500).json({ message: "Error resetting password", error });
     }
-  }
+  },
 };
 
 module.exports = userController;

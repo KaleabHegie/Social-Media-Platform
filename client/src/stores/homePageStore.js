@@ -1,19 +1,22 @@
 import { defineStore } from "pinia";
 import MyHttpService from "@/stores/MyHttpService";
 import Explore from "../views/userPages/Explore.vue";
+import ToastService from "../utils/toast.js";
+
+const toast = ToastService();
 
 export const usePostStoryStore = defineStore("postStory", {
   state: () => ({
     posts: [],
     stories: [],
     explore: [],
-    searchedUsers:[],
+    searchedUsers: [],
     myProfile: [],
-    otherProfile : [],
+    otherProfile: [],
     myPosts: [],
     likedPosts: [],
     allUsers: [],
-    allGroups : [],
+    allGroups: [],
     allPublicUsers: [],
     messages: [],
     currentUser: [],
@@ -38,6 +41,19 @@ export const usePostStoryStore = defineStore("postStory", {
         this.error = error.response?.message || "Failed to fetch posts.";
       } finally {
         this.isLoading = false;
+      }
+    },
+
+    async getSinglePost(postId) {
+      try {
+        const response = await MyHttpService.get("/getSinglePost", {
+          useJWT: true,
+          query: { postId: postId },
+        });
+
+        return response;
+      } catch (error) {
+        return { error: "Failed to fetch post." };
       }
     },
 
@@ -147,12 +163,11 @@ export const usePostStoryStore = defineStore("postStory", {
       }
     },
 
-
     async createGroup(data) {
       this.isLoading = true;
       this.error = null;
       try {
-        console.log(data)
+        console.log(data);
         // Don't manually set 'Content-Type' since FormData will set it correctly
         const response = await MyHttpService.post("/createGroup", {
           body: data,
@@ -172,6 +187,7 @@ export const usePostStoryStore = defineStore("postStory", {
       try {
         const response = await MyHttpService.get("/getMyUserProfile", { useJWT: true });
         if (response.profile) {
+          console.log(response.likedPosts)
           this.myProfile = response.profile;
           this.myPosts = response.myposts || []; // Store the user's posts
           this.likedPosts = response.likedPosts || []; // Store the liked posts
@@ -220,7 +236,6 @@ export const usePostStoryStore = defineStore("postStory", {
       }
     },
 
-
     async getMyGroups() {
       this.isLoading = true;
       this.error = null;
@@ -237,8 +252,6 @@ export const usePostStoryStore = defineStore("postStory", {
         this.isLoading = false;
       }
     },
-
-    
 
     async getAllPublicUsers() {
       this.isLoading = true;
@@ -280,7 +293,7 @@ export const usePostStoryStore = defineStore("postStory", {
           query: { selectedUserId: selectedUserId },
           useJWT: true,
         });
-        console.log(response)
+        console.log(response);
         if (response.messages) {
           this.messages = [];
           this.messages = response.messages[0].messages;
@@ -292,7 +305,6 @@ export const usePostStoryStore = defineStore("postStory", {
       }
     },
 
-
     async fetchMessagesGroup(selectedGroupId) {
       this.isLoading = true;
       this.error = null;
@@ -301,7 +313,7 @@ export const usePostStoryStore = defineStore("postStory", {
           query: { selectedGroupId: selectedGroupId },
           useJWT: true,
         });
-        console.log(response)
+        console.log(response);
         if (response.messages) {
           this.messages = [];
           this.messages = response.messages.messages;
@@ -361,8 +373,8 @@ export const usePostStoryStore = defineStore("postStory", {
     },
 
     async likeDislike(postId) {
-      this.isLoading = true;
-      this.error = null;
+      // this.isLoading = true;
+      // this.error = null;
       try {
         const response = await MyHttpService.post("/likePost", {
           body: { postId: postId },
@@ -372,9 +384,10 @@ export const usePostStoryStore = defineStore("postStory", {
           this.messages = response.messages[0].messages;
         }
       } catch (error) {
+        ToastService;
         this.error = error.response?.message || "Failed to fetch profile.";
       } finally {
-        this.isLoading = false;
+        // this.isLoading = false;
       }
     },
 
@@ -389,7 +402,7 @@ export const usePostStoryStore = defineStore("postStory", {
         if (response.messages) {
           this.messages = response.messages[0].messages;
         }
-        return response
+        return response;
       } catch (error) {
         this.error = error.response?.message || "Failed to fetch profile.";
       } finally {
@@ -412,31 +425,35 @@ export const usePostStoryStore = defineStore("postStory", {
       }
     },
 
-
     async deletePost(postId) {
-      this.isLoading = true;
-      this.error = null;
       try {
-        const response = await MyHttpService.get("/deletePost", { query : {'postId' : postId} , useJWT: true });
+        const response = await MyHttpService.post("/deletePost", {
+          query: { postId: postId },
+          useJWT: true,
+        });
+
+        if (!response.error) {
+          this.posts = this.posts.filter((post) => post._id !== postId);
+        }
+
+        return response;
       } catch (error) {
-        this.error = error.response?.message || "Failed to delete post.";
-      } finally {
-        this.isLoading = false;
+        return { error: "Unable to Delete Post" };
       }
     },
-
     async markAllAsRead() {
       this.isLoading = true;
       this.error = null;
       try {
-        const response = await MyHttpService.post("/dismissNotifications" , { useJWT: true });
+        const response = await MyHttpService.post("/dismissNotifications", {
+          useJWT: true,
+        });
       } catch (error) {
         this.error = error.response?.message || "Failed to delete post.";
       } finally {
         this.isLoading = false;
       }
     },
-
 
     async reportPost(content) {
       this.isLoading = true;
@@ -458,19 +475,16 @@ export const usePostStoryStore = defineStore("postStory", {
       this.error = null;
       try {
         const response = await MyHttpService.post("/acceptRequest", {
-          body: {"requestId" : requestId},
+          body: { requestId: requestId },
           useJWT: true,
         });
-        console.log(response)
+        console.log(response);
       } catch (error) {
         this.error = error.response?.message || "Failed to accept request";
       } finally {
         this.isLoading = false;
       }
     },
-
-
-    
 
     clearData() {
       this.posts = [];

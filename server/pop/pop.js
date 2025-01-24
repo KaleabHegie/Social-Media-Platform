@@ -304,7 +304,8 @@ const populateWithPosts = async (numUsers) => {
       try {
         const form = new FormData();
         const caption = getRandomCaptions();
-        const type = Math.random() > 0.8 ? "post" : "story"; // Random type: post or story
+        const type = Math.random() > 0.2 ? "post" : "story"; // 80% chance of "post"
+        
         const rawHashtags = Array.from({ length: Math.floor(Math.random() * 4) + 1 }, () =>
           HASHTAGS[Math.floor(Math.random() * HASHTAGS.length)]
         ).join(' '); // Random hashtags

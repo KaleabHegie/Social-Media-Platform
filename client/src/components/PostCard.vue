@@ -95,8 +95,8 @@
           </button>
 
           <!-- Delete Button -->
-          <button v-if="canDelete" @click.stop.prevent="showDeleteModal = true"
-            class="flex items-center space-x-2 group" aria-label="Delete post">
+          <button v-if="canDelete" @click.stop.prevent="showDeleteModal = true" class="flex items-center space-x-2 group"
+            aria-label="Delete post">
 
             <i
               class="ri-delete-bin-line text-xl text-gray-600 dark:text-gray-400 group-hover:text-red-500 group-hover:scale-110 transition-transform"></i>
@@ -104,13 +104,11 @@
         </div>
       </div>
       <!-- Hashtags -->
-      <div class="flex flex-wrap gap-2">
-        <router-link v-for="tag in props.post.hashtags || []" :key="tag" :to="`/home`"
-          class="text-sky-500 dark:text-sky-400 text-sm hover:underline" @click.stop>
-          #{{ tag }}
-        </router-link>
-      </div>
-
+      <router-link v-for="tag in props.post.hashtags || []" :key="tag"
+        :to="{ path: '/explore', query: { hashtag: tag } }"
+        class="text-sky-500 dark:text-sky-400 text-sm hover:underline" @click.stop>
+        #{{ tag }}
+      </router-link>
       <!-- Flag Confirmation Modal -->
       <Teleport to="body">
         <Transition name="modal">
@@ -208,15 +206,15 @@ async function confirmFlag(postId) {
     // You can call your API or perform any action related to flagging the post
     console.log(`Post flagged for reason: ${selectedReason.value}`);
 
-   const content = {
-    reason : selectedReason.value,
-    postId : postId
+    const content = {
+      reason: selectedReason.value,
+      postId: postId
     }
 
     await store.reportPost(content)
 
     toast.success('Successfully reported post!', { position: 'top-center' });
-   
+
 
     // Close the modal after flagging
     showFlagModal.value = false;
@@ -256,9 +254,12 @@ const router = useRouter();
 
 const confirmDelete = async () => {
   const response = await store.deletePost(props.post._id)
-  console.log(props.post._id)
+  if (response.error) {
+    toast.error(response.error || "Unable To Delete Post")
+    return;
+  }
   router.push('/home');
-  toast.success('Post Deleted Successfully!', { position: 'top-center' });
+  toast.success('Post Removed!');
   showDeleteModal.value = false; // Close the modal after confirmation
 };
 

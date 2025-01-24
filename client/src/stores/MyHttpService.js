@@ -63,6 +63,17 @@ export default class MyHttpService {
         return { error: data.message || "Bad Request" };
       }
 
+      if (response.status === 403) {
+        const data = await response.json();
+        return { error: data.message || "Validation Error" };
+      }
+
+
+      if (response.status === 404) {
+        const data = await response.json();
+        return { error: data.message || "404 Not Found" };
+      }
+
       if (response.status === 500) {
         return { error: "Server Internal Error" };
       }
