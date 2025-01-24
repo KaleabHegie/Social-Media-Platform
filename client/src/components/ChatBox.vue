@@ -91,7 +91,6 @@ const socket = io('http://localhost:5000'); // Connect to your backend server
 
 let data = []
   if (props.selectedContact.is_group){
-    console.log('-------------------------')
      data = {
     selectedChat : props.selectedContact._id
   }
@@ -120,7 +119,7 @@ socket.on('recive-message' , (data) => {
 
 const sendMessage = () => {// Logs the current message content
 
-const data = {
+const messageData = {
    sender : {
     _id:currentUserId?.id
    },
@@ -130,12 +129,12 @@ const data = {
    selectedChat : props.selectedChat 
 }
 
-socket.emit('send-message' , data)
+socket.emit('send-message' , messageData)
   messages.value.push({
     id: messages.value.length + 1, // Use the current length of `messages.value`
     content: localNewMessage.value,
     isSent: true,
-    sender: data.sender,
+    sender: messageData.sender,
     updatedAt: new Date(),
   });
   localNewMessage.value = ''; // Clear input after sending
