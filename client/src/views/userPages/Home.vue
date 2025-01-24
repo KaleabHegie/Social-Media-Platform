@@ -16,7 +16,7 @@
           </div>
 
           <!-- Stories for mobile -->
-          <div  class="lg:hidden mb-6 w-[94vw]">
+          <div class="lg:hidden mb-6 w-[94vw]">
             <div
               class="z-50 p-2 w-[94vw] flex items-center justify-between mb-4 border-b border-gray-300 dark:border-gray-700">
               <!-- Logo Button -->
@@ -24,7 +24,7 @@
                 <img src="@/assets/logo.png" alt="Logo" class="w-full object-contain rounded-lg" />
               </button>
 
-              
+
               <!-- Notification Icon Button -->
               <div class="relative">
                 <button @click="toggleMobileNotifications"
@@ -35,7 +35,7 @@
                   <!-- Notification Badge -->
                   <span v-if="unreadNotifications?.length > 0"
                     class="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 rounded-full">
-                    
+
                     {{ unreadNotifications?.length }}
                   </span>
                 </button>
@@ -82,7 +82,7 @@
 
         <!-- Stories for desktop -->
 
-        <div  class="hidden lg:block w-80 order-1 lg:order-2 ">
+        <div class="hidden lg:block w-80 order-1 lg:order-2 ">
           <div class="sticky top-4">
             <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">{{ t('stories') }}</h2>
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4">
@@ -91,7 +91,7 @@
               </div>
             </div>
             <div class="mt-6">
-              <NotificationCard :showCloseButton="true" />
+              <NotificationCard :showCloseButton="false" />
             </div>
           </div>
         </div>
@@ -126,7 +126,7 @@ const closeMobileNotifications = () => {
   showMobileNotification.value = false;
 };
 
-onMounted( async () => {
+onMounted(async () => {
   postStoryStore.fetchPosts();
   postStoryStore.fetchStories();
   const result = await postStoryStore.fetchUserProfile()

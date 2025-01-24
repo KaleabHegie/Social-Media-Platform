@@ -121,7 +121,7 @@ export const usePostStoryStore = defineStore("postStory", {
       // Append non-file fields to FormData
       if (content.type) formData.append("type", content.type);
       if (content.caption) formData.append("caption", content.caption);
-      if (content.hashtags) formData.append("hashtags", content.hashtags);
+      if (content.rawHashtags) formData.append("rawHashtags", content.rawHashtags);
 
       // Append the media files (assuming content.media is an array of files)
       if (content.media && Array.isArray(content.media)) {

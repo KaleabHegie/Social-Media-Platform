@@ -10,6 +10,10 @@
           class="text-sm text-sky-500 hover:text-sky-600 dark:hover:text-sky-400">
           {{ t('dismiss') }}
         </button>
+        <button v-if="showCloseButton" @click="$emit('close')"
+          class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
+          <i class="ri-close-line text-xl"></i>
+        </button>
       </div>
     </div>
 
@@ -48,13 +52,18 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 import { usePostStoryStore } from '@/stores/homePageStore';
 import ToastService from '@/utils/toast.js';
 import { useLanguageStore } from '@/stores/languageStore';
 const toast = ToastService();
 
-
+const props = defineProps({
+  showCloseButton: {
+    type: Boolean,
+    default: false,
+  },
+});
 const { t } = useLanguageStore();
 const postStoryStore = usePostStoryStore();
 
@@ -66,8 +75,19 @@ onMounted(async () => {
     return;
   }
 
-  notifications.value = response.notifications || []
+  postStoryStore.myProfile.notifications = response.notifications || []
 });
+
+
+watch(
+  () => postStoryStore.myProfile.notifications,
+  (newNotifications) => {
+    notifications.value = newNotifications;
+  },
+  { deep: true }
+);
+
+
 
 const formatDate = (dateString) => {
   const date = new Date(dateString);
@@ -90,7 +110,7 @@ const markAllAsRead = async () => {
   }
   toast.success('Cleared!', { position: 'top-center' });
 
-  notifications.value = response.notifications || []
+  postStoryStore.myProfile.notifications = []
 };
 
 </script>
