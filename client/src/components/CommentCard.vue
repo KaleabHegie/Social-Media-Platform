@@ -9,7 +9,7 @@
         <!-- <button @click="deleteComment" class="text-red-500 hover:text-red-700">
             <oh-vue-icon name="ri-delete-bin-line" class="w-5 h-5" />
           </button> -->
-        <time :datetime="comment.createdAt" class="text-sm text-gray-200">
+        <time :datetime="comment.createdAt" class="text-sm text-gray-900 dark:text-white">
           {{ formatDate(comment.createdAt) }}
         </time>
       </div>

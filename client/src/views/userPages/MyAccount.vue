@@ -106,7 +106,7 @@
         <div class="mt-4">
           <input v-model="profile.bio"
             class="sm:align-middle w-40 -mt-2 py-2 mr-2 rounded-md text-gray-900 dark:text-white bg-transparent border-b border-gray-300 dark:border-gray-600 focus:outline-none focus:border-sky-500 transition duration-300"
-            :placeholder="t('searchPosts')" />
+            :placeholder="t('updateBio')" />
           <button @click="updateBio"
             class="mt-2 px-4 py-2 bg-sky-500 text-white text-sm rounded-lg hover:bg-sky-600 transition duration-300">
             {{ t('updateBio') }}

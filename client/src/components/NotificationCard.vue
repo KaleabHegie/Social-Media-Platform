@@ -20,7 +20,7 @@
     <!-- Notification List -->
     <div class="max-h-[400px] overflow-y-auto">
       <div v-if="notifications.length === 0" class="p-6 text-center text-gray-500">
-        No New notifications
+        {{ t('noNew') }}
       </div>
 
       <div v-else class="divide-y divide-gray-200 dark:divide-gray-700">
