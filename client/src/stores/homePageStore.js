@@ -399,14 +399,9 @@ export const usePostStoryStore = defineStore("postStory", {
           body: { userId: userId },
           useJWT: true,
         });
-        if (response.messages) {
-          this.messages = response.messages[0].messages;
-        }
         return response;
       } catch (error) {
-        this.error = error.response?.message || "Failed to fetch profile.";
-      } finally {
-        this.isLoading = false;
+        return { error: "An Error Occured" };
       }
     },
 
