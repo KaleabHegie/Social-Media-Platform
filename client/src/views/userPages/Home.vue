@@ -1,7 +1,7 @@
 <template>
   <main class="h-full pt-4 pb-20 px-4 lg:px-8">
     <div class="max-w-6xl mx-auto">
-      <div class="flex flex-col lg:flex-row lg:space-x-8">
+      <div class="flex flex-col xl:flex-row xl:space-x-8">
         <!-- Main content area -->
         <div class="flex-grow order-2 lg:order-1">
 
@@ -82,7 +82,7 @@
 
         <!-- Stories for desktop -->
 
-        <div class="hidden lg:block w-80 order-1 lg:order-2 ">
+        <div class="hidden lg:block w-80 order-1 lg:order-2 fixed top-4 right-[20%] lg:right-[10%]">
           <div class="sticky top-4">
             <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">{{ t('stories') }}</h2>
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4">
