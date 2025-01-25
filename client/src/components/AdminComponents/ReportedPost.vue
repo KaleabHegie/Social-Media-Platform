@@ -4,7 +4,7 @@
       <h3 class="text-lg font-semibold text-sky-800">Post ID: {{ reportedPost?.post?._id }}
       </h3>
       <div class="flex gap-3">
-        <button @click="onDelete(reportedPost?.post?._id)" class="text-red-500 hover:text-red-700">
+        <button @click="deletePost" class="text-red-500 hover:text-red-700">
           <i class="ri-delete-bin-line text-xl"></i>
         </button>
       </div>
@@ -34,12 +34,23 @@
 </template>
 
 <script setup>
-defineProps({
+import { useAdminStore } from "@/stores/adminStore";
+
+// AdminStore
+const adminStore = useAdminStore();
+
+
+const props=defineProps({
   reportedPost: {
     type: Object,
     required: true
   },
-  onDelete: Function,
 });
+
+const deletePost = async () => {
+  console.log(props.reportedPost?.post?._id)
+  await adminStore.deleteReportedPost(props.reportedPost?.post?._id);
+};
+
 
 </script>

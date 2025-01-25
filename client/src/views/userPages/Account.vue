@@ -174,20 +174,31 @@ let user = ref([])
 
 
 onMounted(async () => {
+  const router = useRouter(); // Initialize the router
+
   try {
     await postStoryStore.fetchOtherUserProfile(userId);
-    await postStoryStore.fetchUserProfile()
+    await postStoryStore.fetchUserProfile();
     profile.value = postStoryStore.otherProfile;
+
+    // Check if the profile belongs to the logged-in user
+    if (profile.value._id === authStore.user.id) {
+      router.push('/myAccount'); 
+      return; 
+    }
+
     myposts.value = postStoryStore.usersposts;
     likedposts.value = postStoryStore.likedPosts;
     following.value = postStoryStore.otherProfile.following;
     followers.value = postStoryStore.otherProfile.followers;
-    myFollowers.value = postStoryStore.myProfile.followers
-    myFollowing.value = postStoryStore.myProfile.following
-    user = authStore.user
+    myFollowers.value = postStoryStore.myProfile.followers;
+    myFollowing.value = postStoryStore.myProfile.following;
+    user = authStore.user;
 
-    // following.value = postStoryStore.following; //@todo kalab this object are not found
-    // followers.value = postStoryStore.followers;//@todo kalab this object are not found
+    // Check if the current user is following the profile
+    isFollowing.value = myFollowing.value.some(
+      following => following.user._id === profile.value._id
+    );
   } catch (error) {
     console.error("Error loading profile:", error);
   } finally {
@@ -195,15 +206,20 @@ onMounted(async () => {
   }
 });
 
-
-const sendMessage = () => console.log('Message sent');
+// const sendMessage = () => console.log('Message sent');
 const toggleFollow = async () => {
-  const result = await postStoryStore.followUser(profile.value._id);
-  await postStoryStore.fetchUserProfile()
+  const response = await postStoryStore.followUser(profile.value._id);
+  if(response.error){
+    toast.error(response.error)
+    return;
+  }
+
+
+  await postStoryStore.fetchUserProfile();
 
   myFollowing.value = postStoryStore.myProfile.following
   isFollowing.value = myFollowing.value.some(following => following.user._id === profile.value._id);
-  toast.success(`${result.message}!`, { position: 'top-center' });
+  toast.success(`${response.message}!`, { position: 'top-center' });
 };
 
 

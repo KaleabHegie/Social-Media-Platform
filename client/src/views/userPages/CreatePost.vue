@@ -271,9 +271,8 @@ const submitPost = async () => {
     type: postType.value,
     media: mediaFiles.value,
     caption: caption.value,
-    hashtags: selectedHashtags.value,
+    rawHashtags: selectedHashtags.value.map(tag => `#${tag}`).join(' '),
   };
-
   try {
     if (content.type == 'post' && (!content.media || !content.caption)) {
       throw 'Important Inputs are missing';
@@ -283,7 +282,7 @@ const submitPost = async () => {
 
     isSubmitting.value = true; // Disable the button during submission
     const response = await postStore.createPost(content);
-    const contentType = content.type.charAt(0).toUpperCase()+content.type.slice(1);
+    const contentType = content.type.charAt(0).toUpperCase() + content.type.slice(1);
     if (response.error) {
       toast.error(`Error creating post: ${response.error}`, { position: 'top-center' });
     } else {

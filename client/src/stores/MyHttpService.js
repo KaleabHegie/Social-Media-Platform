@@ -1,6 +1,8 @@
 import { useAuthStore } from "@/stores/authStore";
 
 export default class MyHttpService {
+
+  static MY_BASE_URL="http://localhost:5173/"
   static API_BASE_URL = "http://localhost:5000/api"; // Replace with your backend URL
 
   static loadImage(imageUrl) {
@@ -61,6 +63,17 @@ export default class MyHttpService {
       if (response.status === 400) {
         const data = await response.json();
         return { error: data.message || "Bad Request" };
+      }
+
+      if (response.status === 403) {
+        const data = await response.json();
+        return { error: data.message || "Validation Error" };
+      }
+
+
+      if (response.status === 404) {
+        const data = await response.json();
+        return { error: data.message || "404 Not Found" };
       }
 
       if (response.status === 500) {

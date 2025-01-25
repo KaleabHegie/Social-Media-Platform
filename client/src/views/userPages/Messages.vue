@@ -59,7 +59,7 @@
         <!-- Search bar -->
         <div class="p-4 border-b border-gray-200 dark:border-gray-700">
           <div class="relative">
-            <input v-model="searchQuery" type="text" placeholder="Search"
+            <input v-model="searchQuery" type="text" :placeholder="t('search')"
               class="w-full px-10 py-2 bg-white dark:bg-gray-700 rounded-full border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-sky-400 dark:focus:ring-sky-400 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400" />
             <v-icon name="bi-search" class="absolute left-3 top-2.5 text-gray-400" />
           </div>

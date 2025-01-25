@@ -166,10 +166,10 @@ const postController = {
         deletedPost = await Post.findByIdAndDelete(postToDelete._id);
         // Check if user exists
         if (!deletedPost) {
-          return res.status(400).json({ message: "Reported Post not found 1" });
+          return res.status(400).json({ message: "Post not found." });
         }
       } else {
-        return res.status(400).json({ message: "Reported Post not found 2" });
+        return res.status(400).json({ message: "Post not found" });
       }
 
       //Delete Related Posts
@@ -284,7 +284,7 @@ const postController = {
         });
       }
 
-      console.log(req.body)
+      console.log(req.body);
 
       const postId = req.body.content.postId; // Get the postId from the query parameters
       const userId = req.user.id; // Get the logged-in user's ID
@@ -337,6 +337,57 @@ const postController = {
       console.error("Error reporting post:", error.toString());
       return res.status(constants.SERVER_ERROR).json({
         message: "An error occurred while processing your request",
+      });
+    }
+  },
+
+  getSinglePost: async (req, res) => {
+    try {
+      // Check if the user is logged in
+      if (!req.user) {
+        return res.status(constants.UNAUTHORIZED).json({
+          message: "User must be logged in to access the home feed",
+        });
+      }
+
+      const userId = req.user.id;
+
+      const { postId } = req.query;
+
+      if (!postId) {
+        return res.status(constants.VALIDATION_ERRORS).json({
+          message: "postId is required",
+        });
+      }
+
+      const post = await Post.findOne({ _id: postId, type: "post" })
+        .populate({
+          path: "user",
+          select: "user_name profile_photo_url _id is_verified",
+        })
+        .populate({
+          path: "comments",
+          select: "content sender createdAt likes",
+          populate: {
+            path: "sender",
+            select: "user_name profile_photo_url _id",
+          },
+        });
+
+      if (!post) {
+        return res.status(constants.NOT_FOUND).json({
+          message: "Post not found",
+        });
+      }
+
+      return res.json({
+        message: "Post fetched successfully",
+        post,
+      });
+    } catch (error) {
+      console.error("Error fetching single post:", error.toString());
+      return res.status(constants.SERVER_ERROR).json({
+        message: "An error occurred while fetching the post",
       });
     }
   },
@@ -394,8 +445,14 @@ const postController = {
 
       const userId = req.user.id;
 
-      // Fetch posts of type "story" with user details populated
-      const stories = await Post.find({ type: "story" })
+      // Calculate the timestamp for 24 hours ago
+      const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+
+      // Fetch stories of type "story" created in the last 24 hours
+      const stories = await Post.find({
+        type: "story",
+        createdAt: { $gte: twentyFourHoursAgo }, // Filter stories created in the last 24 hours
+      })
         .populate({
           path: "user",
           select: "user_name profile_photo_url _id", // Fetch only these fields from the user schema
@@ -415,6 +472,7 @@ const postController = {
     }
   },
 
+  
   //@todo Implement the explore feed algo and Search Functionality By Hastag Matching, Pagination
   getExploreFeed: async (req, res) => {
     try {

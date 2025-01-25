@@ -1,7 +1,7 @@
 <template>
   <main class="h-full pt-4 pb-20 px-4 lg:px-8">
     <div class="max-w-6xl mx-auto">
-      <div class="flex flex-col lg:flex-row lg:space-x-8">
+      <div class="flex flex-col xl:flex-row xl:space-x-8">
         <!-- Main content area -->
         <div class="flex-grow order-2 lg:order-1">
 
@@ -16,7 +16,7 @@
           </div>
 
           <!-- Stories for mobile -->
-          <div  class="lg:hidden mb-6 w-[94vw]">
+          <div class="lg:hidden mb-6 w-[94vw]">
             <div
               class="z-50 p-2 w-[94vw] flex items-center justify-between mb-4 border-b border-gray-300 dark:border-gray-700">
               <!-- Logo Button -->
@@ -24,7 +24,7 @@
                 <img src="@/assets/logo.png" alt="Logo" class="w-full object-contain rounded-lg" />
               </button>
 
-              
+
               <!-- Notification Icon Button -->
               <div class="relative">
                 <button @click="toggleMobileNotifications"
@@ -35,7 +35,7 @@
                   <!-- Notification Badge -->
                   <span v-if="unreadNotifications?.length > 0"
                     class="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 rounded-full">
-                    
+
                     {{ unreadNotifications?.length }}
                   </span>
                 </button>
@@ -53,7 +53,7 @@
               </Teleport>
             </div>
             <div class="flex space-x-4 mt-6 overflow-x-auto pb-4 hide-scrollbar" style="scroll-snap-type: x mandatory;">
-              <StoryCard v-for="story in postStoryStore.stories" :key="story.id" :story="story"
+              <StoryCard v-for="story in postStoryStore.stories" :key="story._id" :story="story"
                 class="flex-shrink-0 w-[25%] max-w-[100px] sm:max-w-[120px]" style="scroll-snap-align: start;" />
             </div>
           </div>
@@ -82,16 +82,16 @@
 
         <!-- Stories for desktop -->
 
-        <div  class="hidden lg:block w-80 order-1 lg:order-2 ">
+        <div class="hidden lg:block w-80 order-1 lg:order-2 fixed top-4 right-[20%] lg:right-[10%]">
           <div class="sticky top-4">
             <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">{{ t('stories') }}</h2>
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4">
               <div v-if="postStoryStore.stories.length > 0" class="grid grid-cols-3 gap-4">
-                <StoryCard v-for="story in postStoryStore.stories" :key="story.id" :story="story" />
+                <StoryCard v-for="story in postStoryStore.stories" :key="story._id" :story="story" />
               </div>
             </div>
             <div class="mt-6">
-              <NotificationCard :showCloseButton="true" />
+              <NotificationCard :showCloseButton="false" />
             </div>
           </div>
         </div>
@@ -126,7 +126,7 @@ const closeMobileNotifications = () => {
   showMobileNotification.value = false;
 };
 
-onMounted( async () => {
+onMounted(async () => {
   postStoryStore.fetchPosts();
   postStoryStore.fetchStories();
   const result = await postStoryStore.fetchUserProfile()

@@ -46,8 +46,7 @@
                     <div class="flex items-center">
                         <input v-model="newComment" type="text" :placeholder="t('addComment')"
                             class="flex-grow mr-2 p-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
-                        <button @click="addComment"
-                            class="bg-sky-500 text-white px-4 py-2 rounded-lg hover:bg-sky-600">
+                        <button @click="addComment" class="bg-sky-500 text-white px-4 py-2 rounded-lg hover:bg-sky-600">
                             {{ t('comment') }}
                         </button>
                     </div>
@@ -68,8 +67,8 @@ import PostCard from '@/components/PostCard.vue';
 import { usePostStoryStore } from '@/stores/homePageStore';
 import { useAuthStore } from '@/stores/authStore';
 import { useLanguageStore } from '@/stores/languageStore';
-
-
+import ToastService from '../../utils/toast';
+const toast = ToastService();
 addIcons(RiCloseLine);
 
 const router = useRouter();
@@ -92,7 +91,7 @@ const content = {
 }
 
 const addComment = async () => {
-    
+
     if (newComment.value.trim()) {
         // Create a comment object to add
         content.content = newComment.value;
@@ -125,11 +124,12 @@ const addComment = async () => {
 
 
 onMounted(async () => {
-    if (!store.hasPosts) {
-        await store.fetchPosts();
+    const response = await store.getSinglePost(postId);
+    if (response.error) {
+        toast.error(response.error);
+        return;
     }
-    console.log(  '--------------' , await store)
-    const foundPost = await store.getPostById(postId);
-    post.value = foundPost || null; // Handle case when post is not found
+
+    post.value = response.post;
 });
 </script>

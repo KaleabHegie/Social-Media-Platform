@@ -6,7 +6,7 @@
         {{ t('notifiy') }}
       </h3>
       <div class="flex items-center space-x-4">
-        <button v-if="hasUnread" @click="markAllAsRead"
+        <button v-if="notifications.length > 0" @click="markAllAsRead"
           class="text-sm text-sky-500 hover:text-sky-600 dark:hover:text-sky-400">
           {{ t('dismiss') }}
         </button>
@@ -20,7 +20,7 @@
     <!-- Notification List -->
     <div class="max-h-[400px] overflow-y-auto">
       <div v-if="notifications.length === 0" class="p-6 text-center text-gray-500">
-        No notifications yet
+        {{ t('noNew') }}
       </div>
 
       <div v-else class="divide-y divide-gray-200 dark:divide-gray-700">
@@ -42,7 +42,7 @@
               <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
                 {{ formatDate(notification.createdAt) }}
               </p>
-             
+
             </div>
           </div>
         </div>
@@ -52,7 +52,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 import { usePostStoryStore } from '@/stores/homePageStore';
 import ToastService from '@/utils/toast.js';
 import { useLanguageStore } from '@/stores/languageStore';
@@ -64,23 +64,30 @@ const props = defineProps({
     default: false,
   },
 });
-
 const { t } = useLanguageStore();
 const postStoryStore = usePostStoryStore();
-defineEmits(['close']);
 
-// Simulated notifications data based on the backend structure
 const notifications = ref([]);
 
-const hasUnread = computed(() => {
-  return notifications.value.some(notification => !notification.seen);
-});
-
-
 onMounted(async () => {
-  const result = await postStoryStore.fetchUserProfile()
-  notifications.value = postStoryStore.myProfile.notifications.filter(notification => notification.seen === false).reverse();
+  const response = await postStoryStore.getNotifications();
+  if (response.error) {
+    return;
+  }
+
+  postStoryStore.myProfile.notifications = response.notifications || []
 });
+
+
+watch(
+  () => postStoryStore.myProfile.notifications,
+  (newNotifications) => {
+    notifications.value = newNotifications;
+  },
+  { deep: true }
+);
+
+
 
 const formatDate = (dateString) => {
   const date = new Date(dateString);
@@ -94,10 +101,16 @@ const formatDate = (dateString) => {
 };
 
 const markAllAsRead = async () => {
-  await postStoryStore.markAllAsRead();
-  toast.success('Successful!', { position: 'top-center' });
+
+
+  const response = await postStoryStore.markAllAsRead();
+  if (response.error) {
+    toast.error(response.error || "Unable to Clear");
+    return;
+  }
+  toast.success('Cleared!', { position: 'top-center' });
+
+  postStoryStore.myProfile.notifications = []
 };
-
-
 
 </script>

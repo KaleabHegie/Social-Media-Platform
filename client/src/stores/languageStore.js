@@ -399,44 +399,92 @@ const translations = {
   },
   addHashtag: {
     en: "Add a hashtag...",
-    am: "ሃሽታግ ይጨምሩ..."
+    am: "ሃሽታግ ይጨምሩ...",
   },
   youfollow: {
     en: "You are following this user",
-    am: "ይህን ተጠቃሚ እየተከተሉ ነው።"
+    am: "ይህን ተጠቃሚ እየተከተሉ ነው።",
   },
   typeMessage: {
     en: "Type a message...",
-    am: "መልዕክት ይተይቡ..."
+    am: "መልዕክት ይተይቡ...",
   },
   peak: {
     en: "Peak Message",
-    am: "የድብቅ መልዕክት"
+    am: "የድብቅ መልዕክት",
   },
   close: {
     en: "Close",
-    am: "ዝጋ"
+    am: "ዝጋ",
   },
   groupName: {
     en: "Group Name",
-    am: "ቡድን ስም"
+    am: "ቡድን ስም",
   },
   createGroup: {
     en: "Create Group",
-    am: "ቡድን ፍጠር"
+    am: "ቡድን ፍጠር",
   },
   selectParticipants: {
     en: "Select Participants",
-    am: "ተሳታፊዎችን ይምረጡ"
+    am: "ተሳታፊዎችን ይምረጡ",
   },
   cancel: {
     en: "Cancel",
-    am: "ሰርዝ"
+    am: "ሰርዝ",
   },
-  createNew:{
-     en: "Create New Group",
-    am: "አዲስ ቡድን ፍጠር"
-  }
+  createNew: {
+    en: "Create New Group",
+    am: "አዲስ ቡድን ፍጠር",
+  },
+  flag: {
+    en: "Are you sure you want to flag this post?",
+    am: "እርግጠኛ ነህ ይህን ለጥፍ መጠቆም ይፈልጋሉ?",
+  },
+  reason: {
+    en: "Please select a reason for flagging this post",
+    am: "ምክንያት ለይህን ለጥፍ ይምረጡ",
+  },
+  inappropriate: {
+    en: "Inappropriate Content",
+    am: "ማስታወሻ አልተሰማም",
+  },
+  spam: {
+    en: "Spam",
+    am: "ስፓም",
+  },
+  hate: {
+    en: "Hate Speech",
+    am: "እናት ቅንጣት",
+  },
+  harass: {
+    en: "Harassment",
+    am: "ማስታወሻ",
+  },
+  other: {
+    en: "Other",
+    am: "ሌላ",
+  },
+  yes: {
+    en: "Yes",
+    am: "አዎ",
+  },
+  deletePost: {
+    en: "Are you sure you want to delete this post?",
+    am: "እርግጠኛ ነህ ይህን ለጥፍ መሰረዝ ይፈልጋሉ?",
+  },
+  search: {
+    en: "Search...",
+    am: "ፈልግ...",
+  },
+  noNew:{
+    en: "No new notifications",
+    am: "ምንም አዲስ ማሳወቂያ የለም",
+  },
+  noUsersFound:{
+    en: "No users found",
+    am: "ተጠቃሚዎች አልተገኘም",
+  },
 };
 
 export const useLanguageStore = defineStore("language", () => {
