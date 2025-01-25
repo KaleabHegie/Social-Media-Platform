@@ -120,18 +120,16 @@
         <Transition name="modal">
           <div v-if="showFlagModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
             <div class="max-w-md bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md transform transition-all">
-              <h3 class="text-lg mb-4 text-gray-800 dark:text-white">Are you sure you want to flag this post?</h3>
+              <h3 class="text-lg mb-4 text-gray-800 dark:text-white">{{ t('flag') }}</h3>
               <!-- Dropdown for Report Reason -->
               <div v-if="showDropdown" class="mb-4">
-                <label for="reportReason" class="block text-sm text-gray-700 dark:text-white">Please select a reason for
-                  flagging:</label>
+                <label for="reportReason" class="block text-sm text-gray-700 dark:text-white">{{ t('reason') }}</label>
                 <select v-model="selectedReason" id="reportReason" class="w-full mt-2 p-2 border rounded-md">
-                  <option disabled value="">-- Select a reason --</option>
-                  <option value="inappropriate_content">Inappropriate Content</option>
-                  <option value="spam">Spam</option>
-                  <option value="hate_speech">Hate Speech</option>
-                  <option value="harassment">Harassment</option>
-                  <option value="other">Other</option>
+                  <option value="inappropriate_content">{{ t('inappropriate') }}</option>
+                  <option value="spam">{{ t('spam') }}</option>
+                  <option value="hate_speech">{{ t('hate') }}</option>
+                  <option value="harassment">{{ t('harass') }}</option>
+                  <option value="other">{{ t('other') }}</option>
                 </select>
               </div>
 
@@ -139,11 +137,11 @@
               <div class="flex justify-between">
                 <button @click="confirmFlag(props.post._id)" :disabled="!selectedReason"
                   class="bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600">
-                  Yes, flag it
+                  {{ t('yes') }}
                 </button>
                 <button @click="cancelAction('flag')"
                   class="bg-gray-500 text-white py-2 px-4 rounded-md hover:bg-gray-700">
-                  Cancel
+                  {{ t('cancel') }}
                 </button>
               </div>
             </div>
@@ -157,14 +155,14 @@
         <Transition name="modal">
           <div v-if="showDeleteModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
             <div class="  max-w-md bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md transform transition-all">
-              <h3 class="text-lg text-gray-900 dark:text-white mb-4">Are you sure you want to delete this post?</h3>
+              <h3 class="text-lg text-gray-900 dark:text-white mb-4">{{ t('deletePost') }}</h3>
               <div class="flex justify-between">
                 <button @click="confirmDelete" class="bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-700">
-                  Yes, delete it
+                  {{ t('yes') }}
                 </button>
                 <button @click="cancelAction('delete')"
                   class="bg-gray-500 text-white py-2 px-4 rounded-md hover:bg-gray-700">
-                  Cancel
+                  {{ t('cancel') }}
                 </button>
               </div>
             </div>

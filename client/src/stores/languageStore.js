@@ -436,7 +436,44 @@ const translations = {
   createNew:{
      en: "Create New Group",
     am: "አዲስ ቡድን ፍጠር"
-  }
+  },
+  flag:{
+    en: "Are you sure you want to flag this post?",
+    am: "እርግጠኛ ነህ ይህን ለጥፍ መጠቆም ይፈልጋሉ?"
+  },
+  reason:{
+    en: "Please select a reason for flagging this post",
+    am: "ምክንያት ለይህን ለጥፍ ይምረጡ"
+  },
+  inappropriate:{
+    en: "Inappropriate Content",
+    am: "ማስታወሻ አልተሰማም"
+  },
+  spam:{
+    en: "Spam",
+    am: "ስፓም"
+  },
+  hate:{
+    en: "Hate Speech",
+    am: "እናት ቅንጣት"
+  },
+  harass:{
+    en: "Harassment",
+    am: "ማስታወሻ"
+  },
+  other:{
+    en: "Other",
+    am: "ሌላ"
+  },
+  yes:{
+    en: "Yes",
+    am: "አዎ"
+  },
+  deletePost:{
+    en: "Are you sure you want to delete this post?",
+    am: "እርግጠኛ ነህ ይህን ለጥፍ መሰረዝ ይፈልጋሉ?"
+  },
+
 };
 
 export const useLanguageStore = defineStore("language", () => {
