@@ -98,7 +98,6 @@ io.on("connection", async (socket) => {
 
     await response.save();
 
-    console.log(data.selectedChatId.selectedChat)
     socket.to(data.selectedChatId.selectedChat).emit("recive-message", {
       messageId,
       content: data.content,

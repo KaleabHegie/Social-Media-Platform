@@ -96,9 +96,11 @@ if (props.selectedContact.is_group) {
   }
 }
 else {
+
   data = {
     selectedChat: props.selectedChat._id
   }
+  console.log(data)
 }
 
 socket.on('connect', () => {
@@ -180,13 +182,10 @@ watch(
   () => props.selectedContact,
   async (newContact, oldContact) => {
 
-    console.log(messages.value)
     messages.value = [];
-    console.log(messages.value)
     if (newContact && newContact._id !== oldContact?._id) {
       // Clear the messages immediately
 
-      console.log(props.selectedContact.is_group)
 
       if (props.selectedContact.is_group == false) {
         try {
