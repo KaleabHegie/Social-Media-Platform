@@ -380,6 +380,7 @@ const userController = {
           message: "No chats found",
         });
       }
+      
 
       res.json({
         message: "Users fetched successfully",
@@ -1105,7 +1106,7 @@ const userController = {
     const requesterId = request.user; 
     const requester = await User.findById(requesterId);
 
-    console.log(requester)
+
 
 
     user.followers.push({ user: requesterId });

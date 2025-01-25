@@ -60,9 +60,9 @@ const findRoomId = async (data) => {
 };
 
 io.on("connection", async (socket) => {
+
   socket.on("room_id", async (data) => {
-    const room = await findRoomId(data);
-    socket.join(room);
+    socket.join(data.selectedChatId.selectedChat);
   });
 
   io.emit("client-total", socketConnected.size);
@@ -73,20 +73,13 @@ io.on("connection", async (socket) => {
   });
 
   socket.on("send-message", async (data) => {
-    let room;
 
-    if (!data.selectedChat) {
-      console.log(data.reciver._id);
-      room = await findRoomId({
-        selectedChat: data.reciver._id,
-      });
-    } else {
-      room = await findRoomId({
-        selectedChat: data.selectedChat._id,
-      });
-    }
+    
 
-    const response = await Message.findById(room).exec();
+  
+    const response = await Message.findById(data.selectedChatId.selectedChat).exec();
+    
+    console.log(response)
 
     const messageId = new ObjectId();
     const messageData = {
@@ -100,7 +93,7 @@ io.on("connection", async (socket) => {
 
     await response.save();
 
-    socket.to(room).emit("recive-message", data);
+    socket.to(data.selectedChatId.selectedChat).emit("recive-message", data);
   });
 });
 

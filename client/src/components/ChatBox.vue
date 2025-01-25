@@ -91,7 +91,6 @@ const socket = io('http://localhost:5000'); // Connect to your backend server
 
 let data = []
 if (props.selectedContact.is_group) {
-  console.log('-------------------------')
   data = {
     selectedChat: props.selectedContact._id
   }
@@ -103,7 +102,7 @@ else {
 }
 
 socket.on('connect', () => {
-  socket.emit('room_id', data)
+  socket.emit('room_id', {data : {selectedChatId : data}})
 })
 
 
@@ -127,7 +126,8 @@ const messageData = {
    reciver : props.selectedContact,
    content : props.newMessage ,
    date : new Date(),
-   selectedChat : props.selectedChat 
+   selectedChat : props.selectedChat ,
+   selectedChatId : data
 }
 
 socket.emit('send-message' , messageData)
