@@ -19,8 +19,7 @@
     </div>
 
     <div v-else-if="!isLoading && !error" class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-      <ReportedPost v-for="reportedPost in reportedPosts" :key="reportedPost.post?.postId" :reportedPost="reportedPost"
-        @delete="deletePost" />
+      <ReportedPost v-for="reportedPost in reportedPosts" :key="reportedPost.post?.postId" :reportedPost="reportedPost"/>
     </div>
   </div>
 </template>
@@ -38,10 +37,7 @@ const reportedPosts = computed(() => adminStore.reportedPosts);
 const isLoading = computed(() => adminStore.isLoading);
 const error = computed(() => adminStore.error);
 
-const deletePost = async (postId) => {
-  await adminStore.deleteReportedPost(postId);
-};
-
+  
 
 // Fetch Users on Component Mount
 onMounted(() => {

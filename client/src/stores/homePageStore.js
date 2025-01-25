@@ -466,10 +466,11 @@ export const usePostStoryStore = defineStore("postStory", {
           body: { content: content },
           useJWT: true,
         });
+
+        console.log(response);
+        return response;
       } catch (error) {
-        this.error = error.response?.message || "Failed to delete post.";
-      } finally {
-        this.isLoading = false;
+        return { error: "Failed to Report Post." };
       }
     },
 

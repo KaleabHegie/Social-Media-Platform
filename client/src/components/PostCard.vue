@@ -215,10 +215,13 @@ async function confirmFlag(postId) {
       postId: postId
     }
 
-    await store.reportPost(content)
-
-    toast.success('Successfully reported post!', { position: 'top-center' });
-
+    const response = await store.reportPost(content);
+    if (response.error) {
+      toast.error(response.error);
+      return;
+    } else {
+      toast.success('Successfully reported post!', { position: 'top-center' });
+    }
 
     // Close the modal after flagging
     showFlagModal.value = false;

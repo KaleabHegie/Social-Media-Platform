@@ -3,7 +3,7 @@ const User = require("../Models/UserModel");
 const Comment = require("../Models/CommentModel");
 const ReportedPost = require("../Models/ReportModel");
 const Post = require("../Models/PostModel");
-
+const { ObjectId } = require("mongoose").Types; 
 const adminController = {
   deleteAccountAdmin: async (req, res) => {
     try {
@@ -218,10 +218,15 @@ const adminController = {
           message: "Not Authorized",
         });
       }
-      const reportedPostId = req.query.postId;
-
-      if (!reportedPostId) {
-        return res.status(400).json({ message: "PostId required" });
+      const reportedPostId = req.body.postId;
+      // Check if postId is missing or invalid
+      if (
+        reportedPostId === undefined ||
+        reportedPostId === null ||
+        reportedPostId === "" ||
+        !ObjectId.isValid(reportedPostId) // Validate if it's a valid ObjectId
+      ) {
+        return res.status(400).json({ message: "PostId required and must be valid" });
       }
 
       let deletedPost;
@@ -254,7 +259,7 @@ const adminController = {
         message: "Reported post Removed successfully.",
       });
     } catch (error) {
-      console.error(error);
+      console.error(error + "22222222222");
       return res.status(500).json({ message: "Server error" });
     }
   },

@@ -116,7 +116,7 @@ export const useAdminStore = defineStore("adminStore", {
       this.error = null;
       try {
         const response = await MyHttpService.post("/deleteReportedPost", {
-          query: { postId: postId },
+          body: { postId: postId },
           useJWT: true,
         });
 
@@ -124,13 +124,17 @@ export const useAdminStore = defineStore("adminStore", {
           toast.error(response.error || "An Error Occured");
           return;
         }
+
+        console.log("Before:", JSON.stringify(this.reportedPosts, null, 2));
         // Remove the user from the list
         this.reportedPosts = this.reportedPosts.filter(
-          (post) => reportedPosts.post._id !== postId
+          (post) => post.post._id !== postId
         );
+        console.log("After", JSON.stringify(this.reportedPosts, null, 2));
+
         toast.success(response.message || "Post Deleted Successfully");
       } catch (err) {
-        toast.error("Unexpected Error Occured");
+        toast.error(err);
         return;
       }
     },
@@ -150,7 +154,9 @@ export const useAdminStore = defineStore("adminStore", {
           toast.error(this.error); // Display error notification
         } else {
           // console.log(JSON.stringify(response, null, 2));
-          this.postAnalytics = Array.isArray(response.analytics) ? response.analytics : [];
+          this.postAnalytics = Array.isArray(response.analytics)
+            ? response.analytics
+            : [];
           // console.log(JSON.stringify(this.postAnalytics, null, 2));
         }
       } catch (err) {
