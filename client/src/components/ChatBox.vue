@@ -102,7 +102,7 @@ else {
 }
 
 socket.on('connect', () => {
-  socket.emit('room_id', {data : {selectedChatId : data}})
+  socket.emit('room_id', { data: { selectedChatId: data } });
 })
 
 

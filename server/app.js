@@ -61,8 +61,13 @@ const findRoomId = async (data) => {
 
 io.on("connection", async (socket) => {
 
-  socket.on("room_id", async (data) => {
-    socket.join(data.selectedChatId.selectedChat);
+  socket.on("room_id", (data) => {
+    const roomId = data?.data?.selectedChatId?.selectedChat;
+    if (roomId) {
+      socket.join(roomId);
+    } else {
+      console.error("Invalid room_id data received:", data);
+    }
   });
 
   io.emit("client-total", socketConnected.size);
@@ -79,7 +84,7 @@ io.on("connection", async (socket) => {
   
     const response = await Message.findById(data.selectedChatId.selectedChat).exec();
     
-    console.log(response)
+    
 
     const messageId = new ObjectId();
     const messageData = {
@@ -93,7 +98,12 @@ io.on("connection", async (socket) => {
 
     await response.save();
 
-    socket.to(data.selectedChatId.selectedChat).emit("recive-message", data);
+    console.log(data.selectedChatId.selectedChat)
+    socket.to(data.selectedChatId.selectedChat).emit("recive-message", {
+      messageId,
+      content: data.content,
+      sender: data.sender,
+    });
   });
 });
 
