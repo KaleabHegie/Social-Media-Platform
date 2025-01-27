@@ -128,7 +128,7 @@ export const useAdminStore = defineStore("adminStore", {
         console.log("Before:", JSON.stringify(this.reportedPosts, null, 2));
         // Remove the user from the list
         this.reportedPosts = this.reportedPosts.filter(
-          (post) => post.post._id !== postId
+          (post) => post._id !== postId
         );
         console.log("After", JSON.stringify(this.reportedPosts, null, 2));
 

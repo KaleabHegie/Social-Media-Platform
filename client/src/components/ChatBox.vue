@@ -25,17 +25,28 @@
       </div>
 
       <!-- Messages -->
-      <div class="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 dark:bg-gray-900"
+      <div class="MessagingArea flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 dark:bg-gray-900"
         @contextmenu.prevent="showContextMenu">
         <div v-for="message in messages" :key="message.id" class="flex"
-          :class="[message.sender._id === currentUserId.id ? 'justify-end' : 'justify-start' ]">
+          :class="[message.sender._id === currentUserId.id ? 'justify-end' : 'justify-start']">
+
+          <!-- Profile Pic -->
+          <div v-if="message.sender?._id != currentUserId.id" class="flex items-center space-x-2 mr-1">
+            <!-- Avatar -->
+            <div class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center overflow-hidden">
+              <img :src="message.sender?.profile_photo_url || '/default-avatar.png'" alt="Avatar"
+                class="w-full h-full object-cover" />
+            </div>
+          </div>
+
           <div class="max-w-xs text-md px-4 py-2 rounded-lg relative group" :class="[
-            message.sender._id === currentUserId.id ? 'bg-sky-400 text-white' : 'bg-gray-500 text-white' ,
+            message.sender._id === currentUserId.id ? 'bg-sky-400 text-white' : 'bg-gray-500 text-white',
             message.sender === currentUserId ? 'ml-auto' : ''
           ]">
             {{ message.content }}
             <div class="text-sm opacity-70 ml-2  flex justify-end">{{ formatTime(message.updatedAt) }}</div>
           </div>
+
         </div>
       </div>
 
@@ -66,7 +77,7 @@ import { useLanguageStore } from '@/stores/languageStore';
 
 import { io } from 'socket.io-client'; // Import socket.io-client
 
-const { t} = useLanguageStore();
+const { t } = useLanguageStore();
 const authStore = useAuthStore();
 const postStoryStore = usePostStoryStore();
 const props = defineProps({
@@ -116,22 +127,24 @@ socket.on('recive-message', (data) => {
     sender: data.sender,
     updatedAt: new Date(),
   });
+
+  scrollToBottom();
 })
 
 const sendMessage = () => {// Logs the current message content
 
-const messageData = {
-   sender : {
-    _id:currentUserId?.id
-   },
-   reciver : props.selectedContact,
-   content : props.newMessage ,
-   date : new Date(),
-   selectedChat : props.selectedChat ,
-   selectedChatId : data
-}
+  const messageData = {
+    sender: {
+      _id: currentUserId?.id
+    },
+    reciver: props.selectedContact,
+    content: props.newMessage,
+    date: new Date(),
+    selectedChat: props.selectedChat,
+    selectedChatId: data
+  }
 
-socket.emit('send-message' , messageData)
+  socket.emit('send-message', messageData)
   messages.value.push({
     id: messages.value.length + 1, // Use the current length of `messages.value`
     content: localNewMessage.value,
@@ -147,9 +160,9 @@ socket.emit('send-message' , messageData)
 
 
 const scrollToBottom = () => {
-  const chatBox = document.querySelector('.flex-1.overflow-y-auto');
-  if (chatBox) {
-    chatBox.scrollTop = chatBox.scrollHeight;
+  const messagingArea = document.querySelector('.MessagingArea');
+  if (messagingArea) {
+    messagingArea.scrollTop = messagingArea.scrollHeight;
   }
 };
 

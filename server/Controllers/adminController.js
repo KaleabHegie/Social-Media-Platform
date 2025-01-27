@@ -3,7 +3,7 @@ const User = require("../Models/UserModel");
 const Comment = require("../Models/CommentModel");
 const ReportedPost = require("../Models/ReportModel");
 const Post = require("../Models/PostModel");
-const { ObjectId } = require("mongoose").Types; 
+const { ObjectId } = require("mongoose").Types;
 const adminController = {
   deleteAccountAdmin: async (req, res) => {
     try {
@@ -145,8 +145,9 @@ const adminController = {
 
           // Return the post and the filtered list of users who reported it
           return {
+            _id: reportedPost._id, 
             post,
-            reportedBy: users.filter((user) => user !== null), // Remove null values (non-existing users)
+            reportedBy: users.filter((user) => user !== null),
           };
         })
       );
@@ -213,53 +214,52 @@ const adminController = {
 
   deleteReportedPost: async (req, res) => {
     try {
+      // Check if user is admin
       if (!req.user || !req.user.is_admin) {
         return res.status(constants.UNAUTHORIZED).json({
           message: "Not Authorized",
         });
       }
+
       const reportedPostId = req.body.postId;
-      // Check if postId is missing or invalid
-      if (
-        reportedPostId === undefined ||
-        reportedPostId === null ||
-        reportedPostId === "" ||
-        !ObjectId.isValid(reportedPostId) // Validate if it's a valid ObjectId
-      ) {
-        return res.status(400).json({ message: "PostId required and must be valid" });
+      console.log("Reported Post ID:", reportedPostId);
+
+      // Validate postId
+      if (!reportedPostId) {
+        return res.status(400).json({
+          message: "Reported PostId is required",
+        });
       }
 
-      let deletedPost;
-      // Find and delete the Repoted Post by PostID
-      reportedPost = await ReportedPost.findOne({ postId: reportedPostId });
-      if (reportedPost) {
-        deletedPost = await ReportedPost.findByIdAndDelete(reportedPost._id);
-        // Check if user exists
-        if (!deletedPost) {
-          return res.status(400).json({ message: "Reported Post not found" });
-        }
-      } else {
-        return res.status(400).json({ message: "Reported Post not found" });
+      // Find and delete the reported post
+      const deletedPost = await ReportedPost.findByIdAndDelete(reportedPostId);
+      if (!deletedPost) {
+        return res.status(404).json({ message: "Reported Post not found" });
       }
 
-      //Delete Related Posts
-      await Post.findByIdAndDelete(reportedPostId);
+      // Delete the related post (if postId exists in ReportedPost schema)
+      if (deletedPost.postId) {
+        await Post.findByIdAndDelete(deletedPost.postId);
+      }
 
+      // Delete related comments
       await Comment.deleteMany({ postId: reportedPostId });
 
-      const user = await User.findById(deletedPost._id);
-
-      if (user) {
-        user.post_count = user.post_count > 0 ? user.post_count - 1 : 0; // Decrease the post count, ensuring it doesn't go negative
-        await user.save();
+      // Update user's post count (if userId exists in ReportedPost schema)
+      if (deletedPost.userId) {
+        const user = await User.findById(deletedPost.userId);
+        if (user) {
+          user.post_count = user.post_count > 0 ? user.post_count - 1 : 0; // Ensure post count doesn't go negative
+          await user.save();
+        }
       }
 
-      // Send the success response
+      // Send success response
       return res.json({
-        message: "Reported post Removed successfully.",
+        message: "Reported post removed successfully.",
       });
     } catch (error) {
-      console.error(error + "22222222222");
+      console.error("Error deleting reported post:", error);
       return res.status(500).json({ message: "Server error" });
     }
   },

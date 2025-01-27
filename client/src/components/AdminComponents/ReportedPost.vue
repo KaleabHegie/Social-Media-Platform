@@ -48,8 +48,8 @@ const props=defineProps({
 });
 
 const deletePost = async () => {
-  console.log(props.reportedPost?.post?._id)
-  await adminStore.deleteReportedPost(props.reportedPost?.post?._id);
+  console.log(props.reportedPost +"here")
+  await adminStore.deleteReportedPost(props.reportedPost._id);
 };
 
 

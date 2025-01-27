@@ -42,6 +42,7 @@ const error = computed(() => adminStore.error);
 // Fetch Users on Component Mount
 onMounted(() => {
   console.log("Component mounted, fetching initial data...");
-  adminStore.getReportedPosts();
+   adminStore.getReportedPosts();
+  console.log(reportedPosts.value);
 });
 </script>
