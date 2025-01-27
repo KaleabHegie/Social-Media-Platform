@@ -28,9 +28,9 @@
       <div class="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 dark:bg-gray-900"
         @contextmenu.prevent="showContextMenu">
         <div v-for="message in messages" :key="message.id" class="flex"
-          :class="[message.sender._id === selectedContact._id ? 'justify-start' : 'justify-end']">
+          :class="[message.sender._id === currentUserId.id ? 'justify-end' : 'justify-start' ]">
           <div class="max-w-xs text-md px-4 py-2 rounded-lg relative group" :class="[
-            message.sender._id === selectedContact._id ? 'bg-gray-500 text-white' : 'bg-sky-400 text-white',
+            message.sender._id === currentUserId.id ? 'bg-sky-400 text-white' : 'bg-gray-500 text-white' ,
             message.sender === currentUserId ? 'ml-auto' : ''
           ]">
             {{ message.content }}
@@ -91,19 +91,19 @@ const socket = io('http://localhost:5000'); // Connect to your backend server
 
 let data = []
 if (props.selectedContact.is_group) {
-  console.log('-------------------------')
   data = {
     selectedChat: props.selectedContact._id
   }
 }
 else {
+
   data = {
     selectedChat: props.selectedChat._id
   }
 }
 
 socket.on('connect', () => {
-  socket.emit('room_id', data)
+  socket.emit('room_id', { data: { selectedChatId: data } });
 })
 
 
@@ -127,7 +127,8 @@ const messageData = {
    reciver : props.selectedContact,
    content : props.newMessage ,
    date : new Date(),
-   selectedChat : props.selectedChat 
+   selectedChat : props.selectedChat ,
+   selectedChatId : data
 }
 
 socket.emit('send-message' , messageData)
@@ -180,13 +181,10 @@ watch(
   () => props.selectedContact,
   async (newContact, oldContact) => {
 
-    console.log(messages.value)
     messages.value = [];
-    console.log(messages.value)
     if (newContact && newContact._id !== oldContact?._id) {
       // Clear the messages immediately
 
-      console.log(props.selectedContact.is_group)
 
       if (props.selectedContact.is_group == false) {
         try {

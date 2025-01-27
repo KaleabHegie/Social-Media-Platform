@@ -348,7 +348,7 @@ const userController = {
 
       const currentUserId = req.user.id; // Assuming the user's ID is available
       const chats = await Message.find({
-        // Match if currentUserId exists in participants
+        is_group: false,
       });
 
       const finalChats = chats.filter((chat) =>
@@ -361,6 +361,7 @@ const userController = {
           message: "No chats found",
         });
       }
+      
 
       res.json({
         message: "Users fetched successfully",
@@ -1052,17 +1053,23 @@ const userController = {
       const requesterId = request.user;
       const requester = await User.findById(requesterId);
 
-      console.log(requester);
+
+
 
       user.followers.push({ user: requesterId });
       user.followers_count += 1;
 
       // Add user to requester's following list
-      requester.following.push({ user: userId });
+      requester.following.push({ user: user._id });
       requester.following_count += 1;
 
+      console.log("user", user.requests);
+
+
       // Remove requester from requests list
-      user.requests.splice(requestIndex, 1);
+      user.requests.splice(requestId, 1);
+
+    
 
       // Save both users
       await user.save();

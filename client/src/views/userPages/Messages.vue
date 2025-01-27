@@ -293,16 +293,17 @@ const newMessage = ref('')
 
 const selectContact = (contact) => {
   selectedChat.value = chats.value.find(chat =>
+    !chat.isGroup && // Ensure the chat is not a group
     chat.participants.some(participant => participant.userId === contact._id)
   );
-  selectedContact.value = contact
-}
+  selectedContact.value = contact;
+};
 
+console.log(selectedChat.value)
 const currentUserId = authStore.user?.id
 
 const sendMessage = () => {
   if (newMessage.value.trim()) {
-    console.log(postStoryStore.currentUser)
     // Emit message data to the backend
 
     socket.emit('sendMessage', {
@@ -340,7 +341,6 @@ const filteredGroups = computed(() => {
 })
 
 const filteredContacts = computed(() => {
-  console.log(filteredContacts)
   return contacts.value.filter(contact =>
     contact.user_name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
     contact.last_name.toLowerCase().includes(searchQuery.value.toLowerCase())

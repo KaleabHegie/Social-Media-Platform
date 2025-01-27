@@ -28,9 +28,8 @@
   </template>
   
   <script setup>
-  import { ref } from 'vue';
-  import ConfirmationModal from './ConfirmationModal.vue'; // Import your modal component
   import { usePostStoryStore } from '../stores/homePageStore';
+  import ToastService from '@/utils/toast.js';
   defineProps({
     request: {
       type: Object,
@@ -38,15 +37,16 @@
     },
   });
 
+
   const store = usePostStoryStore()
+  const toast = ToastService();
 
 const acceptRequest = async (request) => {
    await store.acceptRequest(request)
+   toast.success("Request accepted successfully!" , { position: "top-center" });
+   
+
 };
   
   </script>
-  
-  <style scoped>
-  /* Your styles */
-  </style>
   

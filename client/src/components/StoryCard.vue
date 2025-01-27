@@ -56,4 +56,11 @@ const closeModal = () => {
   isModalOpen.value = false
 }
 
+// Check if the story is within 24 hours
+const isStoryActive = computed(() => {
+  const now = new Date()
+  const createdAt = new Date(props.story.created_at) // Ensure `created_at` is included in your story data
+  const differenceInHours = (now - createdAt) / (1000 * 60 * 60)
+  return differenceInHours <= 24
+})
 </script>
