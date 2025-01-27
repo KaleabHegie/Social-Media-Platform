@@ -1,6 +1,6 @@
 <template>
   <router-link :to="`/viewpost/${post._id}`"
-    class="relative block overflow-hidden rounded-lg shadow-lg mb-3 break-inside-avoid transform transition-transform duration-500 hover:scale-[102%] min-h-0">
+    class="relative block overflow-hidden rounded-lg shadow-lg mb-3 break-inside-avoid transform transition-transform duration-500  min-h-0">
     <!-- Conditional rendering for media -->
     <template v-if="post.medias && post.medias.length > 0">
       <template v-if="isVideo(post.medias[0])">
