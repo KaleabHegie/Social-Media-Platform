@@ -81,7 +81,7 @@ const messageController = {
     const selectedGroupId = req.query.selectedGroupId;
     try {
       const finalChats = await Message.findById(selectedGroupId)
-        .populate("messages.sender", "username profilePhoto") // Populate sender details
+        .populate("messages.sender", "user_name profile_photo_url") // Populate sender details
         .select("messages participants");
 
       res.status(200).json({ messages: finalChats });
