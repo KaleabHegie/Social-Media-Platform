@@ -43,7 +43,8 @@
             message.sender._id === currentUserId.id ? 'bg-sky-400 text-white' : 'bg-gray-500 text-white',
             message.sender === currentUserId ? 'ml-auto' : ''
           ]">
-            {{ message.content }}
+            <h5 v-if="selectedContact.is_group && message.sender._id != currentUserId.id" class="text-xs opacity-70 text-white">{{ message.sender.user_name }}</h5>  
+              {{ message.content }}
             <div class="text-sm opacity-70 ml-2  flex justify-end">{{ formatTime(message.updatedAt) }}</div>
           </div>
 

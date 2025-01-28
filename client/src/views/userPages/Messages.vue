@@ -85,7 +85,8 @@
               </div>
               <div class="ml-3 flex-grow">
                 <p class="font-semibold text-gray-800 dark:text-gray-200">{{ group.name }}</p>
-                <p class="text-sm text-gray-500 dark:text-gray-400 truncate">{{ group.lastMessage || 'No messages yet'
+                
+                <p class="text-sm text-gray-500 dark:text-gray-400 truncate">{{ group.messages[group.messages.length - 1].content || 'No messages yet'
                   }}</p>
               </div>
               <div class="text-xs text-gray-400 dark:text-gray-500">
